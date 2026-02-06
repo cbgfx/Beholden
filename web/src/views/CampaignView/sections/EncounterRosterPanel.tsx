@@ -25,7 +25,7 @@ export function EncounterRosterPanel(props: {
   compQ: string;
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
-  onAddMonster: (monsterId: string, qty: number) => void | Promise<void>;
+  onAddMonster: (monsterId: string, qty: number, labelBase?: string) => void;
 
   onAddAllPlayers: () => void;
   onOpenCombat: () => void;
@@ -37,7 +37,7 @@ export function EncounterRosterPanel(props: {
   // Map raw combatants -> VM used by this panel (keeps CampaignView simple)
   const combatantsVM: CombatantVM[] = React.useMemo(() => {
     return (props.combatants ?? []).map((c: any) => {
-      const kind: CombatantVM["kind"] = c.baseType === "player" ? "player" : "monster";
+      const kind: CombatantVM["kind"] = c.kind ?? (c.playerId ? "player" : "monster");
       return {
         id: String(c.id),
         label: c.label ?? c.characterName ?? c.name ?? "Combatant",
@@ -53,7 +53,7 @@ export function EncounterRosterPanel(props: {
 
   return (
     <Panel
-      title="Encounter Roster"
+      title="Encounter roster"
       actions={
         encounter ? (
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -106,8 +106,9 @@ export function EncounterRosterPanel(props: {
 
           {/* Add monsters */}
           <div style={{ display: "grid", gap: 10, paddingTop: 12, borderTop: `1px solid ${theme.colors.panelBorder}` }}>
+            <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Add monsters</div>
             <Button onClick={() => setPickerOpen(true)}>
-              + Add Monster
+              <IconPlus /> Add from compendium
             </Button>
           </div>
 
@@ -117,7 +118,7 @@ export function EncounterRosterPanel(props: {
             compQ={props.compQ}
             onChangeCompQ={props.onChangeCompQ}
             compRows={props.compRows}
-            onAddMonster={(id, qty) => props.onAddMonster(id, qty)}
+            onAddMonster={(id, qty, labelBase) => props.onAddMonster(id, qty, labelBase)}
           />
         </div>
       )}

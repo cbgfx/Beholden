@@ -327,7 +327,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770353797031,
+      "updatedAt": 1770409831999,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -362,6 +362,57 @@
           "conditions": [],
           "createdAt": 1770349375403,
           "updatedAt": 1770353797031
+        },
+        {
+          "id": "e08574cb-cd56-440e-b6d4-ee7b9746050e",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_abominable yeti",
+          "name": "Abominable Yeti",
+          "label": "Ab Yeti 1",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770408403820,
+          "updatedAt": 1770409732387
+        },
+        {
+          "id": "f7c0fe6e-e256-48f0-8911-79cb1948a42b",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_abominable yeti",
+          "name": "Abominable Yeti",
+          "label": "Abominable Yeti 2",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770408403820,
+          "updatedAt": 1770408403820
+        },
+        {
+          "id": "2ade7af4-3f27-4709-a85b-5e38149f381c",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_aboleth",
+          "name": "Aboleth",
+          "label": "Funny Boy",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770409831999,
+          "updatedAt": 1770409831999
         }
       ]
     }

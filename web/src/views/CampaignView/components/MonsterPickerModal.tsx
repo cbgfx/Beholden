@@ -205,11 +205,12 @@ export function MonsterPickerModal(props: {
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
 
-  onAddMonster: (monsterId: string, qty: number) => void | Promise<void>;
+  onAddMonster: (monsterId: string, qty: number, labelBase?: string) => void | Promise<void>;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
   const [monster, setMonster] = React.useState<any | null>(null);
   const [qtyById, setQtyById] = React.useState<Record<string, number>>({});
+  const [labelById, setLabelById] = React.useState<Record<string, string>>({});
   const [error, setError] = React.useState<string | null>(null);
 
   // When opening, select the first result (if any) for instant stat preview.
@@ -242,6 +243,16 @@ export function MonsterPickerModal(props: {
     };
   }, [props.isOpen, selectedMonsterId]);
 
+  const selectedRow = React.useMemo(() => {
+    if (!selectedMonsterId) return null;
+    return props.compRows.find((r) => r.id === selectedMonsterId) ?? null;
+  }, [props.compRows, selectedMonsterId]);
+
+  const selectedLabel = React.useMemo(() => {
+    if (!selectedMonsterId) return "";
+    return labelById[selectedMonsterId] ?? (monster?.name ?? selectedRow?.name ?? "");
+  }, [labelById, selectedMonsterId, monster, selectedRow]);
+
   return (
     <Modal
       isOpen={props.isOpen}
@@ -256,7 +267,17 @@ export function MonsterPickerModal(props: {
       }
       width={1100}
     >
-      <div style={{ display: "grid", gridTemplateColumns: "420px 1fr", gap: 14, minHeight: 560 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "420px 1fr",
+          gap: 14,
+          minHeight: 560,
+          height: "70vh",
+          maxHeight: 720,
+          overflow: "hidden"
+        }}
+      >
         {/* Left: list */}
         <div style={{ display: "grid", gap: 10, borderRight: `1px solid ${theme.colors.panelBorder}`, paddingRight: 14 }}>
           <Input value={props.compQ} onChange={(e) => props.onChangeCompQ(e.target.value)} placeholder="Search compendium…" />
@@ -309,7 +330,8 @@ export function MonsterPickerModal(props: {
                         e.stopPropagation();
                         setError(null);
                         try {
-                          await props.onAddMonster(m.id, qty);
+                          const labelBase = (labelById[m.id] ?? "").trim();
+                          await props.onAddMonster(m.id, qty, labelBase || undefined);
                           props.onClose();
                         } catch {
                           setError("Could not add that monster. (Check server / API)");
@@ -327,8 +349,25 @@ export function MonsterPickerModal(props: {
         </div>
 
         {/* Right: statblock */}
-        <div style={{ overflow: "auto", paddingRight: 6 }}>
-          <MonsterStatblock monster={monster} />
+        <div style={{ overflow: "hidden", paddingRight: 6, display: "grid", gridTemplateRows: "auto 1fr", gap: 10 }}>
+          {/* Label override (pre-add) */}
+          <div style={{ paddingBottom: 10, borderBottom: `1px solid ${theme.colors.panelBorder}` }}>
+            <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>Label</div>
+            <Input
+              value={selectedLabel}
+              onChange={(e) => {
+                if (!selectedMonsterId) return;
+                const next = e.target.value;
+                setLabelById((prev) => ({ ...prev, [selectedMonsterId]: next }));
+              }}
+              placeholder={monster?.name ?? selectedRow?.name ?? "Monster label"}
+              disabled={!selectedMonsterId}
+            />
+          </div>
+
+          <div style={{ overflow: "auto", paddingRight: 6 }}>
+            <MonsterStatblock monster={monster} />
+          </div>
         </div>
       </div>
     </Modal>

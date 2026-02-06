@@ -163,7 +163,11 @@ function ensureCombat(encounterId){
 
 function nextLabelNumber(encounterId, baseName){
   const combat = ensureCombat(encounterId);
-  const rx = new RegExp("^" + baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + r("\s+(\d+)$", "i"));
+  // Match labels like "Goblin 2" (case-insensitive), but only for this baseName.
+  const rx = new RegExp(
+    "^" + baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s+(\\d+)$",
+    "i"
+  );
   let maxN = 0;
   for(const c of combat.combatants){
     const m = String(c.label ?? "").match(rx);
@@ -190,6 +194,57 @@ app.get("/api/meta", (_req,res)=>{
     }
   }
   res.json({ ok:true, host:HOST, port:PORT, ips, dataDir: DATA_DIR, hasCompendium: fs.existsSync(COMPENDIUM_PATH) });
+});
+
+/* Compendium */
+app.get("/api/compendium/monsters/:monsterId", (req,res)=>{
+  const { monsterId } = req.params;
+  const m = compendiumState.monsters.find(x => x.id === monsterId);
+  if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
+
+  // Our compendium stores the rich data under raw_json (from 5eTools/XML imports).
+  // The UI expects convenient top-level fields.
+  const r = m.raw_json ?? {};
+  res.json({
+    id: m.id,
+    name: m.name,
+    nameKey: m.nameKey,
+    cr: m.cr ?? null,
+    xp: m.xp ?? null,
+    typeFull: m.typeFull ?? null,
+    typeKey: m.typeKey ?? null,
+    size: m.size ?? null,
+    environment: m.environment ?? null,
+    source: m.source ?? null,
+
+    // Common statblock fields (best-effort; depends on source format)
+    ac: r.ac ?? null,
+    hp: r.hp ?? null,
+    speed: r.speed ?? null,
+    str: r.str ?? null,
+    dex: r.dex ?? null,
+    con: r.con ?? null,
+    int: r.int ?? null,
+    wis: r.wis ?? null,
+    cha: r.cha ?? null,
+
+    save: r.save ?? null,
+    skill: r.skill ?? null,
+    senses: r.senses ?? null,
+    languages: r.languages ?? null,
+    immune: r.immune ?? null,
+    resist: r.resist ?? null,
+    vulnerable: r.vulnerable ?? null,
+    conditionImmune: r.conditionImmune ?? null,
+
+    trait: r.trait ?? [],
+    action: r.action ?? [],
+    reaction: r.reaction ?? [],
+    legendary: r.legendary ?? [],
+    spellcasting: r.spellcasting ?? [],
+
+    raw_json: r
+  });
 });
 
 /* Campaigns */
@@ -579,6 +634,8 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const monsterId = String(req.body?.monsterId ?? "");
   const qty = Math.min(Math.max(Number(req.body?.qty ?? 1), 1), 20);
   const friendly = Boolean(req.body?.friendly ?? false);
+  const labelBaseRaw = req.body?.labelBase != null ? String(req.body.labelBase) : "";
+  const labelBase = labelBaseRaw.trim();
 
   const m = compendiumState.monsters.find(x => x.id === monsterId);
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
@@ -586,10 +643,11 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const combat = ensureCombat(encounterId);
   const t = now();
   const baseName = m.name;
-  let n = nextLabelNumber(encounterId, baseName);
+  const baseLabel = labelBase || baseName;
+  let n = nextLabelNumber(encounterId, baseLabel);
   const created = [];
   for(let i=0;i<qty;i++){
-    const label = qty === 1 ? baseName : `${baseName} ${n++}`;
+    const label = qty === 1 ? baseLabel : `${baseLabel} ${n++}`;
     const c = {
       id: uid(),
       encounterId,
@@ -733,14 +791,6 @@ app.get("/api/compendium/search", (req,res)=>{
     environments: req.query.env ? String(req.query.env).split(",").filter(Boolean) : null
   };
   res.json(searchCompendium(String(q), filters, limit));
-});
-
-// Full monster detail (used by the MonsterPickerModal right-pane preview)
-app.get("/api/compendium/monsters/:monsterId", (req,res)=>{
-  const { monsterId } = req.params;
-  const m = compendiumState.monsters.find(x => x.id === monsterId);
-  if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
-  res.json(m);
 });
 
 const upload = multer({ limits: { fileSize: 25 * 1024 * 1024 } });

@@ -150,12 +150,12 @@ function AppInner() {
     await refreshAdventure(state.selectedAdventureId);
   }
 
-async function addMonster(monsterId: string, qty: number) {
+  async function addMonster(monsterId: string, qty: number, labelBase?: string) {
     if (!state.selectedEncounterId) return;
     await api(`/api/encounters/${state.selectedEncounterId}/combatants/addMonster`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ monsterId, qty, friendly: false })
+      body: JSON.stringify({ monsterId, qty, friendly: false, labelBase: labelBase?.trim() || undefined })
     });
     await refreshEncounter(state.selectedEncounterId);
   }
