@@ -160,6 +160,12 @@ async function addMonster(monsterId: string, qty: number) {
     await refreshEncounter(state.selectedEncounterId);
   }
 
+  async function removeCombatant(combatantId: string) {
+    if (!state.selectedEncounterId) return;
+    await api(`/api/encounters/${state.selectedEncounterId}/combatants/${combatantId}`, { method: "DELETE" });
+    await refreshEncounter(state.selectedEncounterId);
+  }
+
   const hasCampaigns = state.campaigns.length > 0;
 
   return (
@@ -226,6 +232,7 @@ async function addMonster(monsterId: string, qty: number) {
                   await refreshCampaign(state.selectedCampaignId);
                 }}
                 onEditCombatant={(combatantId) => state.selectedEncounterId ? dispatch({ type: "openDrawer", drawer: { type: "editCombatant", encounterId: state.selectedEncounterId, combatantId } }) : undefined}
+                onRemoveCombatant={removeCombatant}
                 onAddMonster={addMonster}
                 onReorderAdventures={reorderAdventures}
                 onReorderLooseEncounters={reorderLooseEncounters}

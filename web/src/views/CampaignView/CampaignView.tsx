@@ -2,6 +2,7 @@ import React from "react";
 import { theme } from "../../app/theme/theme";
 import { useStore } from "../../app/state/store";
 import type { Encounter } from "../../app/types/domain";
+import type { Combatant } from "../../app/types/domain";
 import { useNavigate } from "react-router-dom";
 
 import { AdventuresPanel } from "./sections/AdventuresPanel";
@@ -11,6 +12,8 @@ import { EncounterRosterPanel } from "./sections/EncounterRosterPanel";
 import { PlayersPanel } from "./sections/PlayersPanel";
 import { CampaignNotesPanel } from "./sections/CampaignNotesPanel";
 import { AdventureNotesPanel } from "./sections/AdventureNotesPanel";
+
+
 
 export function CampaignView(props: {
 
@@ -36,6 +39,7 @@ export function CampaignView(props: {
   onEditPlayer: (playerId: string) => void;
   onDeletePlayer: (playerId: string) => void;
   onEditCombatant: (combatantId: string) => void;
+  onRemoveCombatant: (combatantId: string) => void;
   onAddMonster: (monsterId: string, qty: number) => void;
 
   onReorderAdventures: (ids: string[]) => void;
@@ -146,6 +150,7 @@ const combatants = state.combatants;
           onAddAllPlayers={props.onAddAllPlayers}
           onOpenCombat={() => selectedEncounter && nav(`/combat/${selectedEncounter.id}`)}
           onEditCombatant={props.onEditCombatant}
+          onRemoveCombatant={props.onRemoveCombatant}
           onAddMonster={props.onAddMonster}
         />
 

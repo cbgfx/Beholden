@@ -1,298 +1,349 @@
 {
   "version": 2,
   "campaigns": {
-    "2a9357b3-e117-4412-95e2-1a4170d65ca7": {
-      "id": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3": {
+      "id": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Frozen Assets",
       "color": null,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     }
   },
   "adventures": {
-    "44e82cd0-109e-4ba4-8c8f-6aa75af498a7": {
-      "id": "44e82cd0-109e-4ba4-8c8f-6aa75af498a7",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
-      "name": "Parliamentarians",
-      "status": "active",
-      "sort": 1,
-      "createdAt": 1770351512885,
-      "updatedAt": 1770351512885
-    },
-    "6a498251-fc6e-487a-abf0-760eac9bd6f1": {
-      "id": "6a498251-fc6e-487a-abf0-760eac9bd6f1",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
-      "name": "Dawn Council",
-      "status": "active",
-      "sort": 2,
-      "createdAt": 1770351519285,
-      "updatedAt": 1770351519285
-    },
-    "decabc23-3f47-4c52-b57f-c237db6d5915": {
-      "id": "decabc23-3f47-4c52-b57f-c237db6d5915",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "612980c5-4b0d-4e3d-87fb-05eb7246f1e6": {
+      "id": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Shooting Stars",
       "status": "active",
-      "sort": 3,
-      "createdAt": 1770351529135,
-      "updatedAt": 1770351529135
+      "sort": 1,
+      "createdAt": 1770343909111,
+      "updatedAt": 1770343909111
+    },
+    "151b970d-4dc2-4880-b418-6422b968de93": {
+      "id": "151b970d-4dc2-4880-b418-6422b968de93",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "name": "Dawn Circle",
+      "status": "active",
+      "sort": 2,
+      "createdAt": 1770348779911,
+      "updatedAt": 1770348779911
     }
   },
-  "encounters": {},
-  "notes": {},
+  "encounters": {
+    "bde9ce9a-489e-46ee-908c-f929cbcb9185": {
+      "id": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
+      "name": "Encounter 1",
+      "status": "open",
+      "createdAt": 1770348592131,
+      "updatedAt": 1770348592131
+    }
+  },
+  "notes": {
+    "8ba48ca9-a495-45c1-be1a-81af10a0d258": {
+      "id": "8ba48ca9-a495-45c1-be1a-81af10a0d258",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "adventureId": null,
+      "title": "Testicules",
+      "text": "asdfasdf",
+      "sort": 2,
+      "createdAt": 1770343980540,
+      "updatedAt": 1770344082164
+    },
+    "249f204f-91ba-44e3-a1c0-98c2a65391b1": {
+      "id": "249f204f-91ba-44e3-a1c0-98c2a65391b1",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "adventureId": null,
+      "title": "JAbroni Notes",
+      "text": "Ipsum Slutty",
+      "sort": 1,
+      "createdAt": 1770343988897,
+      "updatedAt": 1770343992783
+    }
+  },
   "players": {
-    "091d335c-254e-4d7c-b452-163a15c20d97": {
-      "id": "091d335c-254e-4d7c-b452-163a15c20d97",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "ea6382ed-bf68-4623-ad88-3d2af848ca01": {
+      "id": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "playerName": "Mark",
-      "characterName": "Torin Sigurdsem",
+      "characterName": "Torin Sigurdsen",
       "level": 5,
       "class": "Bard",
       "species": "Human",
-      "hpMax": 45,
-      "hpCurrent": 45,
-      "ac": 15,
+      "hpMax": 35,
+      "hpCurrent": 25,
+      "ac": 30,
       "color": "green",
-      "createdAt": 1770351395102,
-      "updatedAt": 1770351395102
+      "createdAt": 1770343942957,
+      "updatedAt": 1770346521759
     },
-    "71232887-a0b2-46dd-a83f-2d764b813098": {
-      "id": "71232887-a0b2-46dd-a83f-2d764b813098",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
-      "playerName": "Pat",
-      "characterName": "Alarion Veilborne",
+    "886428e8-d513-4648-8604-a8330f36f4a2": {
+      "id": "886428e8-d513-4648-8604-a8330f36f4a2",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "playerName": "Jean Marc",
+      "characterName": "Diego Diego",
       "level": 5,
-      "class": "Wiard",
-      "species": "Elf",
-      "hpMax": 66,
-      "hpCurrent": 66,
-      "ac": 12,
-      "color": "green",
-      "createdAt": 1770351444826,
-      "updatedAt": 1770351444826
-    },
-    "e14b1642-50cf-491d-a179-d09d7aee3f36": {
-      "id": "e14b1642-50cf-491d-a179-d09d7aee3f36",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
-      "playerName": "Ted",
-      "characterName": "Drokkan Skarvul",
-      "level": 5,
-      "class": "Barbarian",
+      "class": "Cleric",
       "species": "Human",
-      "hpMax": 88,
-      "hpCurrent": 16,
-      "ac": 16,
+      "hpMax": 22,
+      "hpCurrent": 22,
+      "ac": 18,
       "color": "green",
-      "createdAt": 1770351472729,
-      "updatedAt": 1770351488478
+      "createdAt": 1770349362656,
+      "updatedAt": 1770349362656
     }
   },
   "inpcs": {},
   "conditions": {
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_blinded": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_blinded",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_blinded": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_blinded",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Blinded",
       "nameKey": "blinded",
       "category": "condition",
       "color": null,
       "sortOrder": 1,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_charmed": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_charmed",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_charmed": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_charmed",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Charmed",
       "nameKey": "charmed",
       "category": "condition",
       "color": null,
       "sortOrder": 2,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_deafened": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_deafened",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_deafened": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_deafened",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Deafened",
       "nameKey": "deafened",
       "category": "condition",
       "color": null,
       "sortOrder": 3,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_frightened": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_frightened",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_frightened": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_frightened",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Frightened",
       "nameKey": "frightened",
       "category": "condition",
       "color": null,
       "sortOrder": 4,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_grappled": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_grappled",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_grappled": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_grappled",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Grappled",
       "nameKey": "grappled",
       "category": "condition",
       "color": null,
       "sortOrder": 5,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_incapacitated": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_incapacitated",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_incapacitated": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_incapacitated",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Incapacitated",
       "nameKey": "incapacitated",
       "category": "condition",
       "color": null,
       "sortOrder": 6,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_invisible": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_invisible",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_invisible": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_invisible",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Invisible",
       "nameKey": "invisible",
       "category": "condition",
       "color": null,
       "sortOrder": 7,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_paralyzed": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_paralyzed",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_paralyzed": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_paralyzed",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Paralyzed",
       "nameKey": "paralyzed",
       "category": "condition",
       "color": null,
       "sortOrder": 8,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_petrified": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_petrified",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_petrified": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_petrified",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Petrified",
       "nameKey": "petrified",
       "category": "condition",
       "color": null,
       "sortOrder": 9,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_poisoned": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_poisoned",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_poisoned": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_poisoned",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Poisoned",
       "nameKey": "poisoned",
       "category": "condition",
       "color": null,
       "sortOrder": 10,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_prone": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_prone",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_prone": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_prone",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Prone",
       "nameKey": "prone",
       "category": "condition",
       "color": null,
       "sortOrder": 11,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_restrained": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_restrained",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_restrained": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_restrained",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Restrained",
       "nameKey": "restrained",
       "category": "condition",
       "color": null,
       "sortOrder": 12,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_stunned": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_stunned",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_stunned": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_stunned",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Stunned",
       "nameKey": "stunned",
       "category": "condition",
       "color": null,
       "sortOrder": 13,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_unconscious": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_unconscious",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_unconscious": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_unconscious",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Unconscious",
       "nameKey": "unconscious",
       "category": "condition",
       "color": null,
       "sortOrder": 14,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_hex": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_hex",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_hex": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_hex",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Hex",
       "nameKey": "hex",
       "category": "spell",
       "color": null,
       "sortOrder": 15,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_concentrating": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_concentrating",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_concentrating": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_concentrating",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Concentrating",
       "nameKey": "concentrating",
       "category": "spell",
       "color": null,
       "sortOrder": 16,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     },
-    "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_marked": {
-      "id": "cond_2a9357b3-e117-4412-95e2-1a4170d65ca7_marked",
-      "campaignId": "2a9357b3-e117-4412-95e2-1a4170d65ca7",
+    "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_marked": {
+      "id": "cond_e2d0a224-612a-4cc1-a6db-3ae1f9470bd3_marked",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "name": "Marked",
       "nameKey": "marked",
       "category": "marker",
       "color": null,
       "sortOrder": 17,
       "isBuiltin": true,
-      "createdAt": 1770351364794,
-      "updatedAt": 1770351364794
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
     }
   },
-  "combats": {}
+  "combats": {
+    "bde9ce9a-489e-46ee-908c-f929cbcb9185": {
+      "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+      "round": 1,
+      "activeIndex": 0,
+      "createdAt": 1770348592131,
+      "updatedAt": 1770353797031,
+      "combatants": [
+        {
+          "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "player",
+          "baseId": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
+          "name": "Torin Sigurdsen",
+          "label": "Torin Sigurdsen",
+          "friendly": true,
+          "color": "green",
+          "overrides": null,
+          "hpCurrent": 25,
+          "hpMax": 35,
+          "ac": 30,
+          "conditions": [],
+          "createdAt": 1770348596458,
+          "updatedAt": 1770348596458
+        },
+        {
+          "id": "3a94411d-952d-4d77-9193-06a46ca18adc",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "player",
+          "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
+          "name": "Diego Diego",
+          "label": "Diego Diego",
+          "friendly": true,
+          "color": "green",
+          "overrides": null,
+          "hpCurrent": 22,
+          "hpMax": 22,
+          "ac": 18,
+          "conditions": [],
+          "createdAt": 1770349375403,
+          "updatedAt": 1770353797031
+        }
+      ]
+    }
+  }
 }

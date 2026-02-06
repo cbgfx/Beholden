@@ -640,6 +640,21 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
   res.json(next);
 });
 
+// Remove a single combatant from the encounter roster
+app.delete("/api/encounters/:encounterId/combatants/:combatantId", (req, res) => {
+  const { encounterId, combatantId } = req.params;
+  const enc = state.encounters.find((e) => e.id === encounterId);
+  if (!enc) return res.status(404).json({ error: "Encounter not found" });
+
+  const idx = enc.combatants.findIndex((x) => x.id === combatantId);
+  if (idx < 0) return res.status(404).json({ error: "Combatant not found" });
+
+  enc.combatants.splice(idx, 1);
+  save();
+  broadcast("encounter:combatantsChanged", { encounterId });
+  res.json({ ok: true });
+});
+
 
 /* Reorder (drag & drop) */
 app.post("/api/campaigns/:campaignId/adventures/reorder", (req,res)=>{

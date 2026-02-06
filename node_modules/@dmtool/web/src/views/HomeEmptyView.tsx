@@ -26,7 +26,7 @@ export function HomeEmptyView(props: { onCreate: () => void }) {
           alignItems: 'center',
           gap: '20px' // Adds a little space between logo and text
         }}>
-          <div><img src="../../public/beholden-logo.png" style={{ width: 220, height: 220 }} alt="Logo" /></div>
+          <img src="../../public/beholden-logo.png" style={{ width: 220, height: 220 }} alt="Logo" />
           BEHOLDEN
         </div>
 

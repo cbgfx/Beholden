@@ -30,7 +30,7 @@ export function HPBar(props: { cur: number; max: number; ac: number }) {
       </div>
 
       <div style={{ fontSize: 12, color: theme.colors.text, opacity: 0.85 }}>
-        AC {ac} - HP {curHP}/{max}
+        AC {ac} • HP {curHP}/{max}
       </div>
     </div>
   );
