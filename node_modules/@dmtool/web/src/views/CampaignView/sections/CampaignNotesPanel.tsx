@@ -22,7 +22,7 @@ export function CampaignNotesPanel(props: {
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconNotes /> Campaign Notes
+          <IconNotes /> Campaign Notes ({notes.length})
         </span>
       }
       actions={

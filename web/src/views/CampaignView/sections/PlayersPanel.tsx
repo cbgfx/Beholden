@@ -17,7 +17,7 @@ export function PlayersPanel(props: {
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconPerson /> Players <span style={{ color: theme.colors.muted, fontWeight: 600 }}></span>
+          <IconPerson /> {players.length} Players <span style={{ color: theme.colors.muted, fontWeight: 600 }}></span>
         </span>
       }
       actions={

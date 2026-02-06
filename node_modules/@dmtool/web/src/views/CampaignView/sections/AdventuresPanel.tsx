@@ -20,7 +20,7 @@ export function AdventuresPanel(props: {
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconAdventure /> Adventures
+          <IconAdventure /> Adventures ({adventures.length})
         </span>
       }
       actions={

@@ -21,7 +21,7 @@ export function EncountersPanel(props: {
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconEncounter /> Encounters
+          <IconEncounter /> Encounters ({encounters.length})
         </span>
       }
       actions={
