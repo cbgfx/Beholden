@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Panel } from "../../components/ui/Panel";
 import { Button } from "../../components/ui/Button";
@@ -10,7 +9,15 @@ import { useNavigate } from "react-router-dom";
 import { DraggableList } from "../../components/drag/DraggableList";
 import { IconButton } from "../../components/ui/IconButton";
 import { HPBar } from "../../components/ui/HPBar";
-import { IconAdventure, IconEncounter, IconNotes, IconPencil, IconPlus, IconPerson, IconTrash } from "../../components/ui/Icons";
+import {
+  IconAdventure,
+  IconEncounter,
+  IconNotes,
+  IconPencil,
+  IconPlus,
+  IconPerson,
+  IconTrash,
+} from "../../components/ui/Icons";
 
 function NoteAccordionItem(props: {
   note: Note;
@@ -21,15 +28,26 @@ function NoteAccordionItem(props: {
 }) {
   return (
     <div style={{ padding: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
+      >
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onToggle(); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            props.onToggle();
+          }}
           style={{
             all: "unset",
             cursor: "pointer",
             fontWeight: 900,
             color: theme.colors.text,
-            flex: 1
+            flex: 1,
           }}
           title="Click to expand"
         >
@@ -37,17 +55,39 @@ function NoteAccordionItem(props: {
         </button>
 
         <div style={{ display: "flex", gap: 8 }}>
-          <IconButton onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEdit(); }} title="Edit" size="sm">
+          <IconButton
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              props.onEdit();
+            }}
+            title="Edit"
+            size="sm"
+          >
             <IconPencil />
           </IconButton>
-          <IconButton onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDelete(); }} title="Delete" size="sm" variant="ghost">
+          <IconButton
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              props.onDelete();
+            }}
+            title="Delete"
+            size="sm"
+          >
             <IconTrash />
           </IconButton>
         </div>
       </div>
 
       {props.expanded ? (
-        <div style={{ marginTop: 8, whiteSpace: "pre-wrap", color: theme.colors.muted }}>
+        <div
+          style={{
+            marginTop: 8,
+            whiteSpace: "pre-wrap",
+            color: theme.colors.muted,
+          }}
+        >
           {props.note.text || <span style={{ opacity: 0.7 }}>(empty)</span>}
         </div>
       ) : null}
@@ -93,25 +133,59 @@ export function CampaignView(props: {
   const { state, dispatch } = useStore();
   const nav = useNavigate();
 
-  const { adventures, selectedAdventureId, looseEncounters, encounters, selectedEncounterId, players, combatants, campaignNotes, adventureNotes, expandedNoteId } = state;
+  const {
+    adventures,
+    selectedAdventureId,
+    looseEncounters,
+    encounters,
+    selectedEncounterId,
+    players,
+    combatants,
+    campaignNotes,
+    adventureNotes,
+    expandedNoteId,
+  } = state;
 
   const selectedEncounter = React.useMemo(() => {
     const all = [...looseEncounters, ...encounters];
-    return all.find(e => e.id === selectedEncounterId) ?? null;
+    return all.find((e) => e.id === selectedEncounterId) ?? null;
   }, [looseEncounters, encounters, selectedEncounterId]);
 
   return (
-    <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "340px 1fr 380px", gap: theme.spacing.gap }}>
+    <div
+      style={{
+        marginTop: 14,
+        display: "grid",
+        gridTemplateColumns: "340px 1fr 380px",
+        gap: theme.spacing.gap,
+      }}
+    >
       <div style={{ display: "grid", gap: 12 }}>
         <Panel
-          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconAdventure /> Adventures</span>}
-          actions={<IconButton onClick={props.onCreateAdventure} title="Add adventure" variant="solid"><IconPlus /></IconButton>}
+          title={
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconAdventure /> Adventures
+            </span>
+          }
+          actions={
+            <IconButton
+              onClick={props.onCreateAdventure}
+              title="Add adventure"
+              variant="solid"
+            >
+              <IconPlus />
+            </IconButton>
+          }
         >
           {adventures.length ? (
             <DraggableList
-              items={adventures.map(a => ({ id: a.id, title: a.name }))}
+              items={adventures.map((a) => ({ id: a.id, title: a.name }))}
               activeId={selectedAdventureId}
-              onSelect={(id) => dispatch({ type: "selectAdventure", adventureId: id })}
+              onSelect={(id) =>
+                dispatch({ type: "selectAdventure", adventureId: id })
+              }
               onReorder={props.onReorderAdventures}
               renderItem={(it) => (
                 <div
@@ -120,7 +194,7 @@ export function CampaignView(props: {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 10
+                    gap: 10,
                   }}
                 >
                   <div style={{ fontWeight: 900, color: theme.colors.text }}>
@@ -129,14 +203,22 @@ export function CampaignView(props: {
                   <div style={{ display: "flex", gap: 8 }}>
                     <IconButton
                       title="Edit"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEditAdventure(it.id); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        props.onEditAdventure(it.id);
+                      }}
                     >
                       <IconPencil />
                     </IconButton>
                     <IconButton
                       title="Delete"
                       variant="ghost"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDeleteAdventure(it.id); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        props.onDeleteAdventure(it.id);
+                      }}
                     >
                       <IconTrash />
                     </IconButton>
@@ -144,139 +226,324 @@ export function CampaignView(props: {
                 </div>
               )}
             />
-          ) : <div style={{ color: theme.colors.muted }}>No adventures yet.</div>}
+          ) : (
+            <div style={{ color: theme.colors.muted }}>No adventures yet.</div>
+          )}
         </Panel>
 
         <Panel
-          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconEncounter /> Loose encounters</span>}
-          actions={<IconButton onClick={props.onCreateLooseEncounter} title="Add loose encounter"><IconPlus /></IconButton>}
-        >
-          {looseEncounters.length ? (
-            <DraggableList
-              items={looseEncounters.map((e: Encounter) => ({ id: e.id, title: e.name, meta: e.status }))}
-              activeId={selectedEncounterId}
-              onSelect={(id) => { dispatch({ type: "selectEncounter", encounterId: id }); dispatch({ type: "selectAdventure", adventureId: null }); }}
-              onReorder={props.onReorderLooseEncounters}
-              renderItem={(it) => (
-                <div style={{ padding: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
-                    {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <IconButton
-                      title="Edit"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEditEncounter(it.id); }}
-                    >
-                      <IconPencil />
-                    </IconButton>
-                    <IconButton
-                      title="Delete"
-                      variant="ghost"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDeleteEncounter(it.id); }}
-                    >
-                      <IconTrash />
-                    </IconButton>
-                  </div>
-                </div>
-              )}
-            />
-          ) : <div style={{ color: theme.colors.muted }}>No loose encounters.</div>}
-        </Panel>
-
-        <Panel
-          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconEncounter /> Encounters</span>}
-          actions={<IconButton onClick={props.onCreateEncounter} disabled={!selectedAdventureId} title="Add encounter"><IconPlus /></IconButton>}
+          title={
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconEncounter /> Encounters
+            </span>
+          }
+          actions={
+            <IconButton
+              onClick={props.onCreateEncounter}
+              disabled={!selectedAdventureId}
+              title="Add encounter"
+            >
+              <IconPlus />
+            </IconButton>
+          }
         >
           {selectedAdventureId ? (
             encounters.length ? (
               <DraggableList
-                items={encounters.map((e: Encounter) => ({ id: e.id, title: e.name, meta: e.status }))}
+                items={encounters.map((e: Encounter) => ({
+                  id: e.id,
+                  title: e.name,
+                  meta: e.status,
+                }))}
                 activeId={selectedEncounterId}
-                onSelect={(id) => dispatch({ type: "selectEncounter", encounterId: id })}
+                onSelect={(id) =>
+                  dispatch({ type: "selectEncounter", encounterId: id })
+                }
                 onReorder={props.onReorderEncounters}
                 renderItem={(it) => (
-                  <div style={{ padding: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
-                      {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
+                  <div
+                    style={{
+                      padding: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      <div
+                        style={{ fontWeight: 900, color: theme.colors.text }}
+                      >
+                        {it.title ?? it.id}
+                      </div>
+                      {it.meta ? (
+                        <div
+                          style={{ fontSize: 12, color: theme.colors.muted }}
+                        >
+                          {it.meta}
+                        </div>
+                      ) : null}
                     </div>
-<div style={{ display: "flex", gap: 6 }}>
-  <IconButton
-    title="Edit"
-    onClick={(e) => {
-      e.stopPropagation();
-      props.onEditEncounter(it.id);
-    }}
-  >
-    <IconPencil />
-  </IconButton>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <IconButton
+                        title="Edit"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          props.onEditEncounter(it.id);
+                        }}
+                      >
+                        <IconPencil />
+                      </IconButton>
 
-  <IconButton
-    title="Delete"
-    onClick={(e) => {
-      e.stopPropagation();
-      props.onDeleteEncounter(it.id);
-    }}
-  >
-    <IconTrash />
-  </IconButton>
-</div>
-
+                      <IconButton
+                        title="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          props.onDeleteEncounter(it.id);
+                        }}
+                      >
+                        <IconTrash />
+                      </IconButton>
+                    </div>
                   </div>
                 )}
               />
-            ) : <div style={{ color: theme.colors.muted }}>No encounters yet.</div>
-          ) : <div style={{ color: theme.colors.muted }}>Select an adventure.</div>}
+            ) : (
+              <div style={{ color: theme.colors.muted }}>
+                No encounters yet.
+              </div>
+            )
+          ) : (
+            <div style={{ color: theme.colors.muted }}>
+              Select an adventure.
+            </div>
+          )}
+        </Panel>
+
+        <Panel
+          title={
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconEncounter /> Loose encounters
+            </span>
+          }
+          actions={
+            <IconButton
+              onClick={props.onCreateLooseEncounter}
+              title="Add loose encounter"
+            >
+              <IconPlus />
+            </IconButton>
+          }
+        >
+          {looseEncounters.length ? (
+            <DraggableList
+              items={looseEncounters.map((e: Encounter) => ({
+                id: e.id,
+                title: e.name,
+                meta: e.status,
+              }))}
+              activeId={selectedEncounterId}
+              onSelect={(id) => {
+                dispatch({ type: "selectEncounter", encounterId: id });
+                dispatch({ type: "selectAdventure", adventureId: null });
+              }}
+              onReorder={props.onReorderLooseEncounters}
+              renderItem={(it) => (
+                <div
+                  style={{
+                    padding: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
+                  <div
+                    style={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  >
+                    <div style={{ fontWeight: 900, color: theme.colors.text }}>
+                      {it.title ?? it.id}
+                    </div>
+                    {it.meta ? (
+                      <div style={{ fontSize: 12, color: theme.colors.muted }}>
+                        {it.meta}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <IconButton
+                      title="Edit"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        props.onEditEncounter(it.id);
+                      }}
+                    >
+                      <IconPencil />
+                    </IconButton>
+                    <IconButton
+                      title="Delete"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        props.onDeleteEncounter(it.id);
+                      }}
+                    >
+                      <IconTrash />
+                    </IconButton>
+                  </div>
+                </div>
+              )}
+            />
+          ) : (
+            <div style={{ color: theme.colors.muted }}>
+              No loose encounters.
+            </div>
+          )}
         </Panel>
       </div>
 
       <div style={{ display: "grid", gap: 12 }}>
         <Panel
           title="Encounter roster"
-          actions={selectedEncounter ? (
-            <div style={{ display: "flex", gap: 8 }}>
-              <Button onClick={props.onAddAllPlayers}>Add ALL players</Button>
-              <Button variant="ghost" onClick={() => nav(`/combat/${selectedEncounter.id}`)}>Open Combat</Button>
-            </div>
-          ) : null}
+          actions={
+            selectedEncounter ? (
+              <div style={{ display: "flex", gap: 8 }}>
+                <Button onClick={props.onAddAllPlayers}>Add ALL players</Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => nav(`/combat/${selectedEncounter.id}`)}
+                >
+                  Open Combat
+                </Button>
+              </div>
+            ) : null
+          }
         >
           {!selectedEncounter ? (
-            <div style={{ color: theme.colors.muted }}>Select an encounter to build the roster.</div>
+            <div style={{ color: theme.colors.muted }}>
+              Select an encounter to build the roster.
+            </div>
           ) : (
             <>
-              {combatants.length ? combatants.map(c => (
-                <div key={c.id} style={{ borderBottom: `1px solid ${theme.colors.panelBorder}`, padding: "10px 0", display: "flex", justifyContent: "space-between", gap: 10 }}>
-                  <div>
-                    <div style={{ fontWeight: 900, color: theme.colors.text }}>
-                      {c.label} <span style={{ fontWeight: 500, color: theme.colors.muted, fontSize: 13 }}>({c.name})</span>
+              {combatants.length ? (
+                combatants.map((c) => (
+                  <div
+                    key={c.id}
+                    style={{
+                      borderBottom: `1px solid ${theme.colors.panelBorder}`,
+                      padding: "10px 0",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 10,
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{ fontWeight: 900, color: theme.colors.text }}
+                      >
+                        {c.label}{" "}
+                        <span
+                          style={{
+                            fontWeight: 500,
+                            color: theme.colors.muted,
+                            fontSize: 13,
+                          }}
+                        >
+                          ({c.name})
+                        </span>
+                      </div>
+                      <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                        {c.friendly ? "Friendly" : "Enemy"} • HP{" "}
+                        {c.hpCurrent ?? "—"}/{c.hpMax ?? "—"} • AC {c.ac ?? "—"}
+                      </div>
                     </div>
-                    <div style={{ color: theme.colors.muted, fontSize: 13 }}>
-                      {c.friendly ? "Friendly" : "Enemy"} • HP {c.hpCurrent ?? "—"}/{c.hpMax ?? "—"} • AC {c.ac ?? "—"}
-                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => props.onEditCombatant(c.id)}
+                    >
+                      Edit
+                    </Button>
                   </div>
-                  <Button variant="ghost" onClick={() => props.onEditCombatant(c.id)}>Edit</Button>
+                ))
+              ) : (
+                <div style={{ color: theme.colors.muted }}>
+                  No combatants yet.
                 </div>
-              )) : <div style={{ color: theme.colors.muted }}>No combatants yet.</div>}
+              )}
 
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${theme.colors.panelBorder}` }}>
-                <div style={{ fontWeight: 1000, color: theme.colors.accent, marginBottom: 8 }}>Add monsters</div>
-                <Input value={props.compQ} onChange={(e) => props.setCompQ(e.target.value)} placeholder="Search compendium…" />
+              <div
+                style={{
+                  marginTop: 14,
+                  paddingTop: 12,
+                  borderTop: `1px solid ${theme.colors.panelBorder}`,
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: 1000,
+                    color: theme.colors.accent,
+                    marginBottom: 8,
+                  }}
+                >
+                  Add monsters
+                </div>
+                <Input
+                  value={props.compQ}
+                  onChange={(e) => props.setCompQ(e.target.value)}
+                  placeholder="Search compendium…"
+                />
                 <div style={{ marginTop: 8 }}>
                   {props.compRows.map((m) => (
-                    <div key={m.id} style={{ padding: "10px 0", borderBottom: `1px solid ${theme.colors.panelBorder}`, display: "flex", justifyContent: "space-between", gap: 10 }}>
+                    <div
+                      key={m.id}
+                      style={{
+                        padding: "10px 0",
+                        borderBottom: `1px solid ${theme.colors.panelBorder}`,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: 10,
+                      }}
+                    >
                       <div>
-                        <div style={{ fontSize: 16, color: theme.colors.text }}>{m.name}</div>
-                        <div style={{ color: theme.colors.muted, fontSize: 13 }}>CR {m.cr ?? "?"} • {m.typeFull ?? m.type_full ?? "—"} • {m.environment ?? ""}</div>
+                        <div style={{ fontSize: 16, color: theme.colors.text }}>
+                          {m.name}
+                        </div>
+                        <div
+                          style={{ color: theme.colors.muted, fontSize: 13 }}
+                        >
+                          CR {m.cr ?? "?"} • {m.typeFull ?? m.type_full ?? "—"}{" "}
+                          • {m.environment ?? ""}
+                        </div>
                       </div>
-                      <Button onClick={() => {
-                        const qtyStr = window.prompt("How many?", "1") ?? "1";
-                        const qty = Math.min(Math.max(parseInt(qtyStr, 10) || 1, 1), 20);
-                        props.onAddMonster(m.id, qty);
-                      }}>Add</Button>
+                      <Button
+                        onClick={() => {
+                          const qtyStr = window.prompt("How many?", "1") ?? "1";
+                          const qty = Math.min(
+                            Math.max(parseInt(qtyStr, 10) || 1, 1),
+                            20,
+                          );
+                          props.onAddMonster(m.id, qty);
+                        }}
+                      >
+                        Add
+                      </Button>
                     </div>
                   ))}
-                  {!props.compRows.length ? <div style={{ color: theme.colors.muted }}>No matches.</div> : null}
+                  {!props.compRows.length ? (
+                    <div style={{ color: theme.colors.muted }}>No matches.</div>
+                  ) : null}
                 </div>
               </div>
             </>
@@ -285,13 +552,20 @@ export function CampaignView(props: {
 
         <Panel
           title={
-            <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-              <IconPerson /> Players <span style={{ color: theme.colors.muted, fontWeight: 600 }}>(campaign, persistent HP)</span>
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconPerson /> Players{" "}
+              <span style={{ color: theme.colors.muted, fontWeight: 600 }}>
+                (campaign, persistent HP)
+              </span>
             </span>
           }
           actions={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <IconButton onClick={props.onCreatePlayer} title="Add player"><IconPlus /></IconButton>
+              <IconButton onClick={props.onCreatePlayer} title="Add player">
+                <IconPlus />
+              </IconButton>
             </div>
           }
         >
@@ -305,22 +579,46 @@ export function CampaignView(props: {
                   display: "grid",
                   gridTemplateColumns: "1fr auto",
                   gap: 10,
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <div style={{ display: "grid", gap: 6 }}>
                   <div style={{ color: theme.colors.text, fontWeight: 900 }}>
-                    {p.characterName} <span style={{ color: theme.colors.muted, fontWeight: 500 }}>({p.playerName})</span>
+                    {p.characterName}{" "}
+                    <span
+                      style={{ color: theme.colors.muted, fontWeight: 500 }}
+                    >
+                      ({p.playerName})
+                    </span>
                   </div>
                   <HPBar current={p.hpCurrent} max={p.hpMax} />
                   <div style={{ color: theme.colors.muted, fontSize: 13 }}>
-                    L{p.level} {p.class} • {p.species} • HP {p.hpCurrent}/{p.hpMax} • AC {p.ac}
+                    L{p.level} {p.class} • {p.species} • HP {p.hpCurrent}/
+                    {p.hpMax} • AC {p.ac}
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                  <IconButton variant="ghost" onClick={() => props.onEditPlayer(p.id)} title="Edit"><IconPencil /></IconButton>
-                  <IconButton variant="ghost" onClick={() => props.onDeletePlayer(p.id)} title="Delete"><IconTrash /></IconButton>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <IconButton
+                    variant="ghost"
+                    onClick={() => props.onEditPlayer(p.id)}
+                    title="Edit"
+                  >
+                    <IconPencil />
+                  </IconButton>
+                  <IconButton
+                    variant="ghost"
+                    onClick={() => props.onDeletePlayer(p.id)}
+                    title="Delete"
+                  >
+                    <IconTrash />
+                  </IconButton>
                 </div>
               </div>
             ))
@@ -332,57 +630,97 @@ export function CampaignView(props: {
 
       <div style={{ display: "grid", gap: 12 }}>
         <Panel
-          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconNotes /> Campaign notes</span>}
-          actions={<IconButton onClick={props.onAddCampaignNote} title="Add note"><IconPlus /></IconButton>}
+          title={
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconNotes /> Campaign Notes
+            </span>
+          }
+          actions={
+            <IconButton onClick={props.onAddCampaignNote} title="Add note">
+              <IconPlus />
+            </IconButton>
+          }
         >
           {campaignNotes.length ? (
             <DraggableList
-              items={campaignNotes.map(n => ({ id: n.id }))}
+              items={campaignNotes.map((n) => ({ id: n.id }))}
               activeId={expandedNoteId}
               onSelect={(id) => dispatch({ type: "toggleNote", noteId: id })}
               onReorder={props.onReorderCampaignNotes}
               renderItem={(it) => {
-                const n = campaignNotes.find(x => x.id === it.id)!;
+                const n = campaignNotes.find((x) => x.id === it.id)!;
                 return (
                   <NoteAccordionItem
                     note={n}
                     expanded={expandedNoteId === n.id}
-                    onToggle={() => dispatch({ type: "toggleNote", noteId: n.id })}
+                    onToggle={() =>
+                      dispatch({ type: "toggleNote", noteId: n.id })
+                    }
                     onEdit={() => props.onEditCampaignNote(n.id)}
                     onDelete={() => props.onDeleteCampaignNote(n.id)}
                   />
                 );
               }}
             />
-          ) : <div style={{ color: theme.colors.muted }}>No campaign notes yet.</div>}
+          ) : (
+            <div style={{ color: theme.colors.muted }}>
+              No campaign notes yet.
+            </div>
+          )}
         </Panel>
 
         <Panel
-          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconNotes /> Adventure Notes</span>}
-          actions={<IconButton onClick={props.onAddAdventureNote} disabled={!selectedAdventureId} title="Add note"><IconPlus /></IconButton>}
+          title={
+            <span
+              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+            >
+              <IconNotes /> Adventure Notes
+            </span>
+          }
+          actions={
+            <IconButton
+              onClick={props.onAddAdventureNote}
+              disabled={!selectedAdventureId}
+              title="Add note"
+            >
+              <IconPlus />
+            </IconButton>
+          }
         >
           {selectedAdventureId ? (
             adventureNotes.length ? (
               <DraggableList
-                items={adventureNotes.map(n => ({ id: n.id }))}
+                items={adventureNotes.map((n) => ({ id: n.id }))}
                 activeId={expandedNoteId}
                 onSelect={(id) => dispatch({ type: "toggleNote", noteId: id })}
                 onReorder={props.onReorderAdventureNotes}
                 renderItem={(it) => {
-                  const n = adventureNotes.find(x => x.id === it.id)!;
+                  const n = adventureNotes.find((x) => x.id === it.id)!;
                   return (
                     <NoteAccordionItem
                       note={n}
                       expanded={expandedNoteId === n.id}
-                      onToggle={() => dispatch({ type: "toggleNote", noteId: n.id })}
+                      onToggle={() =>
+                        dispatch({ type: "toggleNote", noteId: n.id })
+                      }
                       onEdit={() => props.onEditAdventureNote(n.id)}
                       onDelete={() => props.onDeleteAdventureNote(n.id)}
                     />
                   );
                 }}
               />
-            ) : <div style={{ color: theme.colors.muted }}>No adventure notes yet.</div>
-          ) : <div style={{ color: theme.colors.muted }}>Select an adventure.</div>}
+            ) : (
+              <div style={{ color: theme.colors.muted }}>
+                No adventure notes yet.
+              </div>
+            )
+          ) : (
+            <div style={{ color: theme.colors.muted }}>
+              Select an adventure.
+            </div>
+          )}
         </Panel>
       </div>
     </div>
