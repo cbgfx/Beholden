@@ -19,7 +19,7 @@ export function EncounterRosterPanel(props: {
 
   return (
     <Panel
-      title="Encounter roster"
+      title="Encounter"
       actions={
         selectedEncounter ? (
           <div style={{ display: "flex", gap: 8 }}>

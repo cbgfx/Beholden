@@ -77,6 +77,21 @@
       "color": "green",
       "createdAt": 1770343942957,
       "updatedAt": 1770346521759
+    },
+    "886428e8-d513-4648-8604-a8330f36f4a2": {
+      "id": "886428e8-d513-4648-8604-a8330f36f4a2",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "playerName": "Jean Marc",
+      "characterName": "Diego Diego",
+      "level": 5,
+      "class": "Cleric",
+      "species": "Human",
+      "hpMax": 22,
+      "hpCurrent": 22,
+      "ac": 18,
+      "color": "green",
+      "createdAt": 1770349362656,
+      "updatedAt": 1770349362656
     }
   },
   "inpcs": {},
@@ -292,7 +307,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770348596458,
+      "updatedAt": 1770349375403,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -310,6 +325,23 @@
           "conditions": [],
           "createdAt": 1770348596458,
           "updatedAt": 1770348596458
+        },
+        {
+          "id": "3a94411d-952d-4d77-9193-06a46ca18adc",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "player",
+          "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
+          "name": "Diego Diego",
+          "label": "Diego Diego",
+          "friendly": true,
+          "color": "green",
+          "overrides": null,
+          "hpCurrent": 22,
+          "hpMax": 22,
+          "ac": 18,
+          "conditions": [],
+          "createdAt": 1770349375403,
+          "updatedAt": 1770349375403
         }
       ]
     }
