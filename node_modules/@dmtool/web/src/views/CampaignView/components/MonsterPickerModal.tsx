@@ -47,6 +47,21 @@ function MonsterStatblock(props: { monster: any | null }) {
   const actions = m.actions ?? m.action ?? [];
   const legendary = m.legendary ?? m.legendaryActions ?? [];
 
+  const traitArr: any[] = Array.isArray(traits) ? traits : [];
+  const actionArr: any[] = Array.isArray(actions) ? actions : [];
+
+  // Many spellcasters have "Spellcasting" / "Innate Spellcasting" as a trait (not an action).
+  // Show those under a dedicated "Spells" section so Actions doesn't look "missing".
+  const isSpellSection = (name: unknown) => {
+    const s = String(name ?? "");
+    return /spellcasting/i.test(s) || /innate spellcasting/i.test(s);
+  };
+
+  const spellTraits = traitArr.filter((t) => isSpellSection(t?.name ?? t?.title));
+  const nonSpellTraits = traitArr.filter((t) => !isSpellSection(t?.name ?? t?.title));
+  const spellActions = actionArr.filter((a) => isSpellSection(a?.name ?? a?.title));
+  const nonSpellActions = actionArr.filter((a) => !isSpellSection(a?.name ?? a?.title));
+
   const renderNamed = (arr: any[]) =>
     arr?.length ? (
       <div style={{ display: "grid", gap: 8 }}>
@@ -128,14 +143,21 @@ function MonsterStatblock(props: { monster: any | null }) {
         </div>
       </div>
 
+      {spellTraits.length || spellActions.length ? (
+        <div style={{ display: "grid", gap: 10 }}>
+          <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Spells</div>
+          {renderNamed([...spellTraits, ...spellActions])}
+        </div>
+      ) : null}
+
       <div style={{ display: "grid", gap: 10 }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Traits</div>
-        {renderNamed(Array.isArray(traits) ? traits : [])}
+        {renderNamed(nonSpellTraits)}
       </div>
 
       <div style={{ display: "grid", gap: 10 }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Actions</div>
-        {renderNamed(Array.isArray(actions) ? actions : [])}
+        {renderNamed(nonSpellActions)}
       </div>
 
       {Array.isArray(legendary) && legendary.length ? (

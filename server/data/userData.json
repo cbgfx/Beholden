@@ -80,6 +80,15 @@
       "sort": 4,
       "createdAt": 1770406724160,
       "updatedAt": 1770406724160
+    },
+    "921e4cbf-5c66-486c-aa1f-100bf3ad9503": {
+      "id": "921e4cbf-5c66-486c-aa1f-100bf3ad9503",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
+      "title": "Treasure",
+      "text": "100 gold",
+      "createdAt": 1770410541591,
+      "updatedAt": 1770410541591
     }
   },
   "players": {
@@ -327,7 +336,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770410303556,
+      "updatedAt": 1770412527634,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -347,7 +356,24 @@
           "updatedAt": 1770348596458
         },
         {
-          "id": "3a94411d-952d-4d77-9193-06a46ca18adc",
+          "id": "13171163-1c6f-42d9-a5b3-e2906ce01249",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_thug",
+          "name": "Thug",
+          "label": "Thug 2",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770410880429,
+          "updatedAt": 1770410880429
+        },
+        {
+          "id": "f6e02080-cc3d-4fe6-b48b-09a75dd5f817",
           "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
           "baseType": "player",
           "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
@@ -360,25 +386,8 @@
           "hpMax": 22,
           "ac": 18,
           "conditions": [],
-          "createdAt": 1770349375403,
-          "updatedAt": 1770353797031
-        },
-        {
-          "id": "f7c0fe6e-e256-48f0-8911-79cb1948a42b",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
-          "baseType": "monster",
-          "baseId": "m_abominable yeti",
-          "name": "Abominable Yeti",
-          "label": "Abominable Yeti 2",
-          "friendly": false,
-          "color": "red",
-          "overrides": null,
-          "hpCurrent": null,
-          "hpMax": null,
-          "ac": null,
-          "conditions": [],
-          "createdAt": 1770408403820,
-          "updatedAt": 1770408403820
+          "createdAt": 1770412527634,
+          "updatedAt": 1770412527634
         }
       ]
     }
