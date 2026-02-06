@@ -65,26 +65,23 @@ export function DrawerHost(props: {
   const [noteTitle, setNoteTitle] = useState("");
   const [noteText, setNoteText] = useState("");
 
-  // Player fields
+  // Player
   const [playerName, setPlayerName] = useState("");
   const [characterName, setCharacterName] = useState("");
   const [clazz, setClazz] = useState("");
   const [species, setSpecies] = useState("");
+  const [hpMax, setHpMax] = useState("10");
+  const [hpCur, setHpCur] = useState("10");
+  const [ac, setAc] = useState("10");
+  const [lvl, setLvl] = useState("1");
 
-  // Shared numeric fields (player edit / create)
-  const [hpMax, setHpMax] = useState("");
-  const [hpCur, setHpCur] = useState("");
-  const [ac, setAc] = useState("");
-  const [lvl, setLvl] = useState("");
-
-  // Combatant fields
+  // Combatant
   const [label, setLabel] = useState("");
   const [friendly, setFriendly] = useState(false);
 
   const close = () => dispatch({ type: "closeDrawer" });
 
   const title = useMemo(() => (d ? getDrawerTitle(d) : ""), [d]);
-
   const isNameDrawer = !!d && NAME_DRAWER_TYPES.has(d.type);
   const isNoteDrawer = !!d && NOTE_DRAWER_TYPES.has(d.type);
 
@@ -92,17 +89,14 @@ export function DrawerHost(props: {
     setName("");
     setNoteTitle("");
     setNoteText("");
-
     setPlayerName("");
     setCharacterName("");
     setClazz("");
     setSpecies("");
-
-    setHpMax("");
-    setHpCur("");
-    setAc("");
-    setLvl("");
-
+    setHpMax("10");
+    setHpCur("10");
+    setAc("10");
+    setLvl("1");
     setLabel("");
     setFriendly(false);
   };
@@ -110,7 +104,6 @@ export function DrawerHost(props: {
   // Initialize fields whenever the drawer changes
   useEffect(() => {
     if (!d) return;
-
     resetForm();
 
     switch (d.type) {
@@ -137,27 +130,13 @@ export function DrawerHost(props: {
         }
         break;
       }
-
-      case "createPlayer": {
-        // sensible defaults so you can hit Save quickly
-        setPlayerName("");
-        setCharacterName("");
-        setClazz("");
-        setSpecies("");
-        setLvl("1");
-        setAc("10");
-        setHpMax("10");
-        setHpCur("10");
-        break;
-      }
-
       case "editPlayer": {
         const p = state.players.find((x) => x.id === d.playerId);
         if (p) {
-          setPlayerName(String(p.playerName ?? ""));
-          setCharacterName(String(p.characterName ?? ""));
-          setClazz(String((p as any).class ?? "")); // "class" is a reserved word in TS types sometimes; keep safe
-          setSpecies(String(p.species ?? ""));
+          setPlayerName(p.playerName ?? "");
+          setCharacterName(p.characterName ?? "");
+          setClazz(p.class ?? "");
+          setSpecies(p.species ?? "");
           setHpMax(String(p.hpMax));
           setHpCur(String(p.hpCurrent));
           setAc(String(p.ac));
@@ -165,7 +144,6 @@ export function DrawerHost(props: {
         }
         break;
       }
-
       case "editCombatant": {
         const c = state.combatants.find((x) => x.id === d.combatantId);
         if (c) {
@@ -204,62 +182,45 @@ export function DrawerHost(props: {
           close();
           return;
         }
-
         case "editCampaign": {
           await api(`/api/campaigns/${d.campaignId}`, jsonInit("PUT", { name: safeName("Campaign") }));
           await props.refreshAll();
           close();
           return;
         }
-
         case "createAdventure": {
-          await api(
-            `/api/campaigns/${d.campaignId}/adventures`,
-            jsonInit("POST", { name: safeName("New Adventure") })
-          );
+          await api(`/api/campaigns/${d.campaignId}/adventures`, jsonInit("POST", { name: safeName("New Adventure") }));
           await props.refreshCampaign(d.campaignId);
           close();
           return;
         }
-
         case "editAdventure": {
           await api(`/api/adventures/${d.adventureId}`, jsonInit("PUT", { name: safeName("Adventure") }));
           await props.refreshCampaign(state.selectedCampaignId);
           close();
           return;
         }
-
         case "createLooseEncounter": {
-          await api(
-            `/api/campaigns/${d.campaignId}/encounters`,
-            jsonInit("POST", { name: safeName("Loose Encounter") })
-          );
+          await api(`/api/campaigns/${d.campaignId}/encounters`, jsonInit("POST", { name: safeName("Loose Encounter") }));
           await props.refreshCampaign(d.campaignId);
           close();
           return;
         }
-
         case "createEncounter": {
-          await api(
-            `/api/adventures/${d.adventureId}/encounters`,
-            jsonInit("POST", { name: safeName("New Encounter") })
-          );
+          await api(`/api/adventures/${d.adventureId}/encounters`, jsonInit("POST", { name: safeName("New Encounter") }));
           await props.refreshAdventure(d.adventureId);
           close();
           return;
         }
-
         case "editEncounter": {
           await api(`/api/encounters/${d.encounterId}`, jsonInit("PUT", { name: safeName("Encounter") }));
           await props.refreshAdventure(state.selectedAdventureId);
           close();
           return;
         }
-
         case "note": {
           const t = noteTitle.trim() || "Note";
           const text = noteText ?? "";
-
           if (d.scope === "campaign") {
             await api(`/api/campaigns/${d.campaignId}/notes`, jsonInit("POST", { title: t, text }));
             await props.refreshCampaign(d.campaignId);
@@ -268,44 +229,37 @@ export function DrawerHost(props: {
             await api(`/api/adventures/${aid}/notes`, jsonInit("POST", { title: t, text }));
             await props.refreshAdventure(aid);
           }
-
           close();
           return;
         }
-
         case "editNote": {
-          await api(
-            `/api/notes/${d.noteId}`,
-            jsonInit("PUT", { title: noteTitle.trim() || "Note", text: noteText })
-          );
+          await api(`/api/notes/${d.noteId}`, jsonInit("PUT", { title: noteTitle.trim() || "Note", text: noteText }));
           await props.refreshCampaign(state.selectedCampaignId);
           await props.refreshAdventure(state.selectedAdventureId);
           close();
           return;
         }
-
         case "createPlayer": {
-          const cid = d.campaignId;
-
+          const pName = playerName.trim() || "Player";
+          const cName = characterName.trim() || "Character";
+          const hp = Number(hpMax) || 1;
           await api(
-            `/api/campaigns/${cid}/players`,
+            `/api/campaigns/${d.campaignId}/players`,
             jsonInit("POST", {
-              playerName: playerName.trim() || "Player",
-              characterName: characterName.trim() || "Character",
-              class: clazz.trim() || "Class",
-              species: species.trim() || "Species",
-              level: Number(lvl) || 1,
+              playerName: pName,
+              characterName: cName,
+              class: clazz.trim(),
+              species: species.trim(),
+              hpMax: hp,
+              hpCurrent: hp,
               ac: Number(ac) || 10,
-              hpMax: Number(hpMax) || 10,
-              hpCurrent: Number(hpCur) || (Number(hpMax) || 10)
+              level: Number(lvl) || 1
             })
           );
-
-          await props.refreshCampaign(cid);
+          await props.refreshCampaign(d.campaignId);
           close();
           return;
         }
-
         case "editPlayer": {
           await api(
             `/api/players/${d.playerId}`,
@@ -314,28 +268,23 @@ export function DrawerHost(props: {
               characterName: characterName.trim(),
               class: clazz.trim(),
               species: species.trim(),
-              hpMax: Number(hpMax),
-              hpCurrent: Number(hpCur),
-              ac: Number(ac),
-              level: Number(lvl)
+              hpMax: Number(hpMax) || 1,
+              hpCurrent: Number(hpCur) || 0,
+              ac: Number(ac) || 10,
+              level: Number(lvl) || 1
             })
           );
           await props.refreshCampaign(state.selectedCampaignId);
           close();
           return;
         }
-
         case "editCombatant": {
           const eid = d.encounterId;
-          await api(
-            `/api/encounters/${eid}/combatants/${d.combatantId}`,
-            jsonInit("PUT", { label, friendly })
-          );
+          await api(`/api/encounters/${eid}/combatants/${d.combatantId}`, jsonInit("PUT", { label, friendly }));
           await props.refreshEncounter(eid);
           close();
           return;
         }
-
         default:
           return;
       }
@@ -377,31 +326,31 @@ export function DrawerHost(props: {
         </div>
       ) : null}
 
-      {(d.type === "createPlayer" || d.type === "editPlayer") ? (
+      {d.type === "createPlayer" || d.type === "editPlayer" ? (
         <div style={{ display: "grid", gap: 10 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div style={{ minWidth: 0 }}>
+            <div>
               <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Player name</div>
               <Input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
             </div>
-            <div style={{ minWidth: 0 }}>
+            <div>
               <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Character name</div>
               <Input value={characterName} onChange={(e) => setCharacterName(e.target.value)} />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-            <div style={{ minWidth: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div>
               <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Class</div>
               <Input value={clazz} onChange={(e) => setClazz(e.target.value)} />
             </div>
-            <div style={{ minWidth: 0 }}>
+            <div>
               <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Species</div>
               <Input value={species} onChange={(e) => setSpecies(e.target.value)} />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
               <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Level</div>
               <Input value={lvl} onChange={(e) => setLvl(e.target.value)} />
@@ -411,20 +360,25 @@ export function DrawerHost(props: {
               <Input value={ac} onChange={(e) => setAc(e.target.value)} />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-            <div>
-              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Max HP</div>
-              <Input value={hpMax} onChange={(e) => {
+
+          <div>
+            <div style={{ color: theme.colors.muted, marginBottom: 6 }}>HP</div>
+            <Input
+              value={hpMax}
+              onChange={(e) => {
                 setHpMax(e.target.value);
-                setHpCur(e.target.value);
-              }} />
-            </div>
-              <div>
-              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Current HP</div>
-              <Input value={hpCur} onChange={(e) => {
-                setHpCur(e.target.value);
-              }} />
-            </div>
+                if (d.type === "createPlayer") setHpCur(e.target.value);
+              }}
+            />
+            {d.type === "editPlayer" ? (
+              <div style={{ marginTop: 8 }}>
+                <Reminder>Current HP persists across encounters. It resets on Long Rest.</Reminder>
+                <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr", gap: 6 }}>
+                  <div style={{ color: theme.colors.muted }}>Current HP</div>
+                  <Input value={hpCur} onChange={(e) => setHpCur(e.target.value)} />
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -1,76 +1,68 @@
 import React from "react";
 
-export function IconPencil(props: { size?: number }) {
-  const s = props.size ?? 18;
+type Props = { size?: number; title?: string };
+
+export function IconPlus({ size = 16, title }: Props) {
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-      <path d="M12 20h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"
-        stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M8 1a.5.5 0 0 1 .5.5V7.5H14.5a.5.5 0 0 1 0 1H8.5V14.5a.5.5 0 0 1-1 0V8.5H1.5a.5.5 0 0 1 0-1H7.5V1.5A.5.5 0 0 1 8 1z" />
     </svg>
   );
 }
 
-export function IconTrash(props: { size?: number }) {
-  const s = props.size ?? 18;
+export function IconPencil({ size = 16, title }: Props) {
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-      <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M8 6V4h8v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M6 6l1 16h10l1-16" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M12.146.146a.5.5 0 0 1 .708 0l2.999 2.999a.5.5 0 0 1 0 .708l-9.5 9.5a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l9.5-9.5z" />
+      <path d="M11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5z" />
     </svg>
   );
 }
 
-export function IconPlus(props: { size?: number }) {
-  const s = props.size ?? 18;
+export function IconTrash({ size = 16, title }: Props) {
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M5.5 5.5A.5.5 0 0 1 6 6v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0A.5.5 0 0 1 8.5 6v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0V6z" />
+      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3h11V2h-11v1z" />
     </svg>
   );
 }
 
-export function IconPerson(props: { size?: number }) {
-  const s = props.size ?? 16;
+export function IconPerson({ size = 16, title }: Props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={s} height={s} fill="currentColor" viewBox="0 0 16 16">
-      <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
     </svg>
   );
 }
 
-export function IconAdventure(props: { size?: number }) {
-  const s = props.size ?? 16;
+export function IconAdventure({ size = 16, title }: Props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={s} height={s} fill="currentColor" viewBox="0 0 16 16">
-      <path d="M15.5 8.516a7.5 7.5 0 1 1-9.462-7.24A1 1 0 0 1 7 0h2a1 1 0 0 1 .962 1.276 7.5 7.5 0 0 1 5.538 7.24m-3.61-3.905L6.94 7.439 4.11 12.39l4.95-2.828 2.828-4.95z"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M15.5 8.516a7.5 7.5 0 1 1-9.462-7.24A1 1 0 0 1 7 0h2a1 1 0 0 1 .962 1.276 7.5 7.5 0 0 1 5.538 7.24m-3.61-3.905L6.94 7.439 4.11 12.39l4.95-2.828 2.828-4.95z" />
     </svg>
   );
 }
 
-/** Notes / list card icon (bootstrap-like, but SVG so no dependency) */
-export function IconNotes(props: { size?: number }) {
-  const s = props.size ?? 16;
+export function IconNotes({ size = 16, title }: Props) {
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-      <path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
-            stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4.5h12zm-1 1H3V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5z" />
+      <path d="M14 1H2a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1z" />
+      <path d="M4.5 7.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z" />
     </svg>
   );
 }
 
-/** Crossed swords (Encounter) */
-export function IconEncounter(props: { size?: number }) {
-  const s = props.size ?? 16;
+export function IconEncounter({ size = 16, title }: Props) {
+  // simple crossed swords
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-      <path d="M5 3l6 6-2 2-6-6 2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M19 3l-6 6 2 2 6-6-2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M9 11l-6 6 2 2 6-6-2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M15 11l6 6-2 2-6-6 2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 16 16" aria-label={title}>
+      <path d="M1.5 1.5 6.2 6.2 5.5 6.9 3 4.4 2.1 5.3 3.6 6.8l-.7.7L1.5 6.1z" />
+      <path d="M14.5 1.5 9.8 6.2l.7.7 2.5-2.5.9.9-1.5 1.5.7.7 1.4-1.4z" />
+      <path d="M6.6 7.3 1.9 12l1.4 1.4 4.7-4.7z" />
+      <path d="M9.4 7.3 14.1 12l-1.4 1.4-4.7-4.7z" />
+      <path d="M6.9 8.7 8 9.8l1.1-1.1L8 7.6z" />
     </svg>
   );
 }

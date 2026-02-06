@@ -1,4 +1,4 @@
-# Beholden (Node server + React)
+# DM Tool LAN (Node server + React)
 
 PC runs Node server + JSON DB. Open from any browser on your LAN.
 

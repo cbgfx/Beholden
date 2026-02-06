@@ -12,6 +12,7 @@ export type DrawerState =
   | { type: "createLooseEncounter"; campaignId: string }
   | { type: "note"; scope: "campaign" | "adventure"; campaignId: string; adventureId?: string | null }
   | { type: "editNote"; noteId: string }
+  | { type: "createPlayer"; campaignId: string }
   | { type: "editPlayer"; playerId: string }
   | { type: "editCombatant"; encounterId: string; combatantId: string }
   | null;

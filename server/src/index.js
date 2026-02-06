@@ -308,6 +308,16 @@ app.put("/api/players/:playerId", (req,res)=>{
   res.json(userData.players[playerId]);
 });
 
+app.delete("/api/players/:playerId", (req,res)=>{
+  const { playerId } = req.params;
+  const existing = userData.players[playerId];
+  if(!existing) return res.status(404).json({ ok:false, message:"Not found" });
+  delete userData.players[playerId];
+  scheduleSave();
+  broadcast("players:changed", { campaignId: existing.campaignId });
+  res.json({ ok:true });
+});
+
 /* Adventures (campaign) */
 app.get("/api/campaigns/:campaignId/adventures", (req,res)=>{
   const { campaignId } = req.params;
@@ -561,8 +571,6 @@ app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
   broadcast("encounter:combatantsChanged", { encounterId });
   res.json({ ok:true, added });
 });
-
-// fix Python true -> JS true later by string replace
 
 app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const { encounterId } = req.params;

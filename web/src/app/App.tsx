@@ -218,7 +218,13 @@ async function addMonster(monsterId: string, qty: number) {
                   await refreshAdventure(state.selectedAdventureId);
                 }}
                 onAddAllPlayers={addAllPlayers}
+                onCreatePlayer={() => dispatch({ type: "openDrawer", drawer: { type: "createPlayer", campaignId: state.selectedCampaignId } })}
                 onEditPlayer={(playerId) => dispatch({ type: "openDrawer", drawer: { type: "editPlayer", playerId } })}
+                onDeletePlayer={async (playerId) => {
+                  if (!confirm("Delete this player?")) return;
+                  await api(`/api/players/${playerId}`, { method: "DELETE" });
+                  await refreshCampaign(state.selectedCampaignId);
+                }}
                 onEditCombatant={(combatantId) => state.selectedEncounterId ? dispatch({ type: "openDrawer", drawer: { type: "editCombatant", encounterId: state.selectedEncounterId, combatantId } }) : undefined}
                 onAddMonster={addMonster}
                 onReorderAdventures={reorderAdventures}

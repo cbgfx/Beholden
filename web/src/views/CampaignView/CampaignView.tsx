@@ -8,6 +8,9 @@ import { useStore } from "../../app/state/store";
 import type { Encounter, Note } from "../../app/types/domain";
 import { useNavigate } from "react-router-dom";
 import { DraggableList } from "../../components/drag/DraggableList";
+import { IconButton } from "../../components/ui/IconButton";
+import { HPBar } from "../../components/ui/HPBar";
+import { IconAdventure, IconEncounter, IconNotes, IconPencil, IconPlus, IconPerson, IconTrash } from "../../components/ui/Icons";
 
 function NoteAccordionItem(props: {
   note: Note;
@@ -34,40 +37,12 @@ function NoteAccordionItem(props: {
         </button>
 
         <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEdit(); }}
-            style={{
-              all: "unset",
-              cursor: "pointer",
-              padding: "6px 10px",
-              borderRadius: 10,
-              background: "rgba(236,167,44,0.18)",
-              border: `1px solid ${theme.colors.panelBorder}`,
-              color: theme.colors.text,
-              fontWeight: 900,
-              fontSize: 12
-            }}
-            title="Edit"
-          >
-            Edit
-          </button>
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDelete(); }}
-            style={{
-              all: "unset",
-              cursor: "pointer",
-              padding: "6px 10px",
-              borderRadius: 10,
-              background: "rgba(0,0,0,0.22)",
-              border: `1px solid ${theme.colors.panelBorder}`,
-              color: theme.colors.text,
-              fontWeight: 900,
-              fontSize: 12
-            }}
-            title="Delete"
-          >
-            Del
-          </button>
+          <IconButton onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEdit(); }} title="Edit" size="sm">
+            <IconPencil />
+          </IconButton>
+          <IconButton onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDelete(); }} title="Delete" size="sm" variant="ghost">
+            <IconTrash />
+          </IconButton>
         </div>
       </div>
 
@@ -99,7 +74,9 @@ export function CampaignView(props: {
   onDeleteAdventureNote: (noteId: string) => void;
 
   onAddAllPlayers: () => void;
+  onCreatePlayer: () => void;
   onEditPlayer: (playerId: string) => void;
+  onDeletePlayer: (playerId: string) => void;
   onEditCombatant: (combatantId: string) => void;
   onAddMonster: (monsterId: string, qty: number) => void;
 
@@ -126,7 +103,10 @@ export function CampaignView(props: {
   return (
     <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "340px 1fr 380px", gap: theme.spacing.gap }}>
       <div style={{ display: "grid", gap: 12 }}>
-        <Panel title="Adventures" actions={<Button onClick={props.onCreateAdventure}>+ Adventure</Button>}>
+        <Panel
+          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconAdventure /> Adventures</span>}
+          actions={<IconButton onClick={props.onCreateAdventure} title="Add adventure" variant="solid"><IconPlus /></IconButton>}
+        >
           {adventures.length ? (
             <DraggableList
               items={adventures.map(a => ({ id: a.id, title: a.name }))}
@@ -147,38 +127,19 @@ export function CampaignView(props: {
                     {it.title ?? it.id}
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button
+                    <IconButton
+                      title="Edit"
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEditAdventure(it.id); }}
-                      style={{
-                        all: "unset",
-                        cursor: "pointer",
-                        padding: "6px 10px",
-                        borderRadius: 10,
-                        background: "rgba(236,167,44,0.18)",
-                        border: `1px solid ${theme.colors.panelBorder}`,
-                        color: theme.colors.text,
-                        fontWeight: 900,
-                        fontSize: 12
-                      }}
                     >
-                      Edit
-                    </button>
-                    <button
+                      <IconPencil />
+                    </IconButton>
+                    <IconButton
+                      title="Delete"
+                      variant="ghost"
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDeleteAdventure(it.id); }}
-                      style={{
-                        all: "unset",
-                        cursor: "pointer",
-                        padding: "6px 10px",
-                        borderRadius: 10,
-                        background: "rgba(0,0,0,0.22)",
-                        border: `1px solid ${theme.colors.panelBorder}`,
-                        color: theme.colors.text,
-                        fontWeight: 900,
-                        fontSize: 12
-                      }}
                     >
-                      Del
-                    </button>
+                      <IconTrash />
+                    </IconButton>
                   </div>
                 </div>
               )}
@@ -186,7 +147,10 @@ export function CampaignView(props: {
           ) : <div style={{ color: theme.colors.muted }}>No adventures yet.</div>}
         </Panel>
 
-        <Panel title="Loose encounters (Campaign)" actions={<Button onClick={props.onCreateLooseEncounter}>+ Loose</Button>}>
+        <Panel
+          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconEncounter /> Loose encounters</span>}
+          actions={<IconButton onClick={props.onCreateLooseEncounter} title="Add loose encounter"><IconPlus /></IconButton>}
+        >
           {looseEncounters.length ? (
             <DraggableList
               items={looseEncounters.map((e: Encounter) => ({ id: e.id, title: e.name, meta: e.status }))}
@@ -200,38 +164,19 @@ export function CampaignView(props: {
                     {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button
+                    <IconButton
+                      title="Edit"
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEditEncounter(it.id); }}
-                      style={{
-                        all: "unset",
-                        cursor: "pointer",
-                        padding: "6px 10px",
-                        borderRadius: 10,
-                        background: "rgba(236,167,44,0.18)",
-                        border: `1px solid ${theme.colors.panelBorder}`,
-                        color: theme.colors.text,
-                        fontWeight: 900,
-                        fontSize: 12
-                      }}
                     >
-                      Edit
-                    </button>
-                    <button
+                      <IconPencil />
+                    </IconButton>
+                    <IconButton
+                      title="Delete"
+                      variant="ghost"
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDeleteEncounter(it.id); }}
-                      style={{
-                        all: "unset",
-                        cursor: "pointer",
-                        padding: "6px 10px",
-                        borderRadius: 10,
-                        background: "rgba(0,0,0,0.22)",
-                        border: `1px solid ${theme.colors.panelBorder}`,
-                        color: theme.colors.text,
-                        fontWeight: 900,
-                        fontSize: 12
-                      }}
                     >
-                      Del
-                    </button>
+                      <IconTrash />
+                    </IconButton>
                   </div>
                 </div>
               )}
@@ -239,7 +184,10 @@ export function CampaignView(props: {
           ) : <div style={{ color: theme.colors.muted }}>No loose encounters.</div>}
         </Panel>
 
-        <Panel title="Encounters (Adventure)" actions={<Button onClick={props.onCreateEncounter} disabled={!selectedAdventureId}>+ Encounter</Button>}>
+        <Panel
+          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconEncounter /> Encounters</span>}
+          actions={<IconButton onClick={props.onCreateEncounter} disabled={!selectedAdventureId} title="Add encounter"><IconPlus /></IconButton>}
+        >
           {selectedAdventureId ? (
             encounters.length ? (
               <DraggableList
@@ -253,40 +201,10 @@ export function CampaignView(props: {
                       <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
                       {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
                     </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onEditEncounter(it.id); }}
-                        style={{
-                          all: "unset",
-                          cursor: "pointer",
-                          padding: "6px 10px",
-                          borderRadius: 10,
-                          background: "rgba(236,167,44,0.18)",
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          fontSize: 12
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); props.onDeleteEncounter(it.id); }}
-                        style={{
-                          all: "unset",
-                          cursor: "pointer",
-                          padding: "6px 10px",
-                          borderRadius: 10,
-                          background: "rgba(0,0,0,0.22)",
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          fontSize: 12
-                        }}
-                      >
-                        Del
-                      </button>
-                    </div>
+                    <RowActions
+                      onEdit={() => props.onEditEncounter(it.id)}
+                      onDelete={() => props.onDeleteEncounter(it.id)}
+                    />
                   </div>
                 )}
               />
@@ -296,20 +214,50 @@ export function CampaignView(props: {
       </div>
 
       <div style={{ display: "grid", gap: 12 }}>
-        <Panel title="Players (campaign, persistent HP)">
-          {players.length ? players.map(p => (
-            <div key={p.id} style={{ padding: "10px 0", borderBottom: `1px solid ${theme.colors.panelBorder}`, display: "flex", justifyContent: "space-between", gap: 10 }}>
-              <div>
-                <div style={{ color: theme.colors.text, fontWeight: 900 }}>
-                  {p.characterName} <span style={{ color: theme.colors.muted, fontWeight: 500 }}>({p.playerName})</span>
+        <Panel
+          title={
+            <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
+              <IconPerson /> Players <span style={{ color: theme.colors.muted, fontWeight: 600 }}>(campaign, persistent HP)</span>
+            </span>
+          }
+          actions={
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <IconButton onClick={props.onCreatePlayer} title="Add player"><IconPlus /></IconButton>
+            </div>
+          }
+        >
+          {players.length ? (
+            players.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  padding: "10px 0",
+                  borderBottom: `1px solid ${theme.colors.panelBorder}`,
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  alignItems: "center"
+                }}
+              >
+                <div style={{ display: "grid", gap: 6 }}>
+                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>
+                    {p.characterName} <span style={{ color: theme.colors.muted, fontWeight: 500 }}>({p.playerName})</span>
+                  </div>
+                  <HPBar current={p.hpCurrent} max={p.hpMax} />
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                    L{p.level} {p.class} • {p.species} • HP {p.hpCurrent}/{p.hpMax} • AC {p.ac}
+                  </div>
                 </div>
-                <div style={{ color: theme.colors.muted, fontSize: 13 }}>
-                  L{p.level} {p.class} • {p.species} • HP {p.hpCurrent}/{p.hpMax} • AC {p.ac}
+
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                  <IconButton variant="ghost" onClick={() => props.onEditPlayer(p.id)} title="Edit"><IconPencil /></IconButton>
+                  <IconButton variant="ghost" onClick={() => props.onDeletePlayer(p.id)} title="Delete"><IconTrash /></IconButton>
                 </div>
               </div>
-              <Button variant="ghost" onClick={() => props.onEditPlayer(p.id)}>Edit</Button>
-            </div>
-          )) : <div style={{ color: theme.colors.muted }}>No players yet (we’ll add a UI for this next).</div>}
+            ))
+          ) : (
+            <div style={{ color: theme.colors.muted }}>No players yet.</div>
+          )}
         </Panel>
 
         <Panel
@@ -365,7 +313,10 @@ export function CampaignView(props: {
       </div>
 
       <div style={{ display: "grid", gap: 12 }}>
-        <Panel title="Campaign notes" actions={<Button onClick={props.onAddCampaignNote}>+ Note</Button>}>
+        <Panel
+          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconNotes /> Campaign notes</span>}
+          actions={<IconButton onClick={props.onAddCampaignNote} title="Add note"><IconPlus /></IconButton>}
+        >
           {campaignNotes.length ? (
             <DraggableList
               items={campaignNotes.map(n => ({ id: n.id }))}
@@ -388,7 +339,10 @@ export function CampaignView(props: {
           ) : <div style={{ color: theme.colors.muted }}>No campaign notes yet.</div>}
         </Panel>
 
-        <Panel title="Adventure notes" actions={<Button onClick={props.onAddAdventureNote} disabled={!selectedAdventureId}>+ Note</Button>}>
+        <Panel
+          title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><IconNotes /> Adventure notes</span>}
+          actions={<IconButton onClick={props.onAddAdventureNote} disabled={!selectedAdventureId} title="Add note"><IconPlus /></IconButton>}
+        >
           {selectedAdventureId ? (
             adventureNotes.length ? (
               <DraggableList
