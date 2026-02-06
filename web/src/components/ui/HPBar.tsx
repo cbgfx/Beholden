@@ -1,24 +1,36 @@
 import React from "react";
 import { theme } from "../../app/theme/theme";
 
-export function HPBar(props: { current: number; max: number }) {
-  const cur = Math.max(0, props.current || 0);
-  const max = Math.max(1, props.max || 1);
-  const pct = Math.max(0, Math.min(100, (cur / max) * 100));
+export function HPBar(props: { cur: number; max: number }) {
+  const max = Math.max(1, Number(props.max) || 1);
+  const curHP = Math.max(0, Number(props.cur) || 0);
+  const pct = Math.max(0, Math.min(1, curHP / max));
 
   return (
-    <div style={{
-      height: 8,
-      borderRadius: 999,
-      background: "rgba(0,0,0,0.20)",
-      border: `1px solid ${theme.colors.panelBorder}`,
-      overflow: "hidden"
-    }}>
-      <div style={{
-        height: "100%",
-        width: `${pct}%`,
-        background: "rgba(236,167,44,0.85)"
-      }} />
+    <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          height: 12,
+          borderRadius: 999,
+          background: "rgba(0,0,0,0.28)",
+          border: `1px solid ${theme.colors.panelBorder}`,
+          overflow: "hidden"
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${pct * 100}%`,
+            background: theme.colors.accent,
+            borderRadius: 999
+          }}
+        />
+      </div>
+
+      <div style={{ fontSize: 12, color: theme.colors.text, opacity: 0.85 }}>
+        HP {curHP}/{max}
+      </div>
     </div>
   );
 }

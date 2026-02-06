@@ -3,58 +3,67 @@ import { theme } from "../../../app/theme/theme";
 import { IconButton } from "../../../components/ui/IconButton";
 import { IconPencil, IconTrash, IconPerson } from "../../../components/ui/Icons";
 import { HPBar } from "../../../components/ui/HPBar";
-import type { PlayerVM } from "../sections/PlayersPanel";
+
+export type PlayerVM = {
+  id: string;
+  playerName: string;
+  characterName: string;
+  class: string;
+  species: string;
+  level: number;
+  ac: number;
+  hpMax: number;
+  hpCurrent: number;
+};
 
 export function PlayerRow(props: {
-  player: PlayerVM;
-  showTopBorder?: boolean;
+  p: PlayerVM;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const p = props.player;
+  const p = props.p;
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 220px auto",
-        gap: 12,
+        gridTemplateColumns: "1fr 360px 92px",
         alignItems: "center",
-        padding: 10,
-        borderTop: props.showTopBorder ? `1px solid ${theme.colors.panelBorder}` : "none"
+        gap: 14,
+        padding: "12px 14px",
+        borderRadius: 14,
+        background: "rgba(0,0,0,0.14)",
+        border: `1px solid ${theme.colors.panelBorder}`
       }}
     >
+      {/* Left identity block */}
       <div style={{ minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: theme.colors.accent, display: "inline-flex" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
+          <span style={{ display: "inline-flex", opacity: 0.9 }}>
             <IconPerson />
           </span>
-          <div
-            style={{
-              fontWeight: 900,
-              color: theme.colors.text,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            }}
-          >
-            {p.characterName || "Character"}{" "}
-            <span style={{ fontWeight: 700, opacity: 0.7 }}>({p.playerName || "Player"})</span>
+
+          <div style={{ fontWeight: 900, color: theme.colors.text, fontSize: 16, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {p.characterName} <span style={{ fontWeight: 700, opacity: 0.85 }}>({p.playerName})</span>
           </div>
         </div>
 
-        <div style={{ fontSize: 12, color: theme.colors.muted, marginTop: 2 }}>
-          L{p.level} {p.class} · {p.species} · AC {p.ac} · HP {p.hpCurrent}/{p.hpMax}
+        <div style={{ marginTop: 4, fontSize: 12, color: theme.colors.muted }}>
+          L{p.level} {p.class} • {p.species} • AC {p.ac}
         </div>
       </div>
 
-      <HPBar cur={p.hpCurrent} max={p.hpMax} />
+      {/* Middle HP bar */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <HPBar cur={p.hpCurrent} max={p.hpMax} />
+      </div>
 
-      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-        <IconButton onClick={props.onEdit} title="Edit player">
+      {/* Right actions */}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+        <IconButton title="Edit" onClick={(e) => (e.stopPropagation(), props.onEdit())}>
           <IconPencil />
         </IconButton>
-        <IconButton onClick={props.onDelete} title="Delete player">
+        <IconButton title="Delete" onClick={(e) => (e.stopPropagation(), props.onDelete())}>
           <IconTrash />
         </IconButton>
       </div>

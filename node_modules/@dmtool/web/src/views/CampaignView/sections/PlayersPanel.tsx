@@ -1,27 +1,15 @@
 import React from "react";
+import { theme } from "../../../app/theme/theme";
 import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
 import { IconPlus, IconPerson } from "../../../components/ui/Icons";
-import { theme } from "../../../app/theme/theme";
-import { PlayerRow } from "../components/PlayerRow";
-
-export type PlayerVM = {
-  id: string;
-  playerName: string;
-  characterName: string;
-  class: string;
-  species: string;
-  level: number;
-  ac: number;
-  hpMax: number;
-  hpCurrent: number;
-};
+import { PlayerRow, PlayerVM } from "../components/PlayerRow";
 
 export function PlayersPanel(props: {
   players: PlayerVM[];
   onCreate: () => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onEdit: (playerId: string) => void;
+  onDelete: (playerId: string) => void;
 }) {
   return (
     <Panel
@@ -31,18 +19,17 @@ export function PlayersPanel(props: {
         </span>
       }
       actions={
-        <IconButton onClick={props.onCreate} title="Add player">
+        <IconButton title="Add player" onClick={props.onCreate}>
           <IconPlus />
         </IconButton>
       }
     >
       {props.players.length ? (
-        <div>
-          {props.players.map((p, idx) => (
+        <div style={{ display: "grid", gap: 10 }}>
+          {props.players.map((p) => (
             <PlayerRow
               key={p.id}
-              player={p}
-              showTopBorder={idx !== 0}
+              p={p}
               onEdit={() => props.onEdit(p.id)}
               onDelete={() => props.onDelete(p.id)}
             />
