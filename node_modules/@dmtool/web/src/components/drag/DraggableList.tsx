@@ -66,16 +66,16 @@ export function DraggableList(props: {
             ) : (
               <div
                 style={{
-                  padding: 10,
+                  padding: 5,
                   borderRadius: 12,
                   color: theme.colors.text,
                   display: "flex",
                   justifyContent: "space-between",
-                  gap: 12,
+                  gap: 6,
                 }}
               >
                 <span>{it.title ?? it.id}</span>
-                {it.meta ? <span style={{ fontSize: 12, opacity: 0.75 }}>{it.meta}</span> : null}
+                {it.meta ? <span style={{ fontSize: 11, opacity: 0.75 }}>{it.meta}</span> : null}
               </div>
             )}
           </div>

@@ -11,5 +11,5 @@ export const theme = {
     danger: "#ff5d5d"
   },
   radius: { panel: 14, control: 10 },
-  spacing: { pagePad: 16, gap: 14 }
+  spacing: { pagePad: 16, gap: 7 }
 };

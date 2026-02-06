@@ -25,7 +25,7 @@ export function EncounterRosterPanel(props: {
   compQ: string;
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
-  onAddMonster: (monsterId: string, qty: number) => void;
+  onAddMonster: (monsterId: string, qty: number) => void | Promise<void>;
 
   onAddAllPlayers: () => void;
   onOpenCombat: () => void;
@@ -37,7 +37,7 @@ export function EncounterRosterPanel(props: {
   // Map raw combatants -> VM used by this panel (keeps CampaignView simple)
   const combatantsVM: CombatantVM[] = React.useMemo(() => {
     return (props.combatants ?? []).map((c: any) => {
-      const kind: CombatantVM["kind"] = c.kind ?? (c.playerId ? "player" : "monster");
+      const kind: CombatantVM["kind"] = c.baseType === "player" ? "player" : "monster";
       return {
         id: String(c.id),
         label: c.label ?? c.characterName ?? c.name ?? "Combatant",

@@ -28,6 +28,16 @@ function MonsterStatblock(props: { monster: any | null }) {
   const m = props.monster;
   if (!m) return <div style={{ color: theme.colors.muted }}>Select a monster to preview its stats.</div>;
 
+  // Many compendiums ship an unstructured stat block as raw text.
+  const rawStatBlock: string | null =
+    typeof m.statBlock === "string"
+      ? m.statBlock
+      : typeof m.stat_block === "string"
+        ? m.stat_block
+        : typeof m.statblock === "string"
+          ? m.statblock
+          : null;
+
   // Forgiving render; compendium schemas vary.
   const ac = m.ac?.value ?? m.ac ?? m.armor_class;
   const hp = m.hp?.average ?? m.hp ?? m.hit_points;
@@ -47,11 +57,13 @@ function MonsterStatblock(props: { monster: any | null }) {
   const actions = m.actions ?? m.action ?? [];
   const legendary = m.legendary ?? m.legendaryActions ?? [];
 
+  const hasRaw = Boolean(rawStatBlock && rawStatBlock.trim().length);
+
   const renderNamed = (arr: any[]) =>
     arr?.length ? (
       <div style={{ display: "grid", gap: 8 }}>
         {arr.map((t: any, idx: number) => (
-          <div key={idx} style={{ padding: "8px 10px", borderRadius: 12, border: `1px solid ${theme.colors.panelBorder}`, background: "rgb(4, 255, 0)" }}>
+          <div key={idx} style={{ padding: "8px 10px", borderRadius: 12, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.12)" }}>
             <div style={{ color: theme.colors.text, fontWeight: 900 }}>{t.name ?? t.title ?? "—"}</div>
             <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 13 }}>{t.text ?? t.description ?? ""}</div>
           </div>
@@ -70,13 +82,32 @@ function MonsterStatblock(props: { monster: any | null }) {
 
       <div style={{ color: theme.colors.muted }}>{[type, alignment].filter(Boolean).join(" • ")}</div>
 
-      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgb(0, 0, 0)" }}>
+      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.14)" }}>
         <StatLine label="AC" value={ac ?? "—"} />
         <StatLine label="HP" value={hp ?? "—"} />
         <StatLine label="Speed" value={speed ?? "—"} />
       </div>
 
-      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0)" }}>
+      {hasRaw ? (
+        <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.14)" }}>
+          <div style={{ color: theme.colors.accent, fontWeight: 900, marginBottom: 8 }}>Stat block</div>
+          <pre
+            style={{
+              margin: 0,
+              whiteSpace: "pre-wrap",
+              color: theme.colors.text,
+              fontSize: 13,
+              lineHeight: 1.35,
+              fontFamily:
+                "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+            }}
+          >
+            {rawStatBlock}
+          </pre>
+        </div>
+      ) : null}
+
+      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.14)" }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900, marginBottom: 8 }}>Abilities</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
           {[
@@ -95,21 +126,25 @@ function MonsterStatblock(props: { monster: any | null }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gap: 10 }}>
-        <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Traits</div>
-        {renderNamed(Array.isArray(traits) ? traits : [])}
-      </div>
+      {!hasRaw ? (
+        <>
+          <div style={{ display: "grid", gap: 10 }}>
+            <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Traits</div>
+            {renderNamed(Array.isArray(traits) ? traits : [])}
+          </div>
 
-      <div style={{ display: "grid", gap: 10 }}>
-        <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Actions</div>
-        {renderNamed(Array.isArray(actions) ? actions : [])}
-      </div>
+          <div style={{ display: "grid", gap: 10 }}>
+            <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Actions</div>
+            {renderNamed(Array.isArray(actions) ? actions : [])}
+          </div>
 
-      {Array.isArray(legendary) && legendary.length ? (
-        <div style={{ display: "grid", gap: 10 }}>
-          <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Legendary</div>
-          {renderNamed(legendary)}
-        </div>
+          {Array.isArray(legendary) && legendary.length ? (
+            <div style={{ display: "grid", gap: 10 }}>
+              <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Legendary</div>
+              {renderNamed(legendary)}
+            </div>
+          ) : null}
+        </>
       ) : null}
     </div>
   );
@@ -138,7 +173,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           borderRadius: 10,
           textAlign: "center",
           border: `1px solid ${theme.colors.panelBorder}`,
-          background: "rgb(0, 0, 0)",
+          background: "rgba(0,0,0,0.18)",
           color: theme.colors.text,
           fontWeight: 900
         }}
@@ -170,11 +205,12 @@ export function MonsterPickerModal(props: {
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
 
-  onAddMonster: (monsterId: string, qty: number) => void;
+  onAddMonster: (monsterId: string, qty: number) => void | Promise<void>;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
   const [monster, setMonster] = React.useState<any | null>(null);
   const [qtyById, setQtyById] = React.useState<Record<string, number>>({});
+  const [error, setError] = React.useState<string | null>(null);
 
   // When opening, select the first result (if any) for instant stat preview.
   React.useEffect(() => {
@@ -224,6 +260,11 @@ export function MonsterPickerModal(props: {
         {/* Left: list */}
         <div style={{ display: "grid", gap: 10, borderRight: `1px solid ${theme.colors.panelBorder}`, paddingRight: 14 }}>
           <Input value={props.compQ} onChange={(e) => props.onChangeCompQ(e.target.value)} placeholder="Search compendium…" />
+          {error ? (
+            <div style={{ color: theme.colors.danger ?? "#ff6b6b", fontWeight: 800, fontSize: 13 }}>
+              {error}
+            </div>
+          ) : null}
           <div style={{ overflow: "auto", paddingRight: 6 }}>
             {props.compRows.map((m) => {
               const active = m.id === selectedMonsterId;
@@ -231,7 +272,10 @@ export function MonsterPickerModal(props: {
               return (
                 <div
                   key={m.id}
-                  onClick={() => setSelectedMonsterId(m.id)}
+                  onClick={() => {
+                    setError(null);
+                    setSelectedMonsterId(m.id);
+                  }}
                   style={{
                     padding: 10,
                     borderRadius: 12,
@@ -260,10 +304,16 @@ export function MonsterPickerModal(props: {
                       onChange={(n) => setQtyById((prev) => ({ ...prev, [m.id]: n }))}
                     />
                     <Button
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        props.onAddMonster(m.id, qty);
+                        setError(null);
+                        try {
+                          await props.onAddMonster(m.id, qty);
+                          props.onClose();
+                        } catch {
+                          setError("Could not add that monster. (Check server / API)");
+                        }
                       }}
                     >
                       Add

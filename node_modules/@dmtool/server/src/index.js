@@ -735,6 +735,14 @@ app.get("/api/compendium/search", (req,res)=>{
   res.json(searchCompendium(String(q), filters, limit));
 });
 
+// Full monster detail (used by the MonsterPickerModal right-pane preview)
+app.get("/api/compendium/monsters/:monsterId", (req,res)=>{
+  const { monsterId } = req.params;
+  const m = compendiumState.monsters.find(x => x.id === monsterId);
+  if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
+  res.json(m);
+});
+
 const upload = multer({ limits: { fileSize: 25 * 1024 * 1024 } });
 
 app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{

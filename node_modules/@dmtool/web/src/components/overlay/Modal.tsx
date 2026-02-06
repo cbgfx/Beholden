@@ -48,7 +48,7 @@ export function Modal(props: {
           height: props.height ?? 720,
           maxWidth: "calc(100vw - 48px)",
           maxHeight: "calc(100vh - 48px)",
-          background: "#555555", //The background color of the modal
+          background: "#3c577b", //The background color of the modal
           border: `1px solid ${theme.colors.panelBorder}`,
           borderRadius: 18,
           boxShadow: "0 24px 70px rgba(0,0,0,0.45)",

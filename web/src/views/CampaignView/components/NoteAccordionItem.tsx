@@ -12,8 +12,8 @@ export function NoteAccordionItem(props: {
   onDelete: () => void;
 }) {
   return (
-    <div style={{ padding: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+    <div style={{ padding: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
         <button
           onClick={(e) => {
             e.preventDefault();
