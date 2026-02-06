@@ -49,7 +49,7 @@ export function PlayerRow(props: {
         </div>
 
         <div style={{ marginTop: 4, fontSize: 12, color: theme.colors.muted }}>
-          L{p.level} {p.class} • {p.species} • AC {p.ac}
+          Lvl {p.level} {p.class} • {p.species} • AC {p.ac}
         </div>
       </div>
 

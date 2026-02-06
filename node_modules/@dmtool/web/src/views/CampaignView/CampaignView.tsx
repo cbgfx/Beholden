@@ -556,7 +556,6 @@ export function CampaignView(props: {
             >
               <IconPerson /> Players{" "}
               <span style={{ color: theme.colors.muted, fontWeight: 600 }}>
-                (campaign, persistent HP)
               </span>
             </span>
           }
@@ -622,7 +621,7 @@ export function CampaignView(props: {
                     </div>
 
                     <div style={{ color: theme.colors.muted, fontSize: 13 }}>
-                      L{p.level} {p.class} • {p.species} • AC {p.ac}
+                      Level {p.level} {p.class} • {p.species} • AC {p.ac}
                     </div>
                   </div>
 
