@@ -18,6 +18,15 @@
       "sort": 1,
       "createdAt": 1770343909111,
       "updatedAt": 1770343909111
+    },
+    "006a68be-43d6-48f6-bc5d-621fc581ee5b": {
+      "id": "006a68be-43d6-48f6-bc5d-621fc581ee5b",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "name": "Dawn Circle",
+      "status": "active",
+      "sort": 2,
+      "createdAt": 1770344095609,
+      "updatedAt": 1770344095609
     }
   },
   "encounters": {},
@@ -30,7 +39,7 @@
       "text": "asdfasdf",
       "sort": 2,
       "createdAt": 1770343980540,
-      "updatedAt": 1770343992783
+      "updatedAt": 1770344082164
     },
     "249f204f-91ba-44e3-a1c0-98c2a65391b1": {
       "id": "249f204f-91ba-44e3-a1c0-98c2a65391b1",

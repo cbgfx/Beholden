@@ -2,9 +2,12 @@
 import React from "react";
 import { theme } from "../theme/theme";
 import { Button } from "../../components/ui/Button";
+import { IconButton } from "../../components/ui/IconButton";
 import { Select } from "../../components/ui/Select";
 import { useStore } from "../state/store";
 import { Link, useLocation } from "react-router-dom";
+import { IconPencil, IconTrash } from "../../components/ui/Icons";
+
 
 function NavLink(props: { to: string; label: string }) {
   const loc = useLocation();
@@ -47,8 +50,8 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
             {campaigns.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </Select>
           <Button onClick={props.onCreateCampaign}>+ Campaign</Button>
-        <Button onClick={() => props.onEditCampaign(selectedCampaignId)} disabled={!selectedCampaignId}>Edit</Button>
-        <Button onClick={() => props.onDeleteCampaign(selectedCampaignId)} disabled={!selectedCampaignId}>Delete</Button>
+        <IconButton onClick={() => props.onEditCampaign(selectedCampaignId)} title="edit"><IconPencil /></IconButton>
+        <IconButton onClick={() => props.onDeleteCampaign(selectedCampaignId)} title="delete"><IconTrash /></IconButton>
         </>
       ) : (
         <Button onClick={props.onCreateCampaign}>Create first campaign</Button>

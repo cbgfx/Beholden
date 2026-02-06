@@ -372,7 +372,6 @@ export function DrawerHost(props: {
             />
             {d.type === "editPlayer" ? (
               <div style={{ marginTop: 8 }}>
-                <Reminder>Current HP persists across encounters. It resets on Long Rest.</Reminder>
                 <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr", gap: 6 }}>
                   <div style={{ color: theme.colors.muted }}>Current HP</div>
                   <Input value={hpCur} onChange={(e) => setHpCur(e.target.value)} />
