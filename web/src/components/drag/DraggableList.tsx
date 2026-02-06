@@ -4,9 +4,9 @@ import { theme } from "../../app/theme/theme";
 export type DragItem = { id: string; title?: string; meta?: string };
 
 /**
- * DraggableList: handles drag-to-reorder. You can either:
- *  - pass title/meta (default row renderer), or
- *  - pass renderItem for fully custom row UI (recommended for accordion notes, edit/delete buttons, etc.)
+ * DraggableList: drag-to-reorder + selectable rows.
+ * Selection is handled by the row wrapper even when renderItem is provided.
+ * For buttons inside renderItem, call e.stopPropagation().
  */
 export function DraggableList(props: {
   items: DragItem[];
@@ -33,11 +33,12 @@ export function DraggableList(props: {
       {props.items.map((it) => {
         const isActive = it.id === props.activeId;
         const isDragging = dragId === it.id;
+
         const bg = isActive
           ? "rgba(236,167,44,0.22)"
           : isDragging
-            ? "rgba(236,167,44,0.10)"
-            : "rgba(0,0,0,0.18)";
+          ? "rgba(236,167,44,0.10)"
+          : "rgba(0,0,0,0.18)";
 
         return (
           <div
@@ -45,9 +46,7 @@ export function DraggableList(props: {
             draggable
             onDragStart={() => setDragId(it.id)}
             onDragEnd={() => setDragId(null)}
-            onDragOver={(e) => {
-              e.preventDefault();
-            }}
+            onDragOver={(e) => e.preventDefault()}
             onDrop={() => {
               if (dragId) move(dragId, it.id);
             }}
@@ -57,29 +56,18 @@ export function DraggableList(props: {
               marginBottom: 8,
               userSelect: "none",
               cursor: props.onSelect ? "pointer" : "default",
+              background: bg,
+              border: `1px solid ${theme.colors.panelBorder}`,
             }}
             title="Drag to reorder"
           >
             {props.renderItem ? (
-              // Custom renderer gets full control over row UI (accordion cards, buttons, etc.)
-              <div
-                style={{
-                  borderRadius: 12,
-                  background: bg,
-                  border: `1px solid ${theme.colors.panelBorder}`,
-                }}
-              >
-                {props.renderItem(it)}
-              </div>
+              props.renderItem(it)
             ) : (
-              // Default row renderer
               <div
                 style={{
                   padding: 10,
                   borderRadius: 12,
-                  cursor: "pointer",
-                  background: bg,
-                  border: `1px solid ${theme.colors.panelBorder}`,
                   color: theme.colors.text,
                   display: "flex",
                   justifyContent: "space-between",
@@ -87,9 +75,7 @@ export function DraggableList(props: {
                 }}
               >
                 <span>{it.title ?? it.id}</span>
-                {it.meta ? (
-                  <span style={{ fontSize: 12, opacity: 0.75 }}>{it.meta}</span>
-                ) : null}
+                {it.meta ? <span style={{ fontSize: 12, opacity: 0.75 }}>{it.meta}</span> : null}
               </div>
             )}
           </div>

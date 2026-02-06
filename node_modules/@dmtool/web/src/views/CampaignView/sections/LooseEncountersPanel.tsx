@@ -3,41 +3,44 @@ import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
 import { DraggableList } from "../../../components/drag/DraggableList";
 import { theme } from "../../../app/theme/theme";
-import { IconAdventure, IconPencil, IconPlus, IconTrash } from "../../../components/ui/Icons";
+import { IconEncounter, IconPencil, IconPlus, IconTrash } from "../../../components/ui/Icons";
 
-export function AdventuresPanel(props: {
-  adventures: { id: string; name: string }[];
-  selectedAdventureId: string | null;
-  onSelectAdventure: (id: string) => void;
+export function LooseEncountersPanel(props: {
+  encounters: { id: string; name: string; status?: string | null }[];
+  selectedEncounterId: string | null;
+  onSelectLooseEncounter: (id: string) => void;
   onCreate: () => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onReorder: (ids: string[]) => void;
 }) {
-  const { adventures, selectedAdventureId } = props;
+  const { encounters, selectedEncounterId } = props;
 
   return (
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconAdventure /> Adventures
+          <IconEncounter /> Loose encounters
         </span>
       }
       actions={
-        <IconButton onClick={props.onCreate} title="Add adventure" variant="solid">
+        <IconButton onClick={props.onCreate} title="Add loose encounter">
           <IconPlus />
         </IconButton>
       }
     >
-      {adventures.length ? (
+      {encounters.length ? (
         <DraggableList
-          items={adventures.map((a) => ({ id: a.id, title: a.name }))}
-          activeId={selectedAdventureId}
-          onSelect={(id) => props.onSelectAdventure(id)}
+          items={encounters.map((e) => ({ id: e.id, title: e.name, meta: e.status ?? undefined }))}
+          activeId={selectedEncounterId}
+          onSelect={(id) => props.onSelectLooseEncounter(id)}
           onReorder={props.onReorder}
           renderItem={(it) => (
             <div style={{ padding: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
+                {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
+              </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <IconButton
                   title="Edit"
@@ -51,6 +54,7 @@ export function AdventuresPanel(props: {
                 </IconButton>
                 <IconButton
                   title="Delete"
+                  variant="ghost"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -64,7 +68,7 @@ export function AdventuresPanel(props: {
           )}
         />
       ) : (
-        <div style={{ color: theme.colors.muted }}>No adventures yet.</div>
+        <div style={{ color: theme.colors.muted }}>No loose encounters.</div>
       )}
     </Panel>
   );

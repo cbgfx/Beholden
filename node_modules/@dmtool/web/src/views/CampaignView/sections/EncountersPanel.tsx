@@ -1,64 +1,76 @@
 import React from "react";
 import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
-import { IconEncounter, IconPlus, IconPencil, IconTrash } from "../../../components/ui/Icons";
-import { theme } from "../../../app/theme/theme";
 import { DraggableList } from "../../../components/drag/DraggableList";
-
-export type EncounterVM = { id: string; name: string; status?: "open" | "complete" };
+import { theme } from "../../../app/theme/theme";
+import { IconEncounter, IconPencil, IconPlus, IconTrash } from "../../../components/ui/Icons";
 
 export function EncountersPanel(props: {
-  title?: string; // optional override
-  disabledText?: string;
-
-  encounters: EncounterVM[];
+  encounters: { id: string; name: string; status?: string | null }[];
+  selectedAdventureId: string | null;
   selectedEncounterId: string | null;
-  onSelect: (id: string) => void;
-
+  onSelectEncounter: (id: string) => void;
   onCreate: () => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
-
   onReorder: (ids: string[]) => void;
-
-  disabled?: boolean;
 }) {
-  const label = props.title ?? "Encounters (Adventure)";
+  const { encounters, selectedAdventureId, selectedEncounterId } = props;
 
   return (
-    <Panel title={<span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}> <IconEncounter /> {label}</span>} actions={<IconButton onClick={props.onCreate} title="Add encounter" disabled={props.disabled}>
+    <Panel
+      title={
+        <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
+          <IconEncounter /> Encounters
+        </span>
+      }
+      actions={
+        <IconButton onClick={props.onCreate} disabled={!selectedAdventureId} title="Add encounter">
           <IconPlus />
         </IconButton>
       }
     >
-      {props.disabled ? (
-        <div style={{ color: theme.colors.muted }}>{props.disabledText ?? "Select an adventure."}</div>
-      ) : props.encounters.length ? (
-        <div style={{ display: "grid", gap: 10 }}>
+      {selectedAdventureId ? (
+        encounters.length ? (
           <DraggableList
-            items={props.encounters.map(e => ({
-              id: e.id,
-              title: e.name,
-              meta: e.status === "complete" ? "complete" : undefined
-            }))}
-            activeId={props.selectedEncounterId}
-            onSelect={props.onSelect}
+            items={encounters.map((e) => ({ id: e.id, title: e.name, meta: e.status ?? undefined }))}
+            activeId={selectedEncounterId}
+            onSelect={(id) => props.onSelectEncounter(id)}
             onReorder={props.onReorder}
+            renderItem={(it) => (
+              <div style={{ padding: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <div style={{ fontWeight: 900, color: theme.colors.text }}>{it.title ?? it.id}</div>
+                  {it.meta ? <div style={{ fontSize: 12, color: theme.colors.muted }}>{it.meta}</div> : null}
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <IconButton
+                    title="Edit"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      props.onEdit(it.id);
+                    }}
+                  >
+                    <IconPencil />
+                  </IconButton>
+                  <IconButton
+                    title="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      props.onDelete(it.id);
+                    }}
+                  >
+                    <IconTrash />
+                  </IconButton>
+                </div>
+              </div>
+            )}
           />
-
-          {props.selectedEncounterId ? (
-            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-              <IconButton onClick={() => props.onEdit(props.selectedEncounterId!)} title="Edit encounter">
-                <IconPencil />
-              </IconButton>
-              <IconButton onClick={() => props.onDelete(props.selectedEncounterId!)} title="Delete encounter">
-                <IconTrash />
-              </IconButton>
-            </div>
-          ) : null}
-        </div>
+        ) : (
+          <div style={{ color: theme.colors.muted }}>No encounters yet.</div>
+        )
       ) : (
-        <div style={{ color: theme.colors.muted }}>No encounters yet.</div>
+        <div style={{ color: theme.colors.muted }}>Select an adventure.</div>
       )}
     </Panel>
   );

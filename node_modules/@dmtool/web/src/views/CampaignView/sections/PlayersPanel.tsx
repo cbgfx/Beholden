@@ -1,38 +1,93 @@
 import React from "react";
-import { theme } from "../../../app/theme/theme";
 import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
-import { IconPlus, IconPerson } from "../../../components/ui/Icons";
-import { PlayerRow, PlayerVM } from "../components/PlayerRow";
+import { HPBar } from "../../../components/ui/HPBar";
+import { theme } from "../../../app/theme/theme";
+import { IconPerson, IconPlus, IconPencil, IconTrash } from "../../../components/ui/Icons";
 
 export function PlayersPanel(props: {
-  players: PlayerVM[];
-  onCreate: () => void;
-  onEdit: (playerId: string) => void;
-  onDelete: (playerId: string) => void;
+  players: any[];
+  onCreatePlayer: () => void;
+  onEditPlayer: (playerId: string) => void;
+  onDeletePlayer: (playerId: string) => void;
 }) {
+  const players = props.players;
+
   return (
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconPerson /> Players (campaign, persistent HP)
+          <IconPerson /> Players <span style={{ color: theme.colors.muted, fontWeight: 600 }}>(campaign, persistent HP)</span>
         </span>
       }
       actions={
-        <IconButton title="Add player" onClick={props.onCreate}>
-          <IconPlus />
-        </IconButton>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <IconButton onClick={props.onCreatePlayer} title="Add player">
+            <IconPlus />
+          </IconButton>
+        </div>
       }
     >
-      {props.players.length ? (
+      {players.length ? (
         <div style={{ display: "grid", gap: 10 }}>
-          {props.players.map((p) => (
-            <PlayerRow
+          {players.map((p) => (
+            <div
               key={p.id}
-              p={p}
-              onEdit={() => props.onEdit(p.id)}
-              onDelete={() => props.onDelete(p.id)}
-            />
+              style={{
+                display: "grid",
+                gridTemplateColumns: "minmax(320px, 1fr) 360px 92px",
+                alignItems: "center",
+                gap: 14,
+                padding: "12px 14px",
+                borderRadius: 14,
+                background: "rgba(0,0,0,0.14)",
+                border: `1px solid ${theme.colors.panelBorder}`,
+              }}
+            >
+              <div style={{ minWidth: 0, display: "grid", gap: 6 }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
+                  <span style={{ display: "inline-flex", opacity: 0.9 }}>
+                    <IconPerson />
+                  </span>
+
+                  <div
+                    style={{
+                      color: theme.colors.text,
+                      fontWeight: 900,
+                      fontSize: 16,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {p.characterName}{" "}
+                    <span style={{ color: theme.colors.muted, fontWeight: 600, opacity: 0.9 }}>({p.playerName})</span>
+                  </div>
+                </div>
+
+                <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                  Level {p.level} {p.class} • {p.species} • AC {p.ac}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
+                  <div style={{ width: 320 }}>
+                    <HPBar cur={p.hpCurrent} max={p.hpMax} />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <IconButton variant="ghost" onClick={() => props.onEditPlayer(p.id)} title="Edit">
+                  <IconPencil />
+                </IconButton>
+
+                <IconButton variant="ghost" onClick={() => props.onDeletePlayer(p.id)} title="Delete">
+                  <IconTrash />
+                </IconButton>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
