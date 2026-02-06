@@ -66,14 +66,14 @@ export function PlayersPanel(props: {
                 </div>
 
                 <div style={{ color: theme.colors.muted, fontSize: 13 }}>
-                  Level {p.level} {p.class} • {p.species} • AC {p.ac}
+                  Lvl {p.level} {p.species} {p.class}
                 </div>
               </div>
 
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
                   <div style={{ width: 320 }}>
-                    <HPBar cur={p.hpCurrent} max={p.hpMax} />
+                    <HPBar cur={p.hpCurrent} max={p.hpMax} ac={p.ac} />
                   </div>
                 </div>
               </div>

@@ -1,10 +1,11 @@
 import React from "react";
 import { theme } from "../../app/theme/theme";
 
-export function HPBar(props: { cur: number; max: number }) {
+export function HPBar(props: { cur: number; max: number; ac: number }) {
   const max = Math.max(1, Number(props.max) || 1);
   const curHP = Math.max(0, Number(props.cur) || 0);
   const pct = Math.max(0, Math.min(1, curHP / max));
+  const ac = Number(props.ac);
 
   return (
     <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
@@ -29,7 +30,7 @@ export function HPBar(props: { cur: number; max: number }) {
       </div>
 
       <div style={{ fontSize: 12, color: theme.colors.text, opacity: 0.85 }}>
-        HP {curHP}/{max}
+        AC {ac} - HP {curHP}/{max}
       </div>
     </div>
   );
