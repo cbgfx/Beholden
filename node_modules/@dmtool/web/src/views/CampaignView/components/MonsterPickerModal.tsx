@@ -51,7 +51,7 @@ function MonsterStatblock(props: { monster: any | null }) {
     arr?.length ? (
       <div style={{ display: "grid", gap: 8 }}>
         {arr.map((t: any, idx: number) => (
-          <div key={idx} style={{ padding: "8px 10px", borderRadius: 12, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.12)" }}>
+          <div key={idx} style={{ padding: "8px 10px", borderRadius: 12, border: `1px solid ${theme.colors.panelBorder}`, background: "rgb(4, 255, 0)" }}>
             <div style={{ color: theme.colors.text, fontWeight: 900 }}>{t.name ?? t.title ?? "—"}</div>
             <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 13 }}>{t.text ?? t.description ?? ""}</div>
           </div>
@@ -70,13 +70,13 @@ function MonsterStatblock(props: { monster: any | null }) {
 
       <div style={{ color: theme.colors.muted }}>{[type, alignment].filter(Boolean).join(" • ")}</div>
 
-      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.14)" }}>
+      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgb(0, 0, 0)" }}>
         <StatLine label="AC" value={ac ?? "—"} />
         <StatLine label="HP" value={hp ?? "—"} />
         <StatLine label="Speed" value={speed ?? "—"} />
       </div>
 
-      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0,0.14)" }}>
+      <div style={{ padding: 12, borderRadius: 14, border: `1px solid ${theme.colors.panelBorder}`, background: "rgba(0,0,0)" }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900, marginBottom: 8 }}>Abilities</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
           {[
@@ -138,7 +138,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           borderRadius: 10,
           textAlign: "center",
           border: `1px solid ${theme.colors.panelBorder}`,
-          background: "rgba(0,0,0,0.18)",
+          background: "rgb(0, 0, 0)",
           color: theme.colors.text,
           fontWeight: 900
         }}

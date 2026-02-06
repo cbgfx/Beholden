@@ -53,7 +53,7 @@ export function EncounterRosterPanel(props: {
 
   return (
     <Panel
-      title="Encounter roster"
+      title="Encounter Roster"
       actions={
         encounter ? (
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -106,9 +106,8 @@ export function EncounterRosterPanel(props: {
 
           {/* Add monsters */}
           <div style={{ display: "grid", gap: 10, paddingTop: 12, borderTop: `1px solid ${theme.colors.panelBorder}` }}>
-            <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Add monsters</div>
             <Button onClick={() => setPickerOpen(true)}>
-              <IconPlus /> Add from compendium
+              + Add Monster
             </Button>
           </div>
 
