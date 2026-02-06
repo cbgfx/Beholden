@@ -1,17 +1,45 @@
-
-import React from "react";
 import { theme } from "../app/theme/theme";
 import { Button } from "../components/ui/Button";
 
 export function HomeEmptyView(props: { onCreate: () => void }) {
   return (
-    <div style={{ marginTop: 80, maxWidth: 720 }}>
-      <div style={{ fontSize: 42, fontWeight: 1000, color: theme.colors.text }}>DM Tool LAN</div>
-      <div style={{ marginTop: 10, fontSize: 18, color: theme.colors.muted, lineHeight: 1.4 }}>
-        Create your first campaign to start building adventures, encounters, rosters, and notes.
-      </div>
-      <div style={{ marginTop: 24 }}>
-        <Button onClick={props.onCreate} style={{ padding: "12px 16px", fontSize: 16 }}>Create Campaign</Button>
+    /* This outer div handles the centering */
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      minHeight: '100vh', // Full viewport height
+      width: '100%',
+      textAlign: 'center' // Ensures text inside elements stays centered
+    }}>
+      
+      {/* Your original content (removed marginTop since we're centering vertically) */}
+      <div style={{ maxWidth: 720 }}>
+        
+        <div style={{ 
+          fontSize: 42, 
+          fontWeight: 1000, 
+          color: theme.colors.text, 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          gap: '20px' // Adds a little space between logo and text
+        }}>
+          <div><img src="../../public/beholden-logo.png" style={{ width: 220, height: 220 }} alt="Logo" /></div>
+          BEHOLDEN
+        </div>
+
+        <div style={{ marginTop: 10, fontSize: 18, color: theme.colors.muted, lineHeight: 1.4 }}>
+          Create your first campaign to start building adventures, encounters, rosters, and notes.
+        </div>
+
+        <div style={{ marginTop: 24 }}>
+          <Button onClick={props.onCreate} style={{ padding: "12px 16px", fontSize: 16 }}>
+            Create Campaign
+          </Button>
+        </div>
+
       </div>
     </div>
   );
