@@ -634,8 +634,6 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const monsterId = String(req.body?.monsterId ?? "");
   const qty = Math.min(Math.max(Number(req.body?.qty ?? 1), 1), 20);
   const friendly = Boolean(req.body?.friendly ?? false);
-  const labelBaseRaw = req.body?.labelBase != null ? String(req.body.labelBase) : "";
-  const labelBase = labelBaseRaw.trim();
 
   const m = compendiumState.monsters.find(x => x.id === monsterId);
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
@@ -643,11 +641,10 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const combat = ensureCombat(encounterId);
   const t = now();
   const baseName = m.name;
-  const baseLabel = labelBase || baseName;
-  let n = nextLabelNumber(encounterId, baseLabel);
+  let n = nextLabelNumber(encounterId, baseName);
   const created = [];
   for(let i=0;i<qty;i++){
-    const label = qty === 1 ? baseLabel : `${baseLabel} ${n++}`;
+    const label = qty === 1 ? baseName : `${baseName} ${n++}`;
     const c = {
       id: uid(),
       encounterId,
@@ -701,17 +698,20 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
 // Remove a single combatant from the encounter roster
 app.delete("/api/encounters/:encounterId/combatants/:combatantId", (req, res) => {
   const { encounterId, combatantId } = req.params;
-  const enc = state.encounters.find((e) => e.id === encounterId);
-  if (!enc) return res.status(404).json({ error: "Encounter not found" });
 
-  const idx = enc.combatants.findIndex((x) => x.id === combatantId);
+  // Combatants live under userData.combats (see ensureCombat). Deleting from encounters
+  // would be a no-op for monsters added via the compendium.
+  const combat = ensureCombat(encounterId);
+  const idx = combat.combatants.findIndex((x) => x.id === combatantId);
   if (idx < 0) return res.status(404).json({ error: "Combatant not found" });
 
-  enc.combatants.splice(idx, 1);
-  save();
+  combat.combatants.splice(idx, 1);
+  combat.updatedAt = now();
+  scheduleSave();
   broadcast("encounter:combatantsChanged", { encounterId });
   res.json({ ok: true });
 });
+
 
 
 /* Reorder (drag & drop) */
