@@ -150,8 +150,13 @@ function AppInner() {
     await refreshAdventure(state.selectedAdventureId);
   }
 
-  async function addMonster(monsterId: string, qty: number, opts?: { labelBase?: string; ac?: number; hpMax?: number }) {
+  async function addMonster(
+    monsterId: string,
+    qty: number,
+    opts?: { labelBase?: string; ac?: number; hpMax?: number }
+  ) {
     if (!state.selectedEncounterId) return;
+    const labelBase = opts?.labelBase;
     await api(`/api/encounters/${state.selectedEncounterId}/combatants/addMonster`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -159,7 +164,7 @@ function AppInner() {
         monsterId,
         qty,
         friendly: false,
-        labelBase: opts?.labelBase?.trim() || undefined,
+        labelBase: labelBase?.trim() || undefined,
         ac: opts?.ac,
         hpMax: opts?.hpMax
       })

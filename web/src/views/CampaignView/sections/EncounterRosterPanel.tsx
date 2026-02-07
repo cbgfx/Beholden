@@ -2,7 +2,7 @@ import React from "react";
 import { theme } from "../../../app/theme/theme";
 import { Button } from "../../../components/ui/Button";
 import { IconButton } from "../../../components/ui/IconButton";
-import { IconPencil, IconTrash } from "../../../components/ui/Icons";
+import { IconPlus, IconTrash } from "../../../components/ui/Icons";
 import { Panel } from "../../../components/ui/Panel";
 import { MonsterPickerModal, type CompendiumMonsterRow } from "../components/MonsterPickerModal";
 
@@ -25,7 +25,11 @@ export function EncounterRosterPanel(props: {
   compQ: string;
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
-  onAddMonster: (monsterId: string, qty: number, opts?: { labelBase?: string; ac?: number; hpMax?: number }) => void;
+  onAddMonster: (
+    monsterId: string,
+    qty: number,
+    opts?: { labelBase?: string; ac?: number; hpMax?: number }
+  ) => void;
 
   onAddAllPlayers: () => void;
   onOpenCombat: () => void;
@@ -56,7 +60,7 @@ export function EncounterRosterPanel(props: {
       title="Combat"
       actions={
         encounter ? (
-          <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <Button variant="ghost" onClick={props.onAddAllPlayers}>Add ALL players</Button>
             <Button variant="ghost" onClick={props.onOpenCombat}>Open Combat</Button>
           </div>
@@ -66,9 +70,9 @@ export function EncounterRosterPanel(props: {
       {!encounter ? (
         <div style={{ color: theme.colors.muted }}>Select an encounter to build the roster.</div>
       ) : (
-        <div style={{ display: "grid", gap: 5 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           {/* Roster list */}
-          <div style={{ display: "grid", gap: 5 }}>
+          <div style={{ display: "grid", gap: 8 }}>
             {combatantsVM.map((c) => (
               <div
                 key={c.id}
@@ -84,8 +88,8 @@ export function EncounterRosterPanel(props: {
                 }}
               >
                 <div>
-                  <div style={{ color: theme.colors.text, fontSize: 14, fontWeight: 900 }}>{c.label}</div>
-                  <div style={{ color: theme.colors.muted, fontSize: 10 }}>
+                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>{c.label}</div>
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
                     {c.friendly ? "Friendly" : c.kind === "player" ? "Player" : "Monster"}
                     {c.hpCurrent != null && c.hpMax != null ? ` • HP ${c.hpCurrent}/${c.hpMax}` : ""}
                   </div>
@@ -93,7 +97,7 @@ export function EncounterRosterPanel(props: {
 
                 <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                   <IconButton title="Edit" variant="ghost" onClick={() => props.onEditCombatant(c.id)}>
-                    <IconPencil />
+                    <span style={{ fontWeight: 900 }}>✎</span>
                   </IconButton>
                   <IconButton title="Remove" variant="ghost" onClick={() => props.onRemoveCombatant(c.id)}>
                     <IconTrash />
@@ -105,7 +109,7 @@ export function EncounterRosterPanel(props: {
           </div>
 
           {/* Add monsters */}
-          <div style={{ display: "grid", gap: 5, paddingTop: 12, borderTop: `1px solid ${theme.colors.panelBorder}` }}>
+          <div style={{ display: "grid", gap: 10, paddingTop: 12, borderTop: `1px solid ${theme.colors.panelBorder}` }}>
             <Button onClick={() => setPickerOpen(true)}>
               + Monster
             </Button>
