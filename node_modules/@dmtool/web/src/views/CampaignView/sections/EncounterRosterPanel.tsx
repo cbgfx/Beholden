@@ -63,7 +63,7 @@ export function EncounterRosterPanel(props: {
       title="Combat"
       actions={
         encounter ? (
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <Button variant="ghost" onClick={props.onAddAllPlayers}>Add ALL players</Button>
             <Button variant="ghost" onClick={props.onOpenCombat}>Open Combat</Button>
           </div>
@@ -73,7 +73,7 @@ export function EncounterRosterPanel(props: {
       {!encounter ? (
         <div style={{ color: theme.colors.muted }}>Select an encounter to build the roster.</div>
       ) : (
-        <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "grid", gap: 8 }}>
           {/* Roster list */}
           <div style={{ display: "grid", gap: 8 }}>
             {combatantsVM.map((c) => (
@@ -91,15 +91,15 @@ export function EncounterRosterPanel(props: {
                 }}
               >
                 <div>
-                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>
+                  <div style={{ color: theme.colors.text, fontWeight: 900, fontSize: 14 }}>
                     {c.label}
                     {c.kind === "monster" && c.baseName && c.baseName !== c.label ? (
-                      <span style={{ marginLeft: 8, fontWeight: 600, color: theme.colors.muted, fontSize: 12 }}>
+                      <span style={{ marginLeft: 8, fontWeight: 600, color: theme.colors.muted, fontSize: 11 }}>
                         ({c.baseName})
                       </span>
                     ) : null}
                   </div>
-                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                  <div style={{ color: theme.colors.muted, fontSize: 11 }}>
                     {c.friendly ? "Friendly" : c.kind === "player" ? "Player" : "Monster"}
                     {c.hpCurrent != null && c.hpMax != null ? ` • HP ${c.hpCurrent}/${c.hpMax}` : ""}
                   </div>

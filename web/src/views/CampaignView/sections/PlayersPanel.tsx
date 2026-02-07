@@ -61,7 +61,7 @@ export function PlayersPanel(props: {
                     }}
                   >
                     {p.characterName}{" "}
-                    <span style={{ color: theme.colors.muted, fontWeight: 600, opacity: 0.9 }}>({p.playerName})</span>
+                    <span style={{ color: theme.colors.muted, fontWeight: 600, opacity: 0.9, fontSize: 11 }}>({p.playerName})</span>
                   </div>
                 </div>
 
