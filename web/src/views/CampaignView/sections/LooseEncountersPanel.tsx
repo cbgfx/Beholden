@@ -20,7 +20,7 @@ export function LooseEncountersPanel(props: {
     <Panel
       title={
         <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-          <IconEncounter /> Single Encounters ({encounters.length})
+          <IconEncounter /> Lone Encounters ({encounters.length})
         </span>
       }
       actions={

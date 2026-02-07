@@ -3,6 +3,7 @@ export const theme = {
   colors: {
     bg: "#2e4057",
     accent: "#eca72c",
+    selected: "#2b2f779b",
     text: "#ffffff",
     muted: "rgba(255,255,255,0.72)",
     panelBg: "rgba(255,255,255,0.06)",

@@ -93,11 +93,6 @@ export function DrawerHost(props: {
 
   const close = () => dispatch({ type: "closeDrawer" });
 
-  const sanitizeInt = React.useCallback((s: string) => {
-    const out = String(s ?? "").replace(/[^0-9]/g, "");
-    return out.replace(/^0+(\d)/, "$1");
-  }, []);
-
   const title = useMemo(() => (d ? getDrawerTitle(d) : ""), [d]);
   const isNameDrawer = !!d && NAME_DRAWER_TYPES.has(d.type);
   const isNoteDrawer = !!d && NOTE_DRAWER_TYPES.has(d.type);
@@ -441,10 +436,6 @@ export function DrawerHost(props: {
     });
   })();
 
-  const editingCombatant = d.type === "editCombatant"
-    ? state.combatants.find((c) => c.id === d.combatantId) ?? null
-    : null;
-
   async function openMonsterSpell(name: string) {
     setSpellOpen(true);
     setSpellLoading(true);
@@ -566,40 +557,18 @@ export function DrawerHost(props: {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
-              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>
-                AC{editingCombatant?.acDetails ? ` (${editingCombatant.acDetails})` : ""}
-              </div>
-              <Input
-                type="text"
-                inputMode="numeric"
-                value={combatantAc}
-                onChange={(e) => setCombatantAc(sanitizeInt(e.target.value))}
-                placeholder="10"
-              />
+              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>AC</div>
+              <Input value={combatantAc} onChange={(e) => setCombatantAc(e.target.value)} placeholder="10" />
             </div>
             <div>
-              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>
-                Max HP{editingCombatant?.hpDetails ? ` (${editingCombatant.hpDetails})` : ""}
-              </div>
-              <Input
-                type="text"
-                inputMode="numeric"
-                value={combatantHpMax}
-                onChange={(e) => setCombatantHpMax(sanitizeInt(e.target.value))}
-                placeholder="10"
-              />
+              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Max HP</div>
+              <Input value={combatantHpMax} onChange={(e) => setCombatantHpMax(e.target.value)} placeholder="10" />
             </div>
           </div>
 
           <div>
             <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Current HP</div>
-            <Input
-              type="text"
-              inputMode="numeric"
-              value={combatantHpCur}
-              onChange={(e) => setCombatantHpCur(sanitizeInt(e.target.value))}
-              placeholder="10"
-            />
+            <Input value={combatantHpCur} onChange={(e) => setCombatantHpCur(e.target.value)} placeholder="10" />
           </div>
 
           <label style={{ color: theme.colors.text, display: "flex", gap: 10, alignItems: "center" }}>
