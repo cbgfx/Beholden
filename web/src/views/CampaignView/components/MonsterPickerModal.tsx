@@ -17,7 +17,7 @@ export type CompendiumMonsterRow = {
 
 function StatLine(props: { label: string; value: React.ReactNode }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 10, padding: "6px 0" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 5, padding: "6px 0" }}>
       <div style={{ color: theme.colors.muted, fontWeight: 700 }}>{props.label}</div>
       <div style={{ color: theme.colors.text }}>{props.value}</div>
     </div>
@@ -235,7 +235,7 @@ function MonsterStatblock(props: { monster: any | null }) {
 
   const renderNamed = (arr: any[]) =>
     arr?.length ? (
-      <div style={{ display: "grid", gap: 8 }}>
+      <div style={{ display: "grid", gap: 4 }}>
         {arr.map((t: any, idx: number) => (
           <div
             key={idx}
@@ -278,9 +278,9 @@ function MonsterStatblock(props: { monster: any | null }) {
   }, [spellNames, spellMetaByName, slotsByLevel]);
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+    <div style={{ display: "grid", gap: 6 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 5 }}>
+        <div style={{ fontSize: 14, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
         <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
@@ -308,7 +308,7 @@ function MonsterStatblock(props: { monster: any | null }) {
         }}
       >
         <div style={{ color: theme.colors.accent, fontWeight: 900, marginBottom: 8 }}>Abilities</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 4 }}>
           {[
             ["STR", str],
             ["DEX", dex],
@@ -335,15 +335,15 @@ function MonsterStatblock(props: { monster: any | null }) {
       </div>
 
       {spellNames.length || spellTraits.length || spellActions.length ? (
-        <div style={{ display: "grid", gap: 10 }}>
+        <div style={{ display: "grid", gap: 5 }}>
           <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Spells</div>
 
           {groupedSpells.length ? (
-            <div style={{ display: "grid", gap: 10 }}>
+            <div style={{ display: "grid", gap: 5 }}>
               {groupedSpells.map((g) => (
-                <div key={g.level} style={{ display: "grid", gap: 8 }}>
+                <div key={g.level} style={{ display: "grid", gap: 4 }}>
                   <div style={{ color: theme.colors.muted, fontWeight: 900, fontSize: 12 }}>{g.title}</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                     {g.spells.map((s) => (
                       <button
                         key={`${g.level}_${s.key}`}
@@ -384,8 +384,8 @@ function MonsterStatblock(props: { monster: any | null }) {
               ) : spellError ? (
                 <div style={{ color: theme.colors.danger, fontWeight: 800 }}>{spellError}</div>
               ) : spellDetail ? (
-                <div style={{ display: "grid", gap: 8 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline" }}>
+                <div style={{ display: "grid", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 5, alignItems: "baseline" }}>
                     <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                       {(Number(spellDetail.level) === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`)}
@@ -420,18 +420,18 @@ function MonsterStatblock(props: { monster: any | null }) {
         </div>
       ) : null}
 
-      <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ display: "grid", gap: 5 }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Traits</div>
         {renderNamed(nonSpellTraits)}
       </div>
 
-      <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ display: "grid", gap: 5 }}>
         <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Actions</div>
         {renderNamed(nonSpellActions)}
       </div>
 
       {Array.isArray(legendary) && legendary.length ? (
-        <div style={{ display: "grid", gap: 10 }}>
+        <div style={{ display: "grid", gap: 5 }}>
           <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Legendary</div>
           {renderNamed(legendary)}
         </div>
@@ -556,7 +556,7 @@ export function MonsterPickerModal(props: {
       isOpen={props.isOpen}
       onClose={props.onClose}
       title={
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 5 }}>
           <div style={{ fontWeight: 900 }}>Add monsters</div>
           <IconButton title="Close" variant="ghost" onClick={props.onClose}>
             <IconClose />
@@ -566,14 +566,14 @@ export function MonsterPickerModal(props: {
       width={1100}
     >
       {/* IMPORTANT: constrain height so inner panes can scroll */}
-      <div style={{ height: "70vh", minHeight: 520, overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "420px 1fr", gap: 14, height: "100%", minHeight: 0 }}>
+      <div style={{ height: "70vh", fontSize: 12, lineHeight: "16px", minHeight: 520, overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "420px 1fr", gap: 7, height: "100%", minHeight: 0 }}>
           {/* Left: list */}
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 10,
+              gap: 5,
               borderRight: `1px solid ${theme.colors.panelBorder}`,
               paddingRight: 14,
               minHeight: 0
@@ -598,7 +598,7 @@ export function MonsterPickerModal(props: {
                       cursor: "pointer",
                       display: "grid",
                       gridTemplateColumns: "1fr auto",
-                      gap: 10,
+                      gap: 5,
                       alignItems: "center"
                     }}
                   >
@@ -611,7 +611,7 @@ export function MonsterPickerModal(props: {
                       </div>
                     </div>
 
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                       <QtyStepper value={qty} onChange={(n) => setQtyById((prev) => ({ ...prev, [m.id]: n }))} />
                       <Button
                         onClick={(e) => {
@@ -654,7 +654,7 @@ export function MonsterPickerModal(props: {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, paddingBottom: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, paddingBottom: 10 }}>
               <div>
                 <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>AC</div>
                 <Input
