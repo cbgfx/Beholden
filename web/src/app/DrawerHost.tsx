@@ -149,6 +149,10 @@ export function DrawerHost(props: {
         if (c) {
           setLabel(String(c.label));
           setFriendly(Boolean(c.friendly));
+          // Instance stats
+          setAc(String(c.ac ?? ""));
+          setHpMax(String(c.hpMax ?? ""));
+          setHpCur(String(c.hpCurrent ?? ""));
         }
         break;
       }
@@ -280,7 +284,16 @@ export function DrawerHost(props: {
         }
         case "editCombatant": {
           const eid = d.encounterId;
-          await api(`/api/encounters/${eid}/combatants/${d.combatantId}`, jsonInit("PUT", { label, friendly }));
+          await api(
+            `/api/encounters/${eid}/combatants/${d.combatantId}`,
+            jsonInit("PUT", {
+              label,
+              friendly,
+              ac: ac === "" ? undefined : Number(ac),
+              hpMax: hpMax === "" ? undefined : Number(hpMax),
+              hpCurrent: hpCur === "" ? undefined : Number(hpCur)
+            })
+          );
           await props.refreshEncounter(eid);
           close();
           return;
@@ -387,6 +400,22 @@ export function DrawerHost(props: {
           <div>
             <div style={{ color: theme.colors.muted, marginBottom: 8 }}>Label (instance only)</div>
             <Input value={label} onChange={(e) => setLabel(e.target.value)} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div>
+              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>AC</div>
+              <Input value={ac} onChange={(e) => setAc(e.target.value)} />
+            </div>
+            <div>
+              <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Max HP</div>
+              <Input value={hpMax} onChange={(e) => setHpMax(e.target.value)} />
+            </div>
+          </div>
+
+          <div>
+            <div style={{ color: theme.colors.muted, marginBottom: 6 }}>Current HP</div>
+            <Input value={hpCur} onChange={(e) => setHpCur(e.target.value)} />
           </div>
 
           <label style={{ color: theme.colors.text, display: "flex", gap: 10, alignItems: "center" }}>

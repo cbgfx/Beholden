@@ -28,14 +28,14 @@
     }
   },
   "encounters": {
-    "bde9ce9a-489e-46ee-908c-f929cbcb9185": {
-      "id": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+    "d86a65a2-cba6-4c94-bd29-34dec0aef6f7": {
+      "id": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
       "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
-      "name": "Encounter 1",
-      "status": "open",
-      "createdAt": 1770348592131,
-      "updatedAt": 1770348592131
+      "name": "Fight Cliub",
+      "status": "Open",
+      "createdAt": 1770490488182,
+      "updatedAt": 1770490488182
     }
   },
   "notes": {
@@ -53,11 +53,11 @@
       "id": "249f204f-91ba-44e3-a1c0-98c2a65391b1",
       "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "adventureId": null,
-      "title": "JAbroni Notes",
+      "title": "Jabroni Notes",
       "text": "Ipsum Slutty",
       "sort": 1,
       "createdAt": 1770343988897,
-      "updatedAt": 1770343992783
+      "updatedAt": 1770490274224
     },
     "108e1d09-8f2e-4774-8500-a295a742a542": {
       "id": "108e1d09-8f2e-4774-8500-a295a742a542",
@@ -329,16 +329,16 @@
     }
   },
   "combats": {
-    "bde9ce9a-489e-46ee-908c-f929cbcb9185": {
-      "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+    "d86a65a2-cba6-4c94-bd29-34dec0aef6f7": {
+      "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
       "round": 1,
       "activeIndex": 0,
-      "createdAt": 1770348592131,
-      "updatedAt": 1770488149676,
+      "createdAt": 1770490488182,
+      "updatedAt": 1770495812623,
       "combatants": [
         {
-          "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
           "baseType": "player",
           "baseId": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
           "name": "Torin Sigurdsen",
@@ -346,16 +346,16 @@
           "friendly": true,
           "color": "green",
           "overrides": null,
-          "hpCurrent": 25,
+          "hpCurrent": 22,
           "hpMax": 35,
           "ac": 30,
           "conditions": [],
-          "createdAt": 1770348596458,
-          "updatedAt": 1770348596458
+          "createdAt": 1770490493664,
+          "updatedAt": 1770490596326
         },
         {
-          "id": "f6e02080-cc3d-4fe6-b48b-09a75dd5f817",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "id": "96a85c77-dc37-4b94-b260-e69d10c870c3",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
           "baseType": "player",
           "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
           "name": "Diego Diego",
@@ -363,46 +363,63 @@
           "friendly": true,
           "color": "green",
           "overrides": null,
-          "hpCurrent": 22,
-          "hpMax": 22,
+          "hpCurrent": 7,
+          "hpMax": 20,
           "ac": 18,
           "conditions": [],
-          "createdAt": 1770412527634,
-          "updatedAt": 1770412527634
+          "createdAt": 1770490493664,
+          "updatedAt": 1770490493664
         },
         {
-          "id": "174f3e50-35a8-4796-b64a-25fde84d4caa",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "id": "27f85bee-76ed-421d-b043-82e4de5c8e70",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
           "baseType": "monster",
           "baseId": "m_acolyte",
           "name": "Acolyte",
-          "label": "Spencer",
-          "friendly": false,
-          "color": "red",
-          "overrides": null,
-          "hpCurrent": 9,
-          "hpMax": 9,
-          "ac": 12,
-          "conditions": [],
-          "createdAt": 1770487694241,
-          "updatedAt": 1770487694241
-        },
-        {
-          "id": "c80b9cce-e073-4150-9811-910e05d2a9a9",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
-          "baseType": "monster",
-          "baseId": "m_thug",
-          "name": "Thug",
-          "label": "Thug 1",
+          "label": "Spell Dick 1",
           "friendly": false,
           "color": "red",
           "overrides": null,
           "hpCurrent": 25,
           "hpMax": 25,
-          "ac": 16,
+          "ac": 10,
           "conditions": [],
-          "createdAt": 1770488142705,
-          "updatedAt": 1770488142705
+          "createdAt": 1770490571273,
+          "updatedAt": 1770495754217
+        },
+        {
+          "id": "f9b02138-8b0e-4916-b5ee-8bed7b68b2a6",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+          "baseType": "monster",
+          "baseId": "m_acolyte",
+          "name": "Acolyte",
+          "label": "Spell Dick 2",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": 25,
+          "hpMax": 25,
+          "ac": 10,
+          "conditions": [],
+          "createdAt": 1770490571273,
+          "updatedAt": 1770495765821
+        },
+        {
+          "id": "5b56991b-38f9-4059-b7a7-c0d12718f1ed",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+          "baseType": "monster",
+          "baseId": "m_adult copper dragon",
+          "name": "Adult Copper Dragon",
+          "label": "Adult Copper Dragon",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770495812623,
+          "updatedAt": 1770495812623
         }
       ]
     }

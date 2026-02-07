@@ -586,7 +586,7 @@ app.post("/api/adventures/:adventureId/encounters", (req,res)=>{
   const name = (req.body?.name ?? "").toString().trim() || "New Encounter";
   const id = uid();
   const t = now();
-  userData.encounters[id] = { id, campaignId: adv.campaignId, adventureId, name, status:"open", createdAt:t, updatedAt:t };
+  userData.encounters[id] = { id, campaignId: adv.campaignId, adventureId, name, status:"Open", createdAt:t, updatedAt:t };
   ensureCombat(id);
   scheduleSave();
   broadcast("encounters:changed", { campaignId: adv.campaignId, adventureId });
@@ -607,7 +607,7 @@ app.post("/api/campaigns/:campaignId/encounters", (req,res)=>{
   const name = (req.body?.name ?? "").toString().trim() || "Loose Encounter";
   const id = uid();
   const t = now();
-  userData.encounters[id] = { id, campaignId, adventureId:null, name, status:"open", createdAt:t, updatedAt:t };
+  userData.encounters[id] = { id, campaignId, adventureId:null, name, status:"Open", createdAt:t, updatedAt:t };
   ensureCombat(id);
   scheduleSave();
   broadcast("encounters:changed", { campaignId, adventureId:null });

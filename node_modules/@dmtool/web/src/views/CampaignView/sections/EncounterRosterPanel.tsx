@@ -10,6 +10,8 @@ type CombatantVM = {
   id: string;
   label: string;
   kind: "player" | "monster";
+  // For monsters, the compendium base name (stored on the combatant at creation time)
+  baseName?: string;
   friendly?: boolean;
   hpMax?: number;
   hpCurrent?: number;
@@ -46,6 +48,7 @@ export function EncounterRosterPanel(props: {
         id: String(c.id),
         label: c.label ?? c.characterName ?? c.name ?? "Combatant",
         kind,
+        baseName: kind === "monster" ? (c.name ?? undefined) : undefined,
         friendly: Boolean(c.friendly),
         hpMax: typeof c.hpMax === "number" ? c.hpMax : undefined,
         hpCurrent: typeof c.hpCurrent === "number" ? c.hpCurrent : undefined
@@ -88,7 +91,14 @@ export function EncounterRosterPanel(props: {
                 }}
               >
                 <div>
-                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>{c.label}</div>
+                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>
+                    {c.label}
+                    {c.kind === "monster" && c.baseName && c.baseName !== c.label ? (
+                      <span style={{ marginLeft: 8, fontWeight: 600, color: theme.colors.muted, fontSize: 12 }}>
+                        ({c.baseName})
+                      </span>
+                    ) : null}
+                  </div>
                   <div style={{ color: theme.colors.muted, fontSize: 13 }}>
                     {c.friendly ? "Friendly" : c.kind === "player" ? "Player" : "Monster"}
                     {c.hpCurrent != null && c.hpMax != null ? ` • HP ${c.hpCurrent}/${c.hpMax}` : ""}
