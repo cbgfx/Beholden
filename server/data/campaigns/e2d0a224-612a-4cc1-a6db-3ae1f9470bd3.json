@@ -114,11 +114,11 @@
       "class": "Cleric",
       "species": "Human",
       "hpMax": 20,
-      "hpCurrent": 12,
+      "hpCurrent": 7,
       "ac": 18,
       "color": "green",
       "createdAt": 1770349362656,
-      "updatedAt": 1770487307288
+      "updatedAt": 1770488846077
     }
   },
   "inpcs": {},
