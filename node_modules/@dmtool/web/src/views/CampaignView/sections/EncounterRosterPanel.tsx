@@ -25,7 +25,7 @@ export function EncounterRosterPanel(props: {
   compQ: string;
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
-  onAddMonster: (monsterId: string, qty: number, labelBase?: string) => void;
+  onAddMonster: (monsterId: string, qty: number, opts?: { labelBase?: string; ac?: number; hpMax?: number }) => void;
 
   onAddAllPlayers: () => void;
   onOpenCombat: () => void;
@@ -117,7 +117,7 @@ export function EncounterRosterPanel(props: {
             compQ={props.compQ}
             onChangeCompQ={props.onChangeCompQ}
             compRows={props.compRows}
-            onAddMonster={(id, qty, labelBase) => props.onAddMonster(id, qty, labelBase)}
+            onAddMonster={(id, qty, opts) => props.onAddMonster(id, qty, opts)}
           />
         </div>
       )}

@@ -236,18 +236,23 @@ function loadCompendium(){
   });
 
   compendiumState.spells = (raw.spells ?? []).map((s) => {
+    // Spell identity must NOT collapse variants like "Aid" vs "Aid [2024]".
+    // Use the full display name for id/nameKey. The bracket-stripped name is stored separately
+    // for loose searching only.
     const displayName = (s?.name ?? "Unknown").toString().trim();
-    const normalizedName = displayName.replace(/\s*\[[^\]]+\]\s*$/,"").trim() || displayName;
-    const nameKey = normalizeKey(s?.name_key ?? s?.nameKey ?? normalizedName);
-    const id = s?.id ?? `s_${nameKey.replace(/\s/g,"_")}`;
+    const fullKey = normalizeKey(s?.name_key ?? s?.nameKey ?? displayName);
+    const id = s?.id ?? `s_${fullKey.replace(/\s/g,"_")}`;
+
+    const baseName = displayName.replace(/\s*\[[^\]]+\]\s*$/,"").trim() || displayName;
+    const baseKey = normalizeKey(baseName);
 
     const texts = Array.isArray(s?.text) ? s.text : (s?.text != null ? [s.text] : []);
     return {
       id,
       name: displayName,
-      nameKey,
-      normalizedName,
-      normalizedKey: normalizeKey(normalizedName),
+      nameKey: fullKey,
+      baseName,
+      baseKey,
       level: s?.level != null ? Number(s.level) : null,
       school: s?.school ?? null,
       time: s?.time ?? null,
@@ -766,20 +771,36 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const { encounterId } = req.params;
   const encounter = userData.encounters[encounterId];
   if(!encounter) return res.status(404).json({ ok:false, message:"Encounter not found" });
+
   const monsterId = String(req.body?.monsterId ?? "");
   const qty = Math.min(Math.max(Number(req.body?.qty ?? 1), 1), 20);
   const friendly = Boolean(req.body?.friendly ?? false);
 
+  const labelBaseRaw = req.body?.labelBase;
+  const labelBase = labelBaseRaw != null ? String(labelBaseRaw).trim() : "";
+  const acOverride = req.body?.ac != null ? Number(req.body.ac) : null;
+  const hpMaxOverride = req.body?.hpMax != null ? Number(req.body.hpMax) : null;
+
   const m = compendiumState.monsters.find(x => x.id === monsterId);
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
 
+  const r = m.raw_json ?? {};
+  const defaultAc = r?.ac?.value ?? r?.ac ?? null;
+  const defaultHp = r?.hp?.average ?? r?.hp ?? null;
+
   const combat = ensureCombat(encounterId);
   const t = now();
+
   const baseName = m.name;
-  let n = nextLabelNumber(encounterId, baseName);
+  const effectiveLabelBase = labelBase || baseName;
+  let n = nextLabelNumber(encounterId, effectiveLabelBase);
+
   const created = [];
   for(let i=0;i<qty;i++){
-    const label = qty === 1 ? baseName : `${baseName} ${n++}`;
+    const label = qty === 1 ? effectiveLabelBase : `${effectiveLabelBase} ${n++}`;
+    const hpMax = (hpMaxOverride != null && Number.isFinite(hpMaxOverride)) ? hpMaxOverride : (defaultHp != null ? Number(defaultHp) : null);
+    const ac = (acOverride != null && Number.isFinite(acOverride)) ? acOverride : (defaultAc != null ? Number(defaultAc) : null);
+
     const c = {
       id: uid(),
       encounterId,
@@ -790,9 +811,9 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       friendly,
       color: friendly ? "lightgreen" : "red",
       overrides: null,
-      hpCurrent: null,
-      hpMax: null,
-      ac: null,
+      hpCurrent: hpMax,
+      hpMax,
+      ac,
       conditions: [],
       createdAt: t,
       updatedAt: t
@@ -800,10 +821,13 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
     combat.combatants.push(c);
     created.push(c);
   }
+
   combat.updatedAt = t;
   scheduleSave();
   broadcast("encounter:combatantsChanged", { encounterId });
   res.json({ ok:true, created });
+});
+
 });
 
 app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
@@ -938,8 +962,9 @@ app.get("/api/spells/search", (req,res)=>{
   const out = [];
   for(const s of compendiumState.spells){
     if(q){
-      const hay = `${s.name} ${s.normalizedName ?? ""}`.toLowerCase();
-      if(!hay.includes(q) && !String(s.nameKey ?? "").includes(q)) continue;
+      const hay = `${s.name} ${s.baseName ?? ""}`.toLowerCase();
+      const keyHay = `${s.nameKey ?? ""} ${s.baseKey ?? ""}`;
+      if(!hay.includes(q) && !String(keyHay).includes(q)) continue;
     }
     out.push({ id: s.id, name: s.name, level: s.level, school: s.school, time: s.time });
     if(out.length >= limit) break;
@@ -1001,9 +1026,11 @@ app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{
 const incomingSpells = [];
 for (const s of spells){
   const displayName = String(s?.name ?? "Unknown").trim();
+  // Identity is based on the full display name so we don't collapse variants like "Aid" vs "Aid [2024]".
+  const fullKey = normalizeKey(displayName);
   const normalizedName = displayName.replace(/\s*\[[^\]]+\]\s*$/,"").trim() || displayName;
-  const nameKey = normalizeKey(normalizedName);
-  const id = `s_${nameKey.replace(/\s/g,"_")}`;
+  const baseKey = normalizeKey(normalizedName);
+  const id = `s_${fullKey.replace(/\s/g,"_")}`;
 
   const level = s?.level != null ? Number(String(s.level).replace(/[^0-9]/g, "")) : null;
   const texts = asArray(s?.text).map((t)=> (t==null?"":String(t)).trim()).filter((t)=>t.length>0);
@@ -1011,7 +1038,8 @@ for (const s of spells){
   incomingSpells.push({
     id,
     name: displayName,
-    name_key: nameKey,
+    name_key: fullKey,
+    base_key: baseKey,
     level: Number.isFinite(level) ? level : null,
     school: s?.school ?? null,
     time: s?.time ?? null,
@@ -1028,8 +1056,8 @@ const current = loadJson(COMPENDIUM_PATH, { version: 2, monsters: [], spells: []
   const mapMon = new Map((current.monsters ?? []).map((m) => [normalizeKey(m.name_key ?? m.nameKey ?? m.name), m]));
   for (const m of incoming) mapMon.set(m.name_key, m);
 
-  const mapSp = new Map((current.spells ?? []).map((s) => [normalizeKey(s.name_key ?? s.nameKey ?? s.name), s]));
-  for (const s of incomingSpells) mapSp.set(s.name_key, s);
+  const mapSp = new Map((current.spells ?? []).map((s) => [String(s.id ?? ''), s]));
+  for (const s of incomingSpells) mapSp.set(String(s.id), s);
 
   const merged = { version: 2, monsters: Array.from(mapMon.values()), spells: Array.from(mapSp.values()) };
   saveJsonAtomic(COMPENDIUM_PATH, merged);

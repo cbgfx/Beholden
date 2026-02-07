@@ -28,20 +28,35 @@ function MonsterStatblock(props: { monster: any | null }) {
   const m = props.monster;
   if (!m) return <div style={{ color: theme.colors.muted }}>Select a monster to preview its stats.</div>;
 
+  const titleCaseSpell = React.useCallback((s: string) => {
+    // Title-case words but preserve bracket segments like "Aid [2024]".
+    return String(s ?? "")
+      .split(/\s+/)
+      .map((w) => {
+        if (!w) return w;
+        // Keep pure bracket tokens as-is.
+        if (/^\[[^\]]+\]$/.test(w)) return w;
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      })
+      .join(" ");
+  }, []);
+
   const normalizeSpellName = React.useCallback((name: string) => {
-    // Keep display text intact elsewhere; normalization is only for matching.
-    const base = name
-      .replace(/\[[^\]]+\]\s*$/g, "")
+    // IMPORTANT: do NOT strip bracket suffixes like "[2024]" (variants must remain distinct).
+    // Only remove trailing parenthetical notes and normalize whitespace/case.
+    const base = String(name ?? "")
       .replace(/\([^\)]*\)\s*$/g, "")
+      .replace(/[\.,;]+$/g, "")
       .trim()
       .toLowerCase();
     return base.replace(/\s+/g, " ");
   }, []);
 
-  const extractSpellNames = React.useCallback(
+  const extractSpellGroups = React.useCallback(
     (text: string) => {
-      if (!text) return [] as string[];
-      const out: string[] = [];
+      if (!text) return [] as { header: string; spells: string[] }[];
+
+      const groups: { header: string; spells: string[] }[] = [];
       const lines = text
         .split(/\r?\n/)
         .map((l) => l.trim())
@@ -49,36 +64,47 @@ function MonsterStatblock(props: { monster: any | null }) {
         .filter((l) => !/^source:/i.test(l));
 
       for (const line of lines) {
-        // Typical patterns: "Cantrips (at will): light, sacred flame" or "1st level (3 slots): bless, cure wounds"
         const idx = line.indexOf(":");
         if (idx === -1) continue;
+
+        const lhs = line.slice(0, idx).trim();
         const rhs = line.slice(idx + 1).trim();
         if (!rhs) continue;
+
+        const header = titleCaseSpell(lhs)
+          .replace(/^L0\b/i, "Cantrip")
+          .replace(/^0\s*level\b/i, "Cantrip");
+
         const parts = rhs.split(/[,;]/g);
+        const spells: string[] = [];
         for (let p of parts) {
           p = p
             .replace(/^and\s+/i, "")
             .replace(/\.$/, "")
             .trim();
           if (!p) continue;
-          // Ignore non-spell tokens that can appear in some compendiums.
           if (/^\(?at\s*will\)?$/i.test(p)) continue;
-          out.push(p);
+          // Strip trailing parenthetical notes like "(self only)" but keep bracket variants.
+          p = p.replace(/\([^\)]*\)\s*$/g, "").trim();
+          spells.push(titleCaseSpell(p));
         }
+        if (spells.length) groups.push({ header, spells });
       }
 
-      // Deduplicate by normalized name but keep the first display form.
-      const seen = new Set<string>();
-      const dedup: string[] = [];
-      for (const n of out) {
-        const key = normalizeSpellName(n);
-        if (!key || seen.has(key)) continue;
-        seen.add(key);
-        dedup.push(n);
-      }
-      return dedup;
+      // De-dupe within each group.
+      return groups.map((g) => {
+        const seen = new Set<string>();
+        const out: string[] = [];
+        for (const s of g.spells) {
+          const key = normalizeSpellName(s);
+          if (!key || seen.has(key)) continue;
+          seen.add(key);
+          out.push(s);
+        }
+        return { header: g.header, spells: out };
+      });
     },
-    [normalizeSpellName]
+    [normalizeSpellName, titleCaseSpell]
   );
 
   const [spellOpen, setSpellOpen] = React.useState(false);
@@ -132,7 +158,7 @@ function MonsterStatblock(props: { monster: any | null }) {
     .map((x: any) => String(x?.text ?? x?.description ?? ""))
     .filter(Boolean)
     .join("\n");
-  const spellNames = extractSpellNames(spellTextCombined);
+  const spellGroups = extractSpellGroups(spellTextCombined);
 
   async function openSpellByName(name: string) {
     setSpellOpen(true);
@@ -142,11 +168,25 @@ function MonsterStatblock(props: { monster: any | null }) {
 
     try {
       const q = encodeURIComponent(name);
-      const results = await api<any[]>(`/api/spells/search?q=${q}&limit=20`);
+      const results = await api<any[]>(`/api/spells/search?q=${q}&limit=40`);
       const want = normalizeSpellName(name);
-      const best =
-        results.find((r) => normalizeSpellName(String(r?.name ?? "")) === want) ??
-        results[0];
+      const wantHasBracket = /\[[^\]]+\]\s*$/.test(String(name));
+
+      // Prefer exact match by normalized name.
+      let best = results.find((r) => normalizeSpellName(String(r?.name ?? "")) === want);
+
+      // If the clicked name does NOT have a bracket suffix, avoid "Aid" -> "Aid [2024]" confusion
+      // when a plain version exists.
+      if (!best && !wantHasBracket) {
+        best = results.find((r) => {
+          const rn = String(r?.name ?? "");
+          if (/\[[^\]]+\]\s*$/.test(rn)) return false;
+          return normalizeSpellName(rn) === want;
+        });
+      }
+
+      // Last resort: if we only have a bracketed variant, pick it.
+      if (!best) best = results[0];
 
       if (!best?.id) {
         setSpellError("Spell not found in compendium.");
@@ -247,26 +287,33 @@ function MonsterStatblock(props: { monster: any | null }) {
         <div style={{ display: "grid", gap: 10 }}>
           <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Spells</div>
 
-          {spellNames.length ? (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {spellNames.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => openSpellByName(n)}
-                  style={{
-                    border: `1px solid ${theme.colors.panelBorder}`,
-                    background: "rgba(0,0,0,0.14)",
-                    color: theme.colors.text,
-                    padding: "6px 10px",
-                    borderRadius: 999,
-                    fontWeight: 800,
-                    cursor: "pointer"
-                  }}
-                  title="Open spell"
-                >
-                  {n}
-                </button>
+          {spellGroups.length ? (
+            <div style={{ display: "grid", gap: 10 }}>
+              {spellGroups.map((g, i) => (
+                <div key={`${g.header}_${i}`} style={{ display: "grid", gap: 6 }}>
+                  <div style={{ color: theme.colors.muted, fontWeight: 900 }}>{g.header}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {g.spells.map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => openSpellByName(n)}
+                        style={{
+                          border: `1px solid ${theme.colors.panelBorder}`,
+                          background: "rgba(0,0,0,0.14)",
+                          color: theme.colors.text,
+                          padding: "6px 10px",
+                          borderRadius: 999,
+                          fontWeight: 800,
+                          cursor: "pointer"
+                        }}
+                        title="Open spell"
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           ) : null}
@@ -290,7 +337,8 @@ function MonsterStatblock(props: { monster: any | null }) {
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline" }}>
                     <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
-                      L{spellDetail.level ?? "?"}{spellDetail.school ? ` • ${spellDetail.school}` : ""}
+                      {spellDetail.level === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`}
+                      {spellDetail.school ? ` • ${spellDetail.school}` : ""}
                     </div>
                   </div>
 
@@ -396,13 +444,14 @@ export function MonsterPickerModal(props: {
   onChangeCompQ: (q: string) => void;
   compRows: CompendiumMonsterRow[];
 
-  // labelBase is optional so this modal can be dropped into older code without breakage.
-  onAddMonster: (monsterId: string, qty: number, labelBase?: string) => void;
+  onAddMonster: (monsterId: string, qty: number, opts?: { labelBase?: string; ac?: number; hpMax?: number }) => void;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
   const [monster, setMonster] = React.useState<any | null>(null);
   const [qtyById, setQtyById] = React.useState<Record<string, number>>({});
   const [labelById, setLabelById] = React.useState<Record<string, string>>({});
+  const [acById, setAcById] = React.useState<Record<string, string>>({});
+  const [hpById, setHpById] = React.useState<Record<string, string>>({});
 
   // When opening, select the first result (if any) for instant stat preview.
   React.useEffect(() => {
@@ -432,7 +481,22 @@ export function MonsterPickerModal(props: {
       }
       try {
         const m = await api<any>(`/api/compendium/monsters/${selectedMonsterId}`);
-        if (!cancelled) setMonster(m);
+        if (!cancelled) {
+          setMonster(m);
+
+          // Seed default AC/HP overrides (editable) on first load for this monster.
+          const acRaw = m?.ac?.value ?? m?.ac ?? m?.armor_class;
+          const hpRaw = m?.hp?.average ?? m?.hp ?? m?.hit_points;
+          const acNum = typeof acRaw === "number" ? acRaw : Number(String(acRaw ?? "").match(/\d+/)?.[0]);
+          const hpNum = typeof hpRaw === "number" ? hpRaw : Number(String(hpRaw ?? "").match(/\d+/)?.[0]);
+
+          if (selectedMonsterId && acById[selectedMonsterId] == null && Number.isFinite(acNum)) {
+            setAcById((prev) => ({ ...prev, [selectedMonsterId]: String(acNum) }));
+          }
+          if (selectedMonsterId && hpById[selectedMonsterId] == null && Number.isFinite(hpNum)) {
+            setHpById((prev) => ({ ...prev, [selectedMonsterId]: String(hpNum) }));
+          }
+        }
       } catch {
         if (!cancelled) setMonster(null);
       }
@@ -444,6 +508,8 @@ export function MonsterPickerModal(props: {
   }, [props.isOpen, selectedMonsterId]);
 
   const selectedLabel = selectedMonsterId ? labelById[selectedMonsterId] : "";
+  const selectedAc = selectedMonsterId ? acById[selectedMonsterId] ?? "" : "";
+  const selectedHp = selectedMonsterId ? hpById[selectedMonsterId] ?? "" : "";
 
   return (
     <Modal
@@ -511,8 +577,14 @@ export function MonsterPickerModal(props: {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          const labelBase = labelById[m.id] ?? m.name;
-                          props.onAddMonster(m.id, qty, labelBase);
+                          const labelBase = (labelById[m.id] ?? m.name).trim() || m.name;
+                          const acRaw = (acById[m.id] ?? "").trim();
+                          const hpRaw = (hpById[m.id] ?? "").trim();
+                          props.onAddMonster(m.id, qty, {
+                            labelBase: labelBase || undefined,
+                            ac: acRaw ? Number(acRaw) : undefined,
+                            hpMax: hpRaw ? Number(hpRaw) : undefined
+                          });
                         }}
                       >
                         Add
@@ -538,6 +610,34 @@ export function MonsterPickerModal(props: {
                 placeholder={monster?.name ?? "Monster"}
                 disabled={!selectedMonsterId}
               />
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
+                <div>
+                  <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>AC</div>
+                  <Input
+                    value={selectedAc}
+                    onChange={(e) => {
+                      if (!selectedMonsterId) return;
+                      setAcById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                    }}
+                    placeholder={String(monster?.ac?.value ?? monster?.ac ?? "")}
+                    disabled={!selectedMonsterId}
+                  />
+                </div>
+
+                <div>
+                  <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>HP</div>
+                  <Input
+                    value={selectedHp}
+                    onChange={(e) => {
+                      if (!selectedMonsterId) return;
+                      setHpById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                    }}
+                    placeholder={String(monster?.hp?.average ?? monster?.hp ?? "")}
+                    disabled={!selectedMonsterId}
+                  />
+                </div>
+              </div>
             </div>
 
             <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingRight: 6 }}>
