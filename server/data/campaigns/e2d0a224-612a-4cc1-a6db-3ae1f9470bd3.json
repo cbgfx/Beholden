@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770498105873,
+      "updatedAt": 1770501665517,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -403,23 +403,6 @@
           "conditions": [],
           "createdAt": 1770490571273,
           "updatedAt": 1770495765821
-        },
-        {
-          "id": "37ca07ff-4a6f-4dd2-9c2e-d9eed53f58df",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
-          "baseType": "monster",
-          "baseId": "m_aarakocra",
-          "name": "Aarakocra",
-          "label": "Aarakocra",
-          "friendly": false,
-          "color": "red",
-          "overrides": null,
-          "hpCurrent": null,
-          "hpMax": null,
-          "ac": 12,
-          "conditions": [],
-          "createdAt": 1770498095600,
-          "updatedAt": 1770498105873
         }
       ]
     }

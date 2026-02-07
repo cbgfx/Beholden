@@ -24,7 +24,7 @@ function StatLine(props: { label: string; value: React.ReactNode }) {
   );
 }
 
-function MonsterStatblock(props: { monster: any | null }) {
+function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean }) {
   const m = props.monster;
   if (!m) return <div style={{ color: theme.colors.muted }}>Select a monster to preview its stats.</div>;
 
@@ -247,7 +247,7 @@ function MonsterStatblock(props: { monster: any | null }) {
             }}
           >
             <div style={{ color: theme.colors.text, fontWeight: 900 }}>{t.name ?? t.title ?? "—"}</div>
-            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 12 }}>
+            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 13 }}>
               {t.text ?? t.description ?? ""}
             </div>
           </div>
@@ -280,24 +280,37 @@ function MonsterStatblock(props: { monster: any | null }) {
   return (
     <div style={{ display: "grid", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 5 }}>
-        <div style={{ fontSize: 13, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+        <div style={{ fontSize: 14, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
         <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
       <div style={{ color: theme.colors.muted }}>{[type, alignment].filter(Boolean).join(" • ")}</div>
 
-      <div
-        style={{
-          padding: 12,
-          borderRadius: 14,
-          border: `1px solid ${theme.colors.panelBorder}`,
-          background: "rgba(0,0,0,0.14)"
-        }}
-      >
-        <StatLine label="AC" value={ac ?? "—"} />
-        <StatLine label="HP" value={hp ?? "—"} />
-        <StatLine label="Speed" value={speed ?? "—"} />
-      </div>
+      {!props.hideSummary ? (
+        <div
+          style={{
+            padding: 12,
+            borderRadius: 14,
+            border: `1px solid ${theme.colors.panelBorder}`,
+            background: "rgba(0,0,0,0.14)"
+          }}
+        >
+          <StatLine label="AC" value={ac ?? "—"} />
+          <StatLine label="HP" value={hp ?? "—"} />
+          <StatLine label="Speed" value={speed ?? "—"} />
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: 12,
+            borderRadius: 14,
+            border: `1px solid ${theme.colors.panelBorder}`,
+            background: "rgba(0,0,0,0.14)"
+          }}
+        >
+          <StatLine label="Speed" value={speed ?? "—"} />
+        </div>
+      )}
 
       <div
         style={{
@@ -393,15 +406,15 @@ function MonsterStatblock(props: { monster: any | null }) {
                     </div>
                   </div>
 
-                  <div style={{ color: theme.colors.muted, fontSize: 12 }}>
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
                     {[spellDetail.time, spellDetail.range, spellDetail.duration].filter(Boolean).join(" • ")}
                   </div>
 
                   {spellDetail.components ? (
-                    <div style={{ color: theme.colors.muted, fontSize: 12 }}>Components: {spellDetail.components}</div>
+                    <div style={{ color: theme.colors.muted, fontSize: 13 }}>Components: {spellDetail.components}</div>
                   ) : null}
 
-                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 12 }}>
+                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 13 }}>
                     {Array.isArray(spellDetail.text) ? spellDetail.text.filter(Boolean).join("\n") : String(spellDetail.text ?? "")}
                   </div>
                 </div>
@@ -509,6 +522,44 @@ export function MonsterPickerModal(props: {
   const [hpById, setHpById] = React.useState<Record<string, string>>({});
   const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
 
+  const formatAcString = React.useCallback((m: any): string => {
+    const raw = m?.raw_json ?? m;
+    const acVal = raw?.ac ?? raw?.armor_class;
+    if (acVal == null) return "";
+    // Common shapes:
+    //  - string: "19 (natural armor)"
+    //  - number: 19
+    //  - object: { value: 19, note: "natural armor" }
+    //  - array: [{ value: 19, note: "natural armor" }]
+    const first = Array.isArray(acVal) ? acVal[0] : acVal;
+    if (typeof first === "string" || typeof first === "number") return String(first).trim();
+    const v = first?.value ?? first?.ac ?? first?.armor_class;
+    const note = first?.note ?? first?.type ?? first?.name;
+    if (v == null) return "";
+    return note ? `${String(v).trim()} (${String(note).trim()})` : String(v).trim();
+  }, []);
+
+  const formatHpString = React.useCallback((m: any): string => {
+    const raw = m?.raw_json ?? m;
+    const hpVal = raw?.hp ?? raw?.hit_points;
+    if (hpVal == null) return "";
+    // Common shapes:
+    //  - string: "195 (17d12+85)"
+    //  - number: 195
+    //  - object: { average: 195, formula: "17d12+85" }
+    //  - object: { value: "195 (17d12+85)" }
+    if (typeof hpVal === "string" || typeof hpVal === "number") return String(hpVal).trim();
+    const v = hpVal?.value;
+    if (typeof v === "string" || typeof v === "number") return String(v).trim();
+    const avg = hpVal?.average ?? hpVal?.avg;
+    const formula = hpVal?.formula ?? hpVal?.roll;
+    if (avg == null && formula == null) return "";
+    // Some compendiums put 0 as a placeholder when HP is defined by a special rule.
+    if ((avg === 0 || String(avg) === "0") && !formula) return "";
+    if (avg != null && formula) return `${String(avg).trim()} (${String(formula).trim()})`;
+    return String(avg ?? formula).trim();
+  }, []);
+
   // When opening, select the first result (if any) for instant stat preview.
   React.useEffect(() => {
     if (!props.isOpen) return;
@@ -551,7 +602,29 @@ export function MonsterPickerModal(props: {
   const selectedLabel = selectedMonsterId ? labelById[selectedMonsterId] : "";
   const selectedAc = selectedMonsterId ? acById[selectedMonsterId] : "";
   const selectedHp = selectedMonsterId ? hpById[selectedMonsterId] : "";
-  const selectedFriendly = selectedMonsterId ? Boolean(friendlyById[selectedMonsterId]) : false;
+  const selectedFriendly = selectedMonsterId ? (friendlyById[selectedMonsterId] ?? false) : false;
+
+  // When a monster is selected and its detail loads, prefill the editable fields
+  // (Label/AC/HP/Friendly) from the compendium record so the inputs are not empty.
+  React.useEffect(() => {
+    if (!props.isOpen) return;
+    if (!selectedMonsterId) return;
+    if (!monster) return;
+
+    const id = selectedMonsterId;
+    const defaultAc = formatAcString(monster);
+    const defaultHp = formatHpString(monster);
+
+    setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultAc }));
+    setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultHp }));
+    setFriendlyById((prev) => (prev[id] != null ? prev : { ...prev, [id]: false }));
+  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString]);
+
+  const parseLeadingNumber = React.useCallback((v: unknown) => {
+    const s = String(v ?? "");
+    const m = s.match(/-?\d+/);
+    return m ? Number(m[0]) : NaN;
+  }, []);
 
   return (
     <Modal
@@ -619,16 +692,24 @@ export function MonsterPickerModal(props: {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          const parseLeadingNumber = (v: unknown) => {
+                            const s = String(v ?? "");
+                            const match = s.match(/-?\d+/);
+                            return match ? Number(match[0]) : NaN;
+                          };
+
                           const labelBase = labelById[m.id] ?? m.name;
                           const acRaw = acById[m.id];
                           const hpRaw = hpById[m.id];
-                          const friendly = Boolean(friendlyById[m.id]);
-                          const ac = acRaw != null && String(acRaw).trim() !== "" ? Number(acRaw) : undefined;
-                          const hpMax = hpRaw != null && String(hpRaw).trim() !== "" ? Number(hpRaw) : undefined;
+                          const friendly = friendlyById[m.id] ?? false;
+
+                          const acNum = acRaw != null && String(acRaw).trim() !== "" ? parseLeadingNumber(acRaw) : NaN;
+                          const hpNum = hpRaw != null && String(hpRaw).trim() !== "" ? parseLeadingNumber(hpRaw) : NaN;
+
                           props.onAddMonster(m.id, qty, {
                             labelBase,
-                            ac: Number.isFinite(ac as number) ? (ac as number) : undefined,
-                            hpMax: Number.isFinite(hpMax as number) ? (hpMax as number) : undefined,
+                            ac: Number.isFinite(acNum) ? acNum : undefined,
+                            hpMax: Number.isFinite(hpNum) ? hpNum : undefined,
                             friendly
                           });
                         }}
@@ -646,46 +727,39 @@ export function MonsterPickerModal(props: {
           {/* Right: statblock */}
           <div style={{ display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
             <div style={{ paddingBottom: 10 }}>
-              <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>Label</div>
               <Input
                 value={selectedLabel ?? ""}
                 onChange={(e) => {
                   if (!selectedMonsterId) return;
                   setLabelById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
                 }}
-                placeholder={monster?.name ?? "Monster"}
+                placeholder="Label"
                 disabled={!selectedMonsterId}
               />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, paddingBottom: 10 }}>
-              <div>
-                <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>AC</div>
-                <Input
-                  value={selectedAc ?? ""}
-                  onChange={(e) => {
-                    if (!selectedMonsterId) return;
-                    setAcById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
-                  }}
-                  placeholder={String(monster?.ac?.value ?? monster?.raw_json?.ac?.value ?? monster?.ac ?? "")}
-                  disabled={!selectedMonsterId}
-                />
-              </div>
-              <div>
-                <div style={{ color: theme.colors.muted, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>HP</div>
-                <Input
-                  value={selectedHp ?? ""}
-                  onChange={(e) => {
-                    if (!selectedMonsterId) return;
-                    setHpById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
-                  }}
-                  placeholder={String(monster?.hp?.average ?? monster?.raw_json?.hp?.average ?? monster?.hp ?? "")}
-                  disabled={!selectedMonsterId}
-                />
-              </div>
+              Armor Class ({selectedAc}): <Input
+                value={selectedAc ?? ""}
+                onChange={(e) => {
+                  if (!selectedMonsterId) return;
+                  setAcById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                }}
+                placeholder="AC"
+                disabled={!selectedMonsterId}
+              />
+              Hit Points ({selectedHp}): <Input
+                value={selectedHp ?? ""}
+                onChange={(e) => {
+                  if (!selectedMonsterId) return;
+                  setHpById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                }}
+                placeholder="HP"
+                disabled={!selectedMonsterId}
+              />
             </div>
 
-            <label style={{ display: "flex", alignItems: "center", gap: 10, color: theme.colors.text, paddingBottom: 10 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 12 }}>
               <input
                 type="checkbox"
                 checked={selectedFriendly}
@@ -695,11 +769,11 @@ export function MonsterPickerModal(props: {
                 }}
                 disabled={!selectedMonsterId}
               />
-              Friendly
+              <span style={{ color: theme.colors.text, fontWeight: 700 }}>Friendly</span>
             </label>
 
             <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingRight: 6 }}>
-              <MonsterStatblock monster={monster} />
+              <MonsterStatblock monster={monster} hideSummary />
             </div>
           </div>
         </div>

@@ -10,8 +10,6 @@ type CombatantVM = {
   id: string;
   label: string;
   kind: "player" | "monster";
-  // For monsters, the compendium base name (stored on the combatant at creation time)
-  baseName?: string;
   friendly?: boolean;
   hpMax?: number;
   hpCurrent?: number;
@@ -30,7 +28,7 @@ export function EncounterRosterPanel(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; hpMax?: number }
+    opts?: { labelBase?: string; ac?: number; hpMax?: number; friendly?: boolean }
   ) => void;
 
   onAddAllPlayers: () => void;
@@ -48,7 +46,6 @@ export function EncounterRosterPanel(props: {
         id: String(c.id),
         label: c.label ?? c.characterName ?? c.name ?? "Combatant",
         kind,
-        baseName: kind === "monster" ? (c.name ?? undefined) : undefined,
         friendly: Boolean(c.friendly),
         hpMax: typeof c.hpMax === "number" ? c.hpMax : undefined,
         hpCurrent: typeof c.hpCurrent === "number" ? c.hpCurrent : undefined
@@ -63,7 +60,7 @@ export function EncounterRosterPanel(props: {
       title="Combat"
       actions={
         encounter ? (
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <Button variant="ghost" onClick={props.onAddAllPlayers}>Add ALL players</Button>
             <Button variant="ghost" onClick={props.onOpenCombat}>Open Combat</Button>
           </div>
@@ -73,7 +70,7 @@ export function EncounterRosterPanel(props: {
       {!encounter ? (
         <div style={{ color: theme.colors.muted }}>Select an encounter to build the roster.</div>
       ) : (
-        <div style={{ display: "grid", gap: 8 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           {/* Roster list */}
           <div style={{ display: "grid", gap: 8 }}>
             {combatantsVM.map((c) => (
@@ -82,7 +79,7 @@ export function EncounterRosterPanel(props: {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr auto",
-                  gap: 5,
+                  gap: 10,
                   alignItems: "center",
                   padding: 10,
                   borderRadius: 12,
@@ -91,15 +88,8 @@ export function EncounterRosterPanel(props: {
                 }}
               >
                 <div>
-                  <div style={{ color: theme.colors.text, fontWeight: 900, fontSize: 14 }}>
-                    {c.label}
-                    {c.kind === "monster" && c.baseName && c.baseName !== c.label ? (
-                      <span style={{ marginLeft: 8, fontWeight: 600, color: theme.colors.muted, fontSize: 11 }}>
-                        ({c.baseName})
-                      </span>
-                    ) : null}
-                  </div>
-                  <div style={{ color: theme.colors.muted, fontSize: 11 }}>
+                  <div style={{ color: theme.colors.text, fontWeight: 900 }}>{c.label}</div>
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
                     {c.friendly ? "Friendly" : c.kind === "player" ? "Player" : "Monster"}
                     {c.hpCurrent != null && c.hpMax != null ? ` • HP ${c.hpCurrent}/${c.hpMax}` : ""}
                   </div>
