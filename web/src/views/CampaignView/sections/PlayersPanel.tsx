@@ -54,7 +54,7 @@ export function PlayersPanel(props: {
                     style={{
                       color: theme.colors.text,
                       fontWeight: 900,
-                      fontSize: 16,
+                      fontSize: 14,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -65,7 +65,7 @@ export function PlayersPanel(props: {
                   </div>
                 </div>
 
-                <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                <div style={{ color: theme.colors.muted, fontSize: 12 }}>
                   Lvl {p.level} {p.species} {p.class}
                 </div>
               </div>

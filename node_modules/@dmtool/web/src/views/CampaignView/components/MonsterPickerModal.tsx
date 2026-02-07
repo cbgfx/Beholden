@@ -229,7 +229,7 @@ function MonsterStatblock(props: { monster: any | null }) {
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+        <div style={{ fontSize: 16, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
         <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
@@ -335,7 +335,7 @@ function MonsterStatblock(props: { monster: any | null }) {
               ) : spellDetail ? (
                 <div style={{ display: "grid", gap: 8 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline" }}>
-                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
+                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 10 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                       {spellDetail.level === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`}
                       {spellDetail.school ? ` • ${spellDetail.school}` : ""}

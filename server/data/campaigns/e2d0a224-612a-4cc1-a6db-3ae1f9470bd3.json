@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770487694241,
+      "updatedAt": 1770488149676,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -354,23 +354,6 @@
           "updatedAt": 1770348596458
         },
         {
-          "id": "13171163-1c6f-42d9-a5b3-e2906ce01249",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
-          "baseType": "monster",
-          "baseId": "m_thug",
-          "name": "Thug",
-          "label": "Thug 2",
-          "friendly": false,
-          "color": "red",
-          "overrides": null,
-          "hpCurrent": null,
-          "hpMax": null,
-          "ac": null,
-          "conditions": [],
-          "createdAt": 1770410880429,
-          "updatedAt": 1770410880429
-        },
-        {
           "id": "f6e02080-cc3d-4fe6-b48b-09a75dd5f817",
           "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
           "baseType": "player",
@@ -388,23 +371,6 @@
           "updatedAt": 1770412527634
         },
         {
-          "id": "ce798bc9-9cad-4be6-a7b4-6d0fe5ba52c7",
-          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
-          "baseType": "monster",
-          "baseId": "m_acolyte",
-          "name": "Acolyte",
-          "label": "Acolyte",
-          "friendly": false,
-          "color": "red",
-          "overrides": null,
-          "hpCurrent": null,
-          "hpMax": null,
-          "ac": null,
-          "conditions": [],
-          "createdAt": 1770477742910,
-          "updatedAt": 1770477742910
-        },
-        {
           "id": "174f3e50-35a8-4796-b64a-25fde84d4caa",
           "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
           "baseType": "monster",
@@ -420,6 +386,23 @@
           "conditions": [],
           "createdAt": 1770487694241,
           "updatedAt": 1770487694241
+        },
+        {
+          "id": "c80b9cce-e073-4150-9811-910e05d2a9a9",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_thug",
+          "name": "Thug",
+          "label": "Thug 1",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": 25,
+          "hpMax": 25,
+          "ac": 16,
+          "conditions": [],
+          "createdAt": 1770488142705,
+          "updatedAt": 1770488142705
         }
       ]
     }

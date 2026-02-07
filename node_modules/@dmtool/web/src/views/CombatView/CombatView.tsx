@@ -12,7 +12,7 @@ export function CombatView() {
     <div style={{ marginTop: 14 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <Link to="/" style={{ color: theme.colors.accent, fontWeight: 900, textDecoration: "none" }}>← Back</Link>
-        <div style={{ color: theme.colors.text, fontSize: 18, fontWeight: 900 }}>Combat: {encounterId}</div>
+        <div style={{ color: theme.colors.text, fontSize: 12, fontWeight: 900 }}>Combat: {encounterId}</div>
       </div>
 
       <div style={{ marginTop: 14, maxWidth: 900 }}>
