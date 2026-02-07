@@ -16,13 +16,20 @@ const PORT = Number(process.env.PORT ?? 3000);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
 const DATA_DIR = path.join(__dirname, "..", "data");
-const USER_DATA_PATH = path.join(DATA_DIR, "userData.json");
 const COMPENDIUM_PATH = path.join(DATA_DIR, "compendium.json");
+
+// Campaign storage (v3): each campaign stored in its own json for easy export/backup.
+const CAMPAIGNS_DIR = path.join(DATA_DIR, "campaigns");
+const CAMPAIGNS_INDEX_PATH = path.join(CAMPAIGNS_DIR, "index.json");
+const LEGACY_USER_DATA_PATH = path.join(DATA_DIR, "userData.json");
+
+fs.mkdirSync(CAMPAIGNS_DIR, { recursive: true });
+
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const defaultUserData = {
-  version: 2,
+  version: 3,
   campaigns: {},
   adventures: {},
   encounters: {},
@@ -55,14 +62,131 @@ function saveJsonAtomic(filePath, data){
   fs.renameSync(tmp, filePath);
 }
 
-let userData = loadJson(USER_DATA_PATH, defaultUserData);
+
+function buildEmptyUserData(){
+  return {
+    version: 3,
+    campaigns: {},
+    adventures: {},
+    encounters: {},
+    notes: {},
+    players: {},
+    inpcs: {},
+    conditions: {},
+    combats: {}
+  };
+}
+
+function campaignFilePath(campaignId){
+  return path.join(CAMPAIGNS_DIR, `${campaignId}.json`);
+}
+
+function loadCampaignIndex(){
+  return loadJson(CAMPAIGNS_INDEX_PATH, { version: 1, campaigns: {} });
+}
+
+function saveCampaignIndexAtomic(index){
+  saveJsonAtomic(CAMPAIGNS_INDEX_PATH, index);
+}
+
+function loadAllCampaignFiles(){
+  const idx = loadCampaignIndex();
+  const ud = buildEmptyUserData();
+
+  const campaignIds = Object.keys(idx.campaigns ?? {});
+  for(const campaignId of campaignIds){
+    const fp = campaignFilePath(campaignId);
+    const doc = loadJson(fp, null);
+    if(!doc) continue;
+
+    ud.campaigns[campaignId] = doc.campaign ?? idx.campaigns[campaignId];
+    Object.assign(ud.adventures, doc.adventures ?? {});
+    Object.assign(ud.encounters, doc.encounters ?? {});
+    Object.assign(ud.notes, doc.notes ?? {});
+    Object.assign(ud.players, doc.players ?? {});
+    Object.assign(ud.inpcs, doc.inpcs ?? {});
+    Object.assign(ud.conditions, doc.conditions ?? {});
+    Object.assign(ud.combats, doc.combats ?? {});
+  }
+
+  return ud;
+}
+
+function persistCampaignStorageFromUserData(){
+  const index = { version: 1, campaigns: {} };
+
+  const campaignIds = Object.keys(userData.campaigns ?? {});
+  for(const campaignId of campaignIds){
+    const campaign = userData.campaigns[campaignId];
+    index.campaigns[campaignId] = campaign;
+
+    const adventures = {};
+    const encounters = {};
+    const notes = {};
+    const players = {};
+    const inpcs = {};
+    const conditions = {};
+    const combats = {};
+
+    for(const [id,a] of Object.entries(userData.adventures)) if(a?.campaignId===campaignId) adventures[id]=a;
+    for(const [id,e] of Object.entries(userData.encounters)) if(e?.campaignId===campaignId) encounters[id]=e;
+    for(const [id,n] of Object.entries(userData.notes)) if(n?.campaignId===campaignId) notes[id]=n;
+    for(const [id,p] of Object.entries(userData.players)) if(p?.campaignId===campaignId) players[id]=p;
+    for(const [id,i] of Object.entries(userData.inpcs)) if(i?.campaignId===campaignId) inpcs[id]=i;
+    for(const [id,c] of Object.entries(userData.conditions)) if(c?.campaignId===campaignId) conditions[id]=c;
+
+    for(const [encId,combat] of Object.entries(userData.combats)){
+      const enc = userData.encounters[encId];
+      if(enc?.campaignId===campaignId) combats[encId]=combat;
+    }
+
+    const doc = { version: 1, campaign, adventures, encounters, notes, players, inpcs, conditions, combats };
+    saveJsonAtomic(campaignFilePath(campaignId), doc);
+  }
+
+  try{
+    const existingFiles = fs.readdirSync(CAMPAIGNS_DIR).filter(f=>f.endsWith(".json") && f!=="index.json");
+    for(const fn of existingFiles){
+      const id = fn.replace(/\.json$/,"");
+      if(!index.campaigns[id]){
+        try{ fs.unlinkSync(path.join(CAMPAIGNS_DIR, fn)); }catch{}
+      }
+    }
+  }catch{}
+
+  saveCampaignIndexAtomic(index);
+}
+
+function migrateLegacyUserDataIfNeeded(){
+  const hasIndex = fs.existsSync(CAMPAIGNS_INDEX_PATH);
+  if(hasIndex) return;
+
+  if(fs.existsSync(LEGACY_USER_DATA_PATH)){
+    const legacy = loadJson(LEGACY_USER_DATA_PATH, null);
+    if(legacy && legacy.campaigns){
+      userData = { ...buildEmptyUserData(), ...legacy, version: 3 };
+      persistCampaignStorageFromUserData();
+      try{
+        const bak = path.join(DATA_DIR, `userData.legacy.${Date.now()}.json`);
+        fs.copyFileSync(LEGACY_USER_DATA_PATH, bak);
+      }catch{}
+      return;
+    }
+  }
+
+  saveCampaignIndexAtomic({ version: 1, campaigns: {} });
+}
+
+let userData = buildEmptyUserData();
+migrateLegacyUserDataIfNeeded();
+userData = loadAllCampaignFiles();
 
 let saveTimer = null;
 function scheduleSave(){
   if(saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     saveTimer = null;
-    saveJsonAtomic(USER_DATA_PATH, userData);
+    persistCampaignStorageFromUserData();
   }, 150);
 }
 
@@ -102,10 +226,10 @@ function seedDefaultConditions(campaignId){
   }
 }
 
-const compendiumState = { loaded:false, monsters:[] };
+const compendiumState = { loaded:false, monsters:[], spells:[] };
 
 function loadCompendium(){
-  const raw = loadJson(COMPENDIUM_PATH, { version: 1, monsters: [] });
+  const raw = loadJson(COMPENDIUM_PATH, { version: 2, monsters: [], spells: [] });
   compendiumState.monsters = (raw.monsters ?? []).map((m) => {
     const name = (m?.name ?? "Unknown").toString().trim();
     const nameKey = normalizeKey(m?.name_key ?? m?.nameKey ?? name);
@@ -125,8 +249,34 @@ function loadCompendium(){
       raw_json: m?.raw_json ?? null
     };
   });
+
+  compendiumState.spells = (raw.spells ?? []).map((s) => {
+    const displayName = (s?.name ?? "Unknown").toString().trim();
+    const normalizedName = displayName.replace(/\s*\[[^\]]+\]\s*$/,"").trim() || displayName;
+    const nameKey = normalizeKey(s?.name_key ?? s?.nameKey ?? normalizedName);
+    const id = s?.id ?? `s_${nameKey.replace(/\s/g,"_")}`;
+
+    const texts = Array.isArray(s?.text) ? s.text : (s?.text != null ? [s.text] : []);
+    return {
+      id,
+      name: displayName,
+      nameKey,
+      normalizedName,
+      normalizedKey: normalizeKey(normalizedName),
+      level: s?.level != null ? Number(s.level) : null,
+      school: s?.school ?? null,
+      time: s?.time ?? null,
+      range: s?.range ?? null,
+      components: s?.components ?? null,
+      duration: s?.duration ?? null,
+      classes: s?.classes ?? null,
+      text: texts
+    };
+  });
+
   compendiumState.loaded = true;
 }
+
 loadCompendium();
 
 function matchesFilters(m,f){
@@ -793,6 +943,41 @@ app.get("/api/compendium/search", (req,res)=>{
   res.json(searchCompendium(String(q), filters, limit));
 });
 
+
+
+app.get("/api/spells/search", (req,res)=>{
+  const qRaw = String(req.query.q ?? "").trim();
+  const q = qRaw.toLowerCase();
+  const limit = Math.min(Math.max(parseInt(String(req.query.limit ?? "50"),10) || 50, 1), 200);
+
+  const out = [];
+  for(const s of compendiumState.spells){
+    if(q){
+      const hay = `${s.name} ${s.normalizedName ?? ""}`.toLowerCase();
+      if(!hay.includes(q) && !String(s.nameKey ?? "").includes(q)) continue;
+    }
+    out.push({ id: s.id, name: s.name, level: s.level, school: s.school, time: s.time });
+    if(out.length >= limit) break;
+  }
+  res.json(out);
+});
+
+app.get("/api/spells/:spellId", (req,res)=>{
+  const { spellId } = req.params;
+  const s = compendiumState.spells.find(x=>x.id===spellId);
+  if(!s) return res.status(404).json({ ok:false, message:"Spell not found in compendium" });
+  res.json(s);
+});
+
+app.delete("/api/compendium", (_req,res)=>{
+  try{ if(fs.existsSync(COMPENDIUM_PATH)) fs.unlinkSync(COMPENDIUM_PATH); }catch{}
+  compendiumState.monsters = [];
+  compendiumState.spells = [];
+  compendiumState.loaded = false;
+  broadcast("compendium:changed", { cleared:true });
+  res.json({ ok:true });
+});
+
 const upload = multer({ limits: { fileSize: 25 * 1024 * 1024 } });
 
 app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{
@@ -803,6 +988,7 @@ app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{
   const parsed = parser.parse(xml);
   const comp = parsed?.compendium ?? parsed;
   const monsters = asArray(comp?.monster);
+  const spells = asArray(comp?.spell);
 
   const incoming = [];
   for (const m of monsters){
@@ -824,13 +1010,43 @@ app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{
       source: null,
       raw_json: m
     });
-  }
 
-  const current = loadJson(COMPENDIUM_PATH, { version: 1, monsters: [] });
-  const map = new Map((current.monsters ?? []).map((m) => [normalizeKey(m.name_key ?? m.nameKey ?? m.name), m]));
-  for (const m of incoming) map.set(m.name_key, m);
+                    }
 
-  const merged = { version: 1, monsters: Array.from(map.values()) };
+const incomingSpells = [];
+for (const s of spells){
+  const displayName = String(s?.name ?? "Unknown").trim();
+  const normalizedName = displayName.replace(/\s*\[[^\]]+\]\s*$/,"").trim() || displayName;
+  const nameKey = normalizeKey(normalizedName);
+  const id = `s_${nameKey.replace(/\s/g,"_")}`;
+
+  const level = s?.level != null ? Number(String(s.level).replace(/[^0-9]/g, "")) : null;
+  const texts = asArray(s?.text).map((t)=> (t==null?"":String(t)).trim()).filter((t)=>t.length>0);
+
+  incomingSpells.push({
+    id,
+    name: displayName,
+    name_key: nameKey,
+    level: Number.isFinite(level) ? level : null,
+    school: s?.school ?? null,
+    time: s?.time ?? null,
+    range: s?.range ?? null,
+    components: s?.components ?? null,
+    duration: s?.duration ?? null,
+    classes: s?.classes ?? null,
+    text: texts
+  });
+}
+
+const current = loadJson(COMPENDIUM_PATH, { version: 2, monsters: [], spells: [] });
+
+  const mapMon = new Map((current.monsters ?? []).map((m) => [normalizeKey(m.name_key ?? m.nameKey ?? m.name), m]));
+  for (const m of incoming) mapMon.set(m.name_key, m);
+
+  const mapSp = new Map((current.spells ?? []).map((s) => [normalizeKey(s.name_key ?? s.nameKey ?? s.name), s]));
+  for (const s of incomingSpells) mapSp.set(s.name_key, s);
+
+  const merged = { version: 2, monsters: Array.from(mapMon.values()), spells: Array.from(mapSp.values()) };
   saveJsonAtomic(COMPENDIUM_PATH, merged);
   loadCompendium();
 
@@ -838,24 +1054,65 @@ app.post("/api/compendium/import/xml", upload.single("file"), (req,res)=>{
   res.json({ ok:true, imported: incoming.length, total: merged.monsters.length });
 });
 
-/* Export / Import userData */
+
+/* Export / Import Campaign */
+app.get("/api/campaigns/:campaignId/export", (req,res)=>{
+  const { campaignId } = req.params;
+  const c = userData.campaigns[campaignId];
+  if(!c) return res.status(404).json({ ok:false, message:"Campaign not found" });
+
+  const doc = loadJson(campaignFilePath(campaignId), null) ?? { version: 1, campaign: c };
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Disposition", `attachment; filename=campaign_${campaignId}.json`);
+  res.send(JSON.stringify(doc, null, 2));
+});
+
+app.post("/api/campaigns/import", upload.single("file"), (req,res)=>{
+  if(!req.file) return res.status(400).json({ ok:false, message:"No file uploaded" });
+  let doc = null;
+  try{
+    doc = JSON.parse(req.file.buffer.toString("utf-8"));
+  }catch{
+    return res.status(400).json({ ok:false, message:"Invalid JSON" });
+  }
+  const campaign = doc?.campaign;
+  if(!campaign?.id) return res.status(400).json({ ok:false, message:"Missing campaign.id" });
+
+  const campaignId = String(campaign.id);
+  userData.campaigns[campaignId] = campaign;
+
+  // Remove existing objects for this campaign to avoid orphans.
+  for(const [id,a] of Object.entries(userData.adventures)) if(a?.campaignId===campaignId) delete userData.adventures[id];
+  for(const [id,e] of Object.entries(userData.encounters)) if(e?.campaignId===campaignId){ delete userData.encounters[id]; delete userData.combats[id]; }
+  for(const [id,n] of Object.entries(userData.notes)) if(n?.campaignId===campaignId) delete userData.notes[id];
+  for(const [id,p] of Object.entries(userData.players)) if(p?.campaignId===campaignId) delete userData.players[id];
+  for(const [id,i] of Object.entries(userData.inpcs)) if(i?.campaignId===campaignId) delete userData.inpcs[id];
+  for(const [id,cnd] of Object.entries(userData.conditions)) if(cnd?.campaignId===campaignId) delete userData.conditions[id];
+
+  const mergeMap = (target, incoming) => {
+    for(const [k,v] of Object.entries(incoming ?? {})) target[k]=v;
+  };
+
+  mergeMap(userData.adventures, doc.adventures);
+  mergeMap(userData.encounters, doc.encounters);
+  mergeMap(userData.notes, doc.notes);
+  mergeMap(userData.players, doc.players);
+  mergeMap(userData.inpcs, doc.inpcs);
+  mergeMap(userData.conditions, doc.conditions);
+  mergeMap(userData.combats, doc.combats);
+
+  seedDefaultConditions(campaignId);
+
+  scheduleSave();
+  broadcast("campaigns:changed", { campaignId });
+  res.json({ ok:true, campaignId });
+});
+
+/* Legacy: export all data in one file (debug) */
 app.get("/api/user/export", (_req,res)=>{
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Content-Disposition", "attachment; filename=userData.json");
   res.send(JSON.stringify(userData, null, 2));
-});
-
-app.post("/api/user/import", upload.single("file"), (req,res)=>{
-  if(!req.file) return res.status(400).json({ ok:false, message:"No file uploaded" });
-  try{
-    const next = JSON.parse(req.file.buffer.toString("utf-8"));
-    userData = next;
-    saveJsonAtomic(USER_DATA_PATH, userData);
-    broadcast("user:changed", {});
-    res.json({ ok:true });
-  }catch{
-    res.status(400).json({ ok:false, message:"Invalid JSON" });
-  }
 });
 
 const server = app.listen(PORT, HOST, () => {

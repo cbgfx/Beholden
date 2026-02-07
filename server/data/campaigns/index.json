@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "campaigns": {
+    "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3": {
+      "id": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "name": "Frozen Assets",
+      "color": null,
+      "createdAt": 1770343870946,
+      "updatedAt": 1770343870946
+    }
+  }
+}
