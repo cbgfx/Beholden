@@ -80,6 +80,7 @@ export function EncounterRosterPanel(props: {
                   display: "grid",
                   gridTemplateColumns: "1fr auto",
                   gap: 10,
+                  fontSize: 12,
                   alignItems: "center",
                   padding: 10,
                   borderRadius: 12,
@@ -89,7 +90,7 @@ export function EncounterRosterPanel(props: {
               >
                 <div>
                   <div style={{ color: theme.colors.text, fontWeight: 900 }}>{c.label}</div>
-                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                  <div style={{ color: theme.colors.muted, fontSize: 11 }}>
                     {c.friendly ? "Friendly" : c.kind === "player" ? "Player" : "Monster"}
                     {c.hpCurrent != null && c.hpMax != null ? ` • HP ${c.hpCurrent}/${c.hpMax}` : ""}
                   </div>
