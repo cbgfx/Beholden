@@ -99,11 +99,11 @@
       "class": "Bard",
       "species": "Human",
       "hpMax": 35,
-      "hpCurrent": 25,
+      "hpCurrent": 22,
       "ac": 30,
       "color": "green",
       "createdAt": 1770343942957,
-      "updatedAt": 1770346521759
+      "updatedAt": 1770487294173
     },
     "886428e8-d513-4648-8604-a8330f36f4a2": {
       "id": "886428e8-d513-4648-8604-a8330f36f4a2",
@@ -113,12 +113,12 @@
       "level": 5,
       "class": "Cleric",
       "species": "Human",
-      "hpMax": 22,
-      "hpCurrent": 22,
+      "hpMax": 20,
+      "hpCurrent": 12,
       "ac": 18,
       "color": "green",
       "createdAt": 1770349362656,
-      "updatedAt": 1770349362656
+      "updatedAt": 1770487307288
     }
   },
   "inpcs": {},
@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770477742910,
+      "updatedAt": 1770487694241,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -403,6 +403,23 @@
           "conditions": [],
           "createdAt": 1770477742910,
           "updatedAt": 1770477742910
+        },
+        {
+          "id": "174f3e50-35a8-4796-b64a-25fde84d4caa",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_acolyte",
+          "name": "Acolyte",
+          "label": "Spencer",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": 9,
+          "hpMax": 9,
+          "ac": 12,
+          "conditions": [],
+          "createdAt": 1770487694241,
+          "updatedAt": 1770487694241
         }
       ]
     }

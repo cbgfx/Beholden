@@ -8,7 +8,9 @@ export const theme = {
     panelBg: "rgba(255,255,255,0.06)",
     panelBorder: "rgba(255,255,255,0.14)",
     inputBg: "rgba(0,0,0,0.25)",
-    danger: "#ff5d5d"
+    danger: "#ff5d5d",
+    bloody: "#ff9e4a",
+    health: "#7dc56d",
   },
   radius: { panel: 14, control: 10 },
   spacing: { pagePad: 16, gap: 7 }

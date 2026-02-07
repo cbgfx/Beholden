@@ -828,8 +828,6 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   res.json({ ok:true, created });
 });
 
-});
-
 app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
   const { encounterId, combatantId } = req.params;
   const combat = ensureCombat(encounterId);

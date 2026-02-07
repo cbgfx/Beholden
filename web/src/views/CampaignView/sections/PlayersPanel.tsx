@@ -3,7 +3,7 @@ import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
 import { HPBar } from "../../../components/ui/HPBar";
 import { theme } from "../../../app/theme/theme";
-import { IconPerson, IconPlus, IconPencil, IconTrash } from "../../../components/ui/Icons";
+import { IconPerson, IconPlus, IconSkull, IconPencil, IconTrash } from "../../../components/ui/Icons";
 
 export function PlayersPanel(props: {
   players: any[];
@@ -47,7 +47,7 @@ export function PlayersPanel(props: {
               <div style={{ minWidth: 0, display: "grid", gap: 6 }}>
                 <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
                   <span style={{ display: "inline-flex", opacity: 0.9 }}>
-                    <IconPerson />
+                   {p.hpCurrent > 0? <IconPerson />: <IconSkull />}
                   </span>
 
                   <div
