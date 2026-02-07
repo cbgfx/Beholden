@@ -28,6 +28,72 @@ function MonsterStatblock(props: { monster: any | null }) {
   const m = props.monster;
   if (!m) return <div style={{ color: theme.colors.muted }}>Select a monster to preview its stats.</div>;
 
+  const normalizeSpellName = React.useCallback((name: string) => {
+    // Keep display text intact elsewhere; normalization is only for matching.
+    const base = name
+      .replace(/\[[^\]]+\]\s*$/g, "")
+      .replace(/\([^\)]*\)\s*$/g, "")
+      .trim()
+      .toLowerCase();
+    return base.replace(/\s+/g, " ");
+  }, []);
+
+  const extractSpellNames = React.useCallback(
+    (text: string) => {
+      if (!text) return [] as string[];
+      const out: string[] = [];
+      const lines = text
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .filter((l) => !/^source:/i.test(l));
+
+      for (const line of lines) {
+        // Typical patterns: "Cantrips (at will): light, sacred flame" or "1st level (3 slots): bless, cure wounds"
+        const idx = line.indexOf(":");
+        if (idx === -1) continue;
+        const rhs = line.slice(idx + 1).trim();
+        if (!rhs) continue;
+        const parts = rhs.split(/[,;]/g);
+        for (let p of parts) {
+          p = p
+            .replace(/^and\s+/i, "")
+            .replace(/\.$/, "")
+            .trim();
+          if (!p) continue;
+          // Ignore non-spell tokens that can appear in some compendiums.
+          if (/^\(?at\s*will\)?$/i.test(p)) continue;
+          out.push(p);
+        }
+      }
+
+      // Deduplicate by normalized name but keep the first display form.
+      const seen = new Set<string>();
+      const dedup: string[] = [];
+      for (const n of out) {
+        const key = normalizeSpellName(n);
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        dedup.push(n);
+      }
+      return dedup;
+    },
+    [normalizeSpellName]
+  );
+
+  const [spellOpen, setSpellOpen] = React.useState(false);
+  const [spellLoading, setSpellLoading] = React.useState(false);
+  const [spellError, setSpellError] = React.useState<string | null>(null);
+  const [spellDetail, setSpellDetail] = React.useState<any | null>(null);
+
+  // Reset spell detail when switching monsters.
+  React.useEffect(() => {
+    setSpellOpen(false);
+    setSpellLoading(false);
+    setSpellError(null);
+    setSpellDetail(null);
+  }, [m?.id, m?.name]);
+
   // Forgiving render; compendium schemas vary.
   const ac = m.ac?.value ?? m.ac ?? m.armor_class;
   const hp = m.hp?.average ?? m.hp ?? m.hit_points;
@@ -61,6 +127,40 @@ function MonsterStatblock(props: { monster: any | null }) {
   const nonSpellTraits = traitArr.filter((t) => !isSpellSection(t?.name ?? t?.title));
   const spellActions = actionArr.filter((a) => isSpellSection(a?.name ?? a?.title));
   const nonSpellActions = actionArr.filter((a) => !isSpellSection(a?.name ?? a?.title));
+
+  const spellTextCombined = [...spellTraits, ...spellActions]
+    .map((x: any) => String(x?.text ?? x?.description ?? ""))
+    .filter(Boolean)
+    .join("\n");
+  const spellNames = extractSpellNames(spellTextCombined);
+
+  async function openSpellByName(name: string) {
+    setSpellOpen(true);
+    setSpellLoading(true);
+    setSpellError(null);
+    setSpellDetail(null);
+
+    try {
+      const q = encodeURIComponent(name);
+      const results = await api<any[]>(`/api/spells/search?q=${q}&limit=20`);
+      const want = normalizeSpellName(name);
+      const best =
+        results.find((r) => normalizeSpellName(String(r?.name ?? "")) === want) ??
+        results[0];
+
+      if (!best?.id) {
+        setSpellError("Spell not found in compendium.");
+        return;
+      }
+
+      const detail = await api<any>(`/api/spells/${encodeURIComponent(best.id)}`);
+      setSpellDetail(detail);
+    } catch {
+      setSpellError("Could not load spell details.");
+    } finally {
+      setSpellLoading(false);
+    }
+  }
 
   const renderNamed = (arr: any[]) =>
     arr?.length ? (
@@ -146,6 +246,77 @@ function MonsterStatblock(props: { monster: any | null }) {
       {spellTraits.length || spellActions.length ? (
         <div style={{ display: "grid", gap: 10 }}>
           <div style={{ color: theme.colors.accent, fontWeight: 900 }}>Spells</div>
+
+          {spellNames.length ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {spellNames.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => openSpellByName(n)}
+                  style={{
+                    border: `1px solid ${theme.colors.panelBorder}`,
+                    background: "rgba(0,0,0,0.14)",
+                    color: theme.colors.text,
+                    padding: "6px 10px",
+                    borderRadius: 999,
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                  title="Open spell"
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {spellOpen ? (
+            <div
+              style={{
+                marginTop: 8,
+                padding: 12,
+                borderRadius: 14,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: "rgba(0,0,0,0.14)"
+              }}
+            >
+              {spellLoading ? (
+                <div style={{ color: theme.colors.muted }}>Loading spell…</div>
+              ) : spellError ? (
+                <div style={{ color: theme.colors.danger, fontWeight: 800 }}>{spellError}</div>
+              ) : spellDetail ? (
+                <div style={{ display: "grid", gap: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline" }}>
+                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
+                    <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
+                      L{spellDetail.level ?? "?"}{spellDetail.school ? ` • ${spellDetail.school}` : ""}
+                    </div>
+                  </div>
+
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                    {[spellDetail.time, spellDetail.range, spellDetail.duration].filter(Boolean).join(" • ")}
+                  </div>
+
+                  {spellDetail.components ? (
+                    <div style={{ color: theme.colors.muted, fontSize: 13 }}>Components: {spellDetail.components}</div>
+                  ) : null}
+
+                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 13 }}>
+                    {Array.isArray(spellDetail.text) ? spellDetail.text.filter(Boolean).join("\n") : String(spellDetail.text ?? "")}
+                  </div>
+                </div>
+              ) : null}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                <Button variant="ghost" onClick={() => setSpellOpen(false)}>
+                  Close spell
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Keep the original spellcasting blocks visible for usage limits / slots notes */}
           {renderNamed([...spellTraits, ...spellActions])}
         </div>
       ) : null}

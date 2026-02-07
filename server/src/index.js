@@ -21,7 +21,7 @@ const COMPENDIUM_PATH = path.join(DATA_DIR, "compendium.json");
 // Campaign storage (v3): each campaign stored in its own json for easy export/backup.
 const CAMPAIGNS_DIR = path.join(DATA_DIR, "campaigns");
 const CAMPAIGNS_INDEX_PATH = path.join(CAMPAIGNS_DIR, "index.json");
-const LEGACY_USER_DATA_PATH = path.join(DATA_DIR, "userData.json");
+// NOTE: legacy userData.json migration has been removed (one-time only, not needed going forward).
 
 fs.mkdirSync(CAMPAIGNS_DIR, { recursive: true });
 
@@ -157,28 +157,13 @@ function persistCampaignStorageFromUserData(){
   saveCampaignIndexAtomic(index);
 }
 
-function migrateLegacyUserDataIfNeeded(){
-  const hasIndex = fs.existsSync(CAMPAIGNS_INDEX_PATH);
-  if(hasIndex) return;
-
-  if(fs.existsSync(LEGACY_USER_DATA_PATH)){
-    const legacy = loadJson(LEGACY_USER_DATA_PATH, null);
-    if(legacy && legacy.campaigns){
-      userData = { ...buildEmptyUserData(), ...legacy, version: 3 };
-      persistCampaignStorageFromUserData();
-      try{
-        const bak = path.join(DATA_DIR, `userData.legacy.${Date.now()}.json`);
-        fs.copyFileSync(LEGACY_USER_DATA_PATH, bak);
-      }catch{}
-      return;
-    }
-  }
-
+function ensureCampaignIndexExists(){
+  if(fs.existsSync(CAMPAIGNS_INDEX_PATH)) return;
   saveCampaignIndexAtomic({ version: 1, campaigns: {} });
 }
 
 let userData = buildEmptyUserData();
-migrateLegacyUserDataIfNeeded();
+ensureCampaignIndexExists();
 userData = loadAllCampaignFiles();
 
 let saveTimer = null;

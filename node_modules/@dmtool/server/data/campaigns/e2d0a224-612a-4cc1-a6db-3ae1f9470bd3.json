@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770348592131,
-      "updatedAt": 1770412527634,
+      "updatedAt": 1770477742910,
       "combatants": [
         {
           "id": "9f923c77-3760-448a-8fd9-3e33722e9415",
@@ -386,6 +386,23 @@
           "conditions": [],
           "createdAt": 1770412527634,
           "updatedAt": 1770412527634
+        },
+        {
+          "id": "ce798bc9-9cad-4be6-a7b4-6d0fe5ba52c7",
+          "encounterId": "bde9ce9a-489e-46ee-908c-f929cbcb9185",
+          "baseType": "monster",
+          "baseId": "m_acolyte",
+          "name": "Acolyte",
+          "label": "Acolyte",
+          "friendly": false,
+          "color": "red",
+          "overrides": null,
+          "hpCurrent": null,
+          "hpMax": null,
+          "ac": null,
+          "conditions": [],
+          "createdAt": 1770477742910,
+          "updatedAt": 1770477742910
         }
       ]
     }
