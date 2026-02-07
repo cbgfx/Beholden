@@ -785,8 +785,52 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
 
   const r = m.raw_json ?? {};
-  const defaultAc = r?.ac?.value ?? r?.ac ?? null;
-  const defaultHp = r?.hp?.average ?? r?.hp ?? null;
+
+  // Parse AC / HP from compendium into numeric + details.
+  const parseFirstNumber = (val) => {
+    if (val == null) return null;
+    if (typeof val === "object") {
+      const candidate = val.value ?? val.average ?? val.hp ?? val.ac ?? null;
+      if (candidate != null) return parseFirstNumber(candidate);
+      // Fall through to string parse.
+    }
+    if (typeof val === "number") return Number.isFinite(val) ? val : null;
+    const s = String(val);
+    const m = s.match(/-?\d+/);
+    if (!m) return null;
+    const n = Number(m[0]);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const parseDetails = (val) => {
+    if (val == null) return null;
+    if (typeof val === "object") {
+      // Common shapes: { value, note } for AC; { average, formula } for HP
+      const note = val.note ?? val.details ?? null;
+      const formula = val.formula ?? null;
+      const out = note ?? formula;
+      return out != null && String(out).trim() !== "" ? String(out).trim() : null;
+    }
+    const s = String(val).trim();
+    // Extract parenthetical detail: "15 (natural armor)" -> "natural armor"
+    const paren = s.match(/\(([^)]+)\)/);
+    if (paren && paren[1] && String(paren[1]).trim() !== "") return String(paren[1]).trim();
+    // If string includes text after the first number, keep it as details.
+    const m = s.match(/^-?\d+\s*(.*)$/);
+    if (m && m[1] && m[1].trim() !== "") {
+      const rest = m[1].trim();
+      // Strip wrapping punctuation
+      return rest.replace(/^[:\-]+\s*/, "").trim() || null;
+    }
+    return null;
+  };
+
+  const rawAc = r?.ac?.value ?? r?.ac ?? r?.armor_class ?? null;
+  const rawHp = r?.hp?.average ?? r?.hp ?? r?.hit_points ?? null;
+  const defaultAc = parseFirstNumber(rawAc);
+  const defaultHp = parseFirstNumber(rawHp);
+  const defaultAcDetails = parseDetails(r?.ac ?? rawAc);
+  const defaultHpDetails = parseDetails(r?.hp ?? rawHp);
 
   const combat = ensureCombat(encounterId);
   const t = now();
@@ -798,8 +842,8 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const created = [];
   for(let i=0;i<qty;i++){
     const label = qty === 1 ? effectiveLabelBase : `${effectiveLabelBase} ${n++}`;
-    const hpMax = (hpMaxOverride != null && Number.isFinite(hpMaxOverride)) ? hpMaxOverride : (defaultHp != null ? Number(defaultHp) : null);
-    const ac = (acOverride != null && Number.isFinite(acOverride)) ? acOverride : (defaultAc != null ? Number(defaultAc) : null);
+    const hpMax = (hpMaxOverride != null && Number.isFinite(hpMaxOverride)) ? hpMaxOverride : (defaultHp != null && Number.isFinite(defaultHp) ? defaultHp : null);
+    const ac = (acOverride != null && Number.isFinite(acOverride)) ? acOverride : (defaultAc != null && Number.isFinite(defaultAc) ? defaultAc : null);
 
     const c = {
       id: uid(),
@@ -814,6 +858,8 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       hpCurrent: hpMax,
       hpMax,
       ac,
+      acDetails: defaultAcDetails,
+      hpDetails: defaultHpDetails,
       conditions: [],
       createdAt: t,
       updatedAt: t
@@ -835,14 +881,20 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
   if(idx<0) return res.status(404).json({ ok:false, message:"Not found" });
   const existing = combat.combatants[idx];
   const t = now();
+  const numOr = (v, fallback) => {
+    if (v == null) return fallback;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
   const next = {
     ...existing,
     label: req.body?.label != null ? String(req.body.label) : existing.label,
     friendly: req.body?.friendly != null ? Boolean(req.body.friendly) : existing.friendly,
     color: req.body?.color != null ? String(req.body.color) : existing.color,
-    hpCurrent: req.body?.hpCurrent != null ? Number(req.body.hpCurrent) : existing.hpCurrent,
-    hpMax: req.body?.hpMax != null ? Number(req.body.hpMax) : existing.hpMax,
-    ac: req.body?.ac != null ? Number(req.body.ac) : existing.ac,
+    hpCurrent: req.body?.hpCurrent != null ? numOr(req.body.hpCurrent, existing.hpCurrent) : existing.hpCurrent,
+    hpMax: req.body?.hpMax != null ? numOr(req.body.hpMax, existing.hpMax) : existing.hpMax,
+    ac: req.body?.ac != null ? numOr(req.body.ac, existing.ac) : existing.ac,
     updatedAt: t
   };
   combat.combatants[idx] = next;

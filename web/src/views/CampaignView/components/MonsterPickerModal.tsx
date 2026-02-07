@@ -518,46 +518,55 @@ export function MonsterPickerModal(props: {
   const [monster, setMonster] = React.useState<any | null>(null);
   const [qtyById, setQtyById] = React.useState<Record<string, number>>({});
   const [labelById, setLabelById] = React.useState<Record<string, string>>({});
+  // Numeric-only inputs (stored as strings for controlled inputs)
   const [acById, setAcById] = React.useState<Record<string, string>>({});
   const [hpById, setHpById] = React.useState<Record<string, string>>({});
+  // Read-only detail text (e.g. "natural armor", "17d12+85")
+  const [acDetailsById, setAcDetailsById] = React.useState<Record<string, string>>({});
+  const [hpDetailsById, setHpDetailsById] = React.useState<Record<string, string>>({});
   const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
 
-  const formatAcString = React.useCallback((m: any): string => {
-    const raw = m?.raw_json ?? m;
-    const acVal = raw?.ac ?? raw?.armor_class;
-    if (acVal == null) return "";
-    // Common shapes:
-    //  - string: "19 (natural armor)"
-    //  - number: 19
-    //  - object: { value: 19, note: "natural armor" }
-    //  - array: [{ value: 19, note: "natural armor" }]
-    const first = Array.isArray(acVal) ? acVal[0] : acVal;
-    if (typeof first === "string" || typeof first === "number") return String(first).trim();
-    const v = first?.value ?? first?.ac ?? first?.armor_class;
-    const note = first?.note ?? first?.type ?? first?.name;
-    if (v == null) return "";
-    return note ? `${String(v).trim()} (${String(note).trim()})` : String(v).trim();
+  const splitNumberAndDetails = React.useCallback((val: unknown): { num: string; details: string } => {
+    if (val == null) return { num: "", details: "" };
+
+    // Objects from some compendiums.
+    if (typeof val === "object") {
+      const v: any = val;
+      // AC: { value, note }
+      if (v?.value != null) {
+        const n = String(v.value);
+        const note = v?.note ?? v?.details ?? "";
+        return { num: (n.match(/\d+/)?.[0] ?? ""), details: String(note ?? "").trim() };
+      }
+      // HP: { average, formula }
+      if (v?.average != null || v?.avg != null || v?.formula != null) {
+        const avg = v?.average ?? v?.avg;
+        const formula = v?.formula ?? v?.roll;
+        return {
+          num: avg != null ? String(avg).match(/\d+/)?.[0] ?? "" : "",
+          details: formula != null ? String(formula).trim() : ""
+        };
+      }
+    }
+
+    const s = String(val).trim();
+    const numMatch = s.match(/\d+/);
+    const num = numMatch?.[0] ?? "";
+
+    // Prefer parenthetical content as details.
+    const paren = s.match(/\(([^)]+)\)/);
+    if (paren?.[1]) return { num, details: String(paren[1]).trim() };
+
+    // Otherwise, capture any trailing text after the number.
+    const rest = s.replace(/^\d+\s*/, "").trim();
+    return { num, details: rest };
   }, []);
 
-  const formatHpString = React.useCallback((m: any): string => {
-    const raw = m?.raw_json ?? m;
-    const hpVal = raw?.hp ?? raw?.hit_points;
-    if (hpVal == null) return "";
-    // Common shapes:
-    //  - string: "195 (17d12+85)"
-    //  - number: 195
-    //  - object: { average: 195, formula: "17d12+85" }
-    //  - object: { value: "195 (17d12+85)" }
-    if (typeof hpVal === "string" || typeof hpVal === "number") return String(hpVal).trim();
-    const v = hpVal?.value;
-    if (typeof v === "string" || typeof v === "number") return String(v).trim();
-    const avg = hpVal?.average ?? hpVal?.avg;
-    const formula = hpVal?.formula ?? hpVal?.roll;
-    if (avg == null && formula == null) return "";
-    // Some compendiums put 0 as a placeholder when HP is defined by a special rule.
-    if ((avg === 0 || String(avg) === "0") && !formula) return "";
-    if (avg != null && formula) return `${String(avg).trim()} (${String(formula).trim()})`;
-    return String(avg ?? formula).trim();
+  const sanitizeInt = React.useCallback((s: string) => {
+    // Keep only digits.
+    const out = String(s ?? "").replace(/[^0-9]/g, "");
+    // Avoid leading zeros like "000" unless the value is 0.
+    return out.replace(/^0+(\d)/, "$1");
   }, []);
 
   // When opening, select the first result (if any) for instant stat preview.
@@ -602,6 +611,8 @@ export function MonsterPickerModal(props: {
   const selectedLabel = selectedMonsterId ? labelById[selectedMonsterId] : "";
   const selectedAc = selectedMonsterId ? acById[selectedMonsterId] : "";
   const selectedHp = selectedMonsterId ? hpById[selectedMonsterId] : "";
+  const selectedAcDetails = selectedMonsterId ? (acDetailsById[selectedMonsterId] ?? "") : "";
+  const selectedHpDetails = selectedMonsterId ? (hpDetailsById[selectedMonsterId] ?? "") : "";
   const selectedFriendly = selectedMonsterId ? (friendlyById[selectedMonsterId] ?? false) : false;
 
   // When a monster is selected and its detail loads, prefill the editable fields
@@ -612,17 +623,22 @@ export function MonsterPickerModal(props: {
     if (!monster) return;
 
     const id = selectedMonsterId;
-    const defaultAc = formatAcString(monster);
-    const defaultHp = formatHpString(monster);
+    const raw = monster?.raw_json ?? monster;
+    const acVal = Array.isArray(raw?.ac) ? raw.ac[0] : (raw?.ac ?? raw?.armor_class);
+    const hpVal = raw?.hp ?? raw?.hit_points;
+    const { num: acNum, details: acDet } = splitNumberAndDetails(acVal);
+    const { num: hpNum, details: hpDet } = splitNumberAndDetails(hpVal);
 
-    setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultAc }));
-    setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultHp }));
+    setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: sanitizeInt(acNum) }));
+    setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: sanitizeInt(hpNum) }));
+    setAcDetailsById((prev) => (prev[id] != null ? prev : { ...prev, [id]: acDet }));
+    setHpDetailsById((prev) => (prev[id] != null ? prev : { ...prev, [id]: hpDet }));
     setFriendlyById((prev) => (prev[id] != null ? prev : { ...prev, [id]: false }));
-  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString]);
+  }, [props.isOpen, selectedMonsterId, monster, splitNumberAndDetails, sanitizeInt]);
 
   const parseLeadingNumber = React.useCallback((v: unknown) => {
     const s = String(v ?? "");
-    const m = s.match(/-?\d+/);
+    const m = s.match(/\d+/);
     return m ? Number(m[0]) : NaN;
   }, []);
 
@@ -738,25 +754,42 @@ export function MonsterPickerModal(props: {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, paddingBottom: 10 }}>
-              Armor Class ({selectedAc}): <Input
-                value={selectedAc ?? ""}
-                onChange={(e) => {
-                  if (!selectedMonsterId) return;
-                  setAcById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
-                }}
-                placeholder="AC"
-                disabled={!selectedMonsterId}
-              />
-              Hit Points ({selectedHp}): <Input
-                value={selectedHp ?? ""}
-                onChange={(e) => {
-                  if (!selectedMonsterId) return;
-                  setHpById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
-                }}
-                placeholder="HP"
-                disabled={!selectedMonsterId}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, paddingBottom: 10 }}>
+              <div style={{ display: "grid", gap: 6 }}>
+                <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
+                  Armor Class{selectedAcDetails ? ` (${selectedAcDetails})` : ""}:
+                </div>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={selectedAc ?? ""}
+                  onChange={(e) => {
+                    if (!selectedMonsterId) return;
+                    const v = sanitizeInt(e.target.value);
+                    setAcById((prev) => ({ ...prev, [selectedMonsterId]: v }));
+                  }}
+                  placeholder="AC"
+                  disabled={!selectedMonsterId}
+                />
+              </div>
+
+              <div style={{ display: "grid", gap: 6 }}>
+                <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
+                  Hit Points{selectedHpDetails ? ` (${selectedHpDetails})` : ""}:
+                </div>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={selectedHp ?? ""}
+                  onChange={(e) => {
+                    if (!selectedMonsterId) return;
+                    const v = sanitizeInt(e.target.value);
+                    setHpById((prev) => ({ ...prev, [selectedMonsterId]: v }));
+                  }}
+                  placeholder="HP"
+                  disabled={!selectedMonsterId}
+                />
+              </div>
             </div>
 
             <label style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 12 }}>
