@@ -36,7 +36,7 @@ export function CampaignView(props: {
 
   onEditCombatant: (combatantId: string) => void;
   onRemoveCombatant: (combatantId: string) => void;
-  onAddMonster: (monsterId: string, qty: number) => void;
+  onAddMonster: (monsterId: string, qty: number, opts?: { labelBase?: string; ac?: number; hpMax?: number; friendly?: boolean }) => void;
 
   onReorderAdventures: (ids: string[]) => void;
   onReorderLooseEncounters: (ids: string[]) => void;

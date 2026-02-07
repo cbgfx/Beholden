@@ -280,8 +280,8 @@ function MonsterStatblock(props: { monster: any | null }) {
   return (
     <div style={{ display: "grid", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 5 }}>
-        <div style={{ fontSize: 12, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
-        <div style={{ color: theme.colors.muted, fontWeight: 700, fontSize: 12 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
+        <div style={{ fontSize: 13, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+        <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
       <div style={{ color: theme.colors.muted }}>{[type, alignment].filter(Boolean).join(" • ")}</div>
@@ -386,7 +386,7 @@ function MonsterStatblock(props: { monster: any | null }) {
               ) : spellDetail ? (
                 <div style={{ display: "grid", gap: 4 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 5, alignItems: "baseline" }}>
-                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 14 }}>{spellDetail.name}</div>
+                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                       {(Number(spellDetail.level) === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`)}
                       {spellDetail.school ? ` • ${spellDetail.school}` : ""}
@@ -498,7 +498,7 @@ export function MonsterPickerModal(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; hpMax?: number }
+    opts?: { labelBase?: string; ac?: number; hpMax?: number; friendly?: boolean }
   ) => void;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
@@ -507,6 +507,7 @@ export function MonsterPickerModal(props: {
   const [labelById, setLabelById] = React.useState<Record<string, string>>({});
   const [acById, setAcById] = React.useState<Record<string, string>>({});
   const [hpById, setHpById] = React.useState<Record<string, string>>({});
+  const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
 
   // When opening, select the first result (if any) for instant stat preview.
   React.useEffect(() => {
@@ -550,6 +551,7 @@ export function MonsterPickerModal(props: {
   const selectedLabel = selectedMonsterId ? labelById[selectedMonsterId] : "";
   const selectedAc = selectedMonsterId ? acById[selectedMonsterId] : "";
   const selectedHp = selectedMonsterId ? hpById[selectedMonsterId] : "";
+  const selectedFriendly = selectedMonsterId ? Boolean(friendlyById[selectedMonsterId]) : false;
 
   return (
     <Modal
@@ -620,12 +622,14 @@ export function MonsterPickerModal(props: {
                           const labelBase = labelById[m.id] ?? m.name;
                           const acRaw = acById[m.id];
                           const hpRaw = hpById[m.id];
+                          const friendly = Boolean(friendlyById[m.id]);
                           const ac = acRaw != null && String(acRaw).trim() !== "" ? Number(acRaw) : undefined;
                           const hpMax = hpRaw != null && String(hpRaw).trim() !== "" ? Number(hpRaw) : undefined;
                           props.onAddMonster(m.id, qty, {
                             labelBase,
                             ac: Number.isFinite(ac as number) ? (ac as number) : undefined,
-                            hpMax: Number.isFinite(hpMax as number) ? (hpMax as number) : undefined
+                            hpMax: Number.isFinite(hpMax as number) ? (hpMax as number) : undefined,
+                            friendly
                           });
                         }}
                       >
@@ -680,6 +684,19 @@ export function MonsterPickerModal(props: {
                 />
               </div>
             </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: 10, color: theme.colors.text, paddingBottom: 10 }}>
+              <input
+                type="checkbox"
+                checked={selectedFriendly}
+                onChange={(e) => {
+                  if (!selectedMonsterId) return;
+                  setFriendlyById((prev) => ({ ...prev, [selectedMonsterId]: e.target.checked }));
+                }}
+                disabled={!selectedMonsterId}
+              />
+              Friendly
+            </label>
 
             <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingRight: 6 }}>
               <MonsterStatblock monster={monster} />

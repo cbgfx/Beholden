@@ -82,7 +82,7 @@ export function EncounterRosterPanel(props: {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr auto",
-                  gap: 10,
+                  gap: 5,
                   alignItems: "center",
                   padding: 10,
                   borderRadius: 12,

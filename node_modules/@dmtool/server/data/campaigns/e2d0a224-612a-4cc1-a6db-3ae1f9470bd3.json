@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770495812623,
+      "updatedAt": 1770498067503,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -405,7 +405,7 @@
           "updatedAt": 1770495765821
         },
         {
-          "id": "5b56991b-38f9-4059-b7a7-c0d12718f1ed",
+          "id": "09773a9c-eb1b-4941-a36c-19386deb06aa",
           "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
           "baseType": "monster",
           "baseId": "m_adult copper dragon",
@@ -418,8 +418,8 @@
           "hpMax": null,
           "ac": null,
           "conditions": [],
-          "createdAt": 1770495812623,
-          "updatedAt": 1770495812623
+          "createdAt": 1770498067503,
+          "updatedAt": 1770498067503
         }
       ]
     }
