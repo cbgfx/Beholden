@@ -35,8 +35,8 @@ export function CombatView() {
   const { encounterId } = useParams();
   const { state } = useStore();
   const [combatants, setCombatants] = React.useState<Combatant[]>([]);
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const [targetId, setTargetId] = React.useState<string | null>(null);
   const [round, setRound] = React.useState(1);
   const [delta, setDelta] = React.useState<string>("0");
   const [isNarrow, setIsNarrow] = React.useState(false);
@@ -51,7 +51,7 @@ export function CombatView() {
     if (!encounterId) return;
     const rows = await api<Combatant[]>(`/api/encounters/${encounterId}/combatants`);
     setCombatants(rows);
-    setSelectedId((prev) => {
+    setTargetId((prev) => {
       if (prev && rows.some((c) => (c as any).id === prev)) return prev;
       return (rows[0] as any)?.id ?? null;
     });
@@ -78,9 +78,9 @@ export function CombatView() {
     if (msg.type === "encounter:combatantsChanged" && msg.payload?.encounterId === encounterId) refresh();
   });
 
-  const selected = React.useMemo(
-    () => combatants.find((c) => (c as any).id === selectedId) ?? null,
-    [combatants, selectedId]
+  const target = React.useMemo(
+    () => combatants.find((c) => (c as any).id === targetId) ?? null,
+    [combatants, targetId]
   );
 
   const allHaveInitiative = React.useMemo(() => {
@@ -110,10 +110,6 @@ export function CombatView() {
 
   const active = (orderedCombatants as any)[activeIndex] ?? null;
 
-  React.useEffect(() => {
-    if (active?.id) setSelectedId(active.id);
-  }, [active?.id]);
-
   // When initiative becomes fully set (combat "starts"), snap to Round 1, first in order.
   const prevAllHaveInitRef = React.useRef(false);
   React.useEffect(() => {
@@ -124,8 +120,11 @@ export function CombatView() {
     prevAllHaveInitRef.current = allHaveInitiative;
   }, [allHaveInitiative]);
 
-  const selectedAny: any = selected as any;
-  const selectedMonster = selectedAny?.baseType === "monster" ? monsterCache[selectedAny.baseId] : null;
+  const activeAny: any = active as any;
+  const targetAny: any = target as any;
+
+  const activeMonster = activeAny?.baseType === "monster" ? monsterCache[activeAny.baseId] : null;
+  const targetMonster = targetAny?.baseType === "monster" ? monsterCache[targetAny.baseId] : null;
 
   const playersById = React.useMemo(() => {
     const m: Record<string, any> = {};
@@ -142,12 +141,12 @@ export function CombatView() {
   React.useEffect(() => {
     let alive = true;
     (async () => {
-      if (!selectedAny || selectedAny.baseType !== "monster") return;
-      if (monsterCache[selectedAny.baseId]) return;
+      if (!targetAny || targetAny.baseType !== "monster") return;
+      if (monsterCache[targetAny.baseId]) return;
       try {
-        const d = await api<MonsterDetail>(`/api/compendium/monsters/${selectedAny.baseId}`);
+        const d = await api<MonsterDetail>(`/api/compendium/monsters/${targetAny.baseId}`);
         if (!alive) return;
-        setMonsterCache((prev) => ({ ...prev, [selectedAny.baseId]: d }));
+        setMonsterCache((prev) => ({ ...prev, [targetAny.baseId]: d }));
       } catch {
         // ignore
       }
@@ -155,7 +154,7 @@ export function CombatView() {
     return () => {
       alive = false;
     };
-  }, [selectedAny?.id, selectedAny?.baseType, selectedAny?.baseId]);
+  }, [targetAny?.id, targetAny?.baseType, targetAny?.baseId]);
 
   // Preload CR data for all monsters in the order list so rows don't show Lvl 0.
   React.useEffect(() => {
@@ -191,11 +190,11 @@ export function CombatView() {
   }, [delta]);
 
   async function applyHpDelta(kind: "damage" | "heal") {
-    if (!encounterId || !selectedAny) return;
+    if (!encounterId || !targetAny) return;
     if (damageAmount <= 0) return;
-    const cur = selectedAny.hpCurrent;
-    const overrides = selectedAny.overrides || null;
-    const rawMax = selectedAny.hpMax;
+    const cur = targetAny.hpCurrent;
+    const overrides = targetAny.overrides || null;
+    const rawMax = targetAny.hpMax;
     const max = overrides?.hpMaxOverride != null ? overrides.hpMaxOverride : rawMax;
     const tempHp = Math.max(0, Number(overrides?.tempHp ?? 0) || 0);
     if (cur == null) return;
@@ -215,7 +214,7 @@ export function CombatView() {
       else nextHp = nextHp + damageAmount;
     }
 
-    await api(`/api/encounters/${encounterId}/combatants/${selectedAny.id}`, {
+    await api(`/api/encounters/${encounterId}/combatants/${targetAny.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -230,9 +229,9 @@ export function CombatView() {
     setDelta("0");
   }
 
-  async function updateSelectedCombatant(patch: any) {
-    if (!encounterId || !selectedAny) return;
-    await api(`/api/encounters/${encounterId}/combatants/${selectedAny.id}`, {
+  async function updateCombatant(id: string, patch: any) {
+    if (!encounterId) return;
+    await api(`/api/encounters/${encounterId}/combatants/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch)
@@ -327,16 +326,21 @@ export function CombatView() {
     }
   }
 
-  const spellNames = React.useMemo(() => {
-    if (!selectedMonster) return [] as string[];
-    return parseMonsterSpells(selectedMonster);
-  }, [selectedMonster?.id]);
+  const targetSpellNames = React.useMemo(() => {
+    if (!targetMonster) return [] as string[];
+    return parseMonsterSpells(targetMonster);
+  }, [targetMonster?.id]);
+
+  const activeSpellNames = React.useMemo(() => {
+    if (!activeMonster) return [] as string[];
+    return parseMonsterSpells(activeMonster);
+  }, [activeMonster?.id]);
 
   // Load spell levels (light cache) so we can sort by spell level.
   React.useEffect(() => {
     let alive = true;
     (async () => {
-      const names = spellNames;
+      const names = Array.from(new Set([...targetSpellNames, ...activeSpellNames]));
       for (const n of names) {
         const key = n.trim().toLowerCase();
         if (!key) continue;
@@ -356,10 +360,10 @@ export function CombatView() {
     return () => {
       alive = false;
     };
-  }, [spellNames.join("|"), spellLevelCache]);
+  }, [targetSpellNames.join("|"), activeSpellNames.join("|"), spellLevelCache]);
 
-  const sortedSpellNames = React.useMemo(() => {
-    const rows = [...spellNames];
+  function sortSpells(names: string[]) {
+    const rows = [...names];
     rows.sort((a, b) => {
       const al = spellLevelCache[a.trim().toLowerCase()] ?? 99;
       const bl = spellLevelCache[b.trim().toLowerCase()] ?? 99;
@@ -367,7 +371,10 @@ export function CombatView() {
       return a.localeCompare(b);
     });
     return rows;
-  }, [spellNames, spellLevelCache]);
+  }
+
+  const sortedTargetSpellNames = React.useMemo(() => sortSpells(targetSpellNames), [targetSpellNames, spellLevelCache]);
+  const sortedActiveSpellNames = React.useMemo(() => sortSpells(activeSpellNames), [activeSpellNames, spellLevelCache]);
 
   return (
     <div style={{ padding: 14 }}>
@@ -383,37 +390,45 @@ export function CombatView() {
         style={{
           marginTop: 14,
           display: "grid",
-          gridTemplateColumns: isNarrow ? "1fr" : "minmax(250px, 300px) minmax(0, 1fr)",
+          gridTemplateColumns: isNarrow ? "1fr" : "minmax(0, 1fr) minmax(250px, 300px) minmax(0, 1fr)",
           gap: 14,
           alignItems: "start"
         }}
       >
+        <CombatantDetailsPanel
+          roleTitle="Active"
+          selected={active}
+          isNarrow={isNarrow}
+          selectedMonster={activeMonster}
+          spellNames={sortedActiveSpellNames}
+          showHpActions={false}
+          onUpdate={(patch) => active?.id ? updateCombatant((active as any).id, patch) : void 0}
+          onOpenSpell={(name) => openSpellByName(name)}
+        />
+
         <CombatOrderPanel
           combatants={orderedCombatants}
           playersById={playersById}
           monsterCrById={monsterCrById}
-          activeIndex={activeIndex}
-          selectedId={selectedId}
-          onSelect={(id, idx) => {
-            setSelectedId(id);
-            setActiveIndex(idx);
-          }}
+          activeId={active?.id ?? null}
+          targetId={target?.id ?? null}
+          onSelectTarget={(id) => setTargetId(id)}
         />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <CombatantDetailsPanel
-            selected={selected}
-            isNarrow={isNarrow}
-            selectedMonster={selectedMonster}
-            spellNames={sortedSpellNames}
-            delta={delta}
-            onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}
-            onDamage={() => applyHpDelta("damage")}
-            onHeal={() => applyHpDelta("heal")}
-            onUpdate={updateSelectedCombatant}
-            onOpenSpell={(name) => openSpellByName(name)}
-          />
-        </div>
+        <CombatantDetailsPanel
+          roleTitle="Target"
+          selected={target}
+          isNarrow={isNarrow}
+          selectedMonster={targetMonster}
+          spellNames={sortedTargetSpellNames}
+          showHpActions={true}
+          delta={delta}
+          onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}
+          onDamage={() => applyHpDelta("damage")}
+          onHeal={() => applyHpDelta("heal")}
+          onUpdate={(patch) => target?.id ? updateCombatant((target as any).id, patch) : void 0}
+          onOpenSpell={(name) => openSpellByName(name)}
+        />
       </div>
 
       <SpellDetailModal

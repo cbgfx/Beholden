@@ -10,14 +10,16 @@ import { MonsterSpells } from "../components/MonsterSpells";
 import { MonsterTraits } from "../components/MonsterTraits";
 
 export function CombatantDetailsPanel(props: {
+  roleTitle?: string;
   selected: Combatant | null;
   isNarrow: boolean;
   selectedMonster: MonsterDetail | null;
   spellNames: string[];
-  delta: string;
-  onDeltaChange: (v: string) => void;
-  onDamage: () => void;
-  onHeal: () => void;
+  showHpActions?: boolean;
+  delta?: string;
+  onDeltaChange?: (v: string) => void;
+  onDamage?: () => void;
+  onHeal?: () => void;
   onUpdate: (patch: any) => void;
   onOpenSpell: (name: string) => void;
 }) {
@@ -65,7 +67,10 @@ export function CombatantDetailsPanel(props: {
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span>{props.selected ? selectedAny.label : "No selection"}</span>
+          <span>
+            {props.roleTitle ? <span style={{ color: theme.colors.muted }}>{props.roleTitle}: </span> : null}
+            {props.selected ? selectedAny.label : "No selection"}
+          </span>
           {props.selected ? (
             selectedAny.baseType === "monster" ? (
               <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
@@ -78,29 +83,31 @@ export function CombatantDetailsPanel(props: {
         </div>
       }
       actions={
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input
-            value={props.delta}
-            onChange={(e) => props.onDeltaChange(e.target.value)}
-            placeholder="0"
-            style={{
-              width: 54,
-              padding: "6px 8px",
-              borderRadius: 10,
-              border: `1px solid ${theme.colors.panelBorder}`,
-              background: theme.colors.panelBg,
-              color: theme.colors.text,
-              fontWeight: 900,
-              fontSize: 12
-            }}
-          />
-          <Button variant="danger" onClick={props.onDamage}>
-            Damage
-          </Button>
-          <Button variant="health" onClick={props.onHeal}>
-            Heal
-          </Button>
-        </div>
+        props.showHpActions === false ? null : (
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              value={props.delta ?? "0"}
+              onChange={(e) => props.onDeltaChange?.(e.target.value)}
+              placeholder="0"
+              style={{
+                width: 54,
+                padding: "6px 8px",
+                borderRadius: 10,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: theme.colors.panelBg,
+                color: theme.colors.text,
+                fontWeight: 900,
+                fontSize: 12
+              }}
+            />
+            <Button variant="danger" onClick={props.onDamage}>
+              Damage
+            </Button>
+            <Button variant="health" onClick={props.onHeal}>
+              Heal
+            </Button>
+          </div>
+        )
       }
     >
       {!props.selected ? (

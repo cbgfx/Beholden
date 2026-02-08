@@ -9,9 +9,9 @@ export function CombatOrderPanel(props: {
   combatants: Combatant[];
   playersById: Record<string, { playerName: string; characterName: string; class: string; species: string; level: number; ac: number; hpMax: number; hpCurrent: number }>;
   monsterCrById: Record<string, number | null | undefined>;
-  activeIndex: number;
-  selectedId: string | null;
-  onSelect: (id: string, index: number) => void;
+  activeId: string | null;
+  targetId: string | null;
+  onSelectTarget: (id: string) => void;
 }) {
   return (
     <Panel
@@ -23,8 +23,8 @@ export function CombatOrderPanel(props: {
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: "70vh", overflow: "auto" }}>
         {props.combatants.map((c, idx) => {
-          const isActive = idx === props.activeIndex;
-          const isSelected = c.id === props.selectedId;
+          const isActive = c.id === props.activeId;
+          const isTarget = c.id === props.targetId;
           // Combatants in this codebase use baseType/baseId (not sourceType/sourceId).
           // hp/ac can be nullable in the domain type, so normalize to numbers for rendering.
           const hpCurrent = Number(c.hpCurrent ?? 0);
@@ -60,13 +60,6 @@ export function CombatOrderPanel(props: {
             vm.level = Number(playerRec.level ?? 0) || 0;
           }
 
-          const init = Number.isFinite(Number((c as any).initiative)) ? Number((c as any).initiative) : null;
-          const metaRight = (
-            <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>
-              Init {init != null ? init : "—"}
-            </span>
-          );
-
           const iconColor = isDead
             ? theme.colors.muted
             : (c.baseType === "player" ? theme.colors.player : (c.color || (friendly ? theme.colors.health : theme.colors.danger)));
@@ -80,7 +73,7 @@ export function CombatOrderPanel(props: {
           return (
             <button
               key={c.id}
-              onClick={() => props.onSelect(c.id, idx)}
+              onClick={() => props.onSelectTarget(c.id)}
               style={{
                 all: "unset",
                 cursor: "pointer",
@@ -103,7 +96,7 @@ export function CombatOrderPanel(props: {
                   style={{
                     borderRadius: 14,
                     padding: 0,
-                    background: isSelected ? theme.colors.selected : "transparent",
+                    background: isTarget ? theme.colors.selected : "transparent",
                     border: `1px solid ${isActive ? theme.colors.accent : theme.colors.panelBorder}`
                   }}
                 >
