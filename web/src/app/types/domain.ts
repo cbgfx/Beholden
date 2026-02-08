@@ -30,5 +30,7 @@ export type Combatant = {
   hpDetail: string | null;
   ac: number | null;
   acDetail: string | null;
+  // Initiative for turn order. Null means not set yet.
+  initiative: number | null;
 };
 export type Meta = { ok: boolean; ips: string[]; host: string; port: number; hasCompendium: boolean };

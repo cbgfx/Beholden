@@ -13,7 +13,6 @@ export function CombatantDetailsPanel(props: {
   selected: Combatant | null;
   isNarrow: boolean;
   selectedMonster: MonsterDetail | null;
-  selectedPlayer: { level: number; class: string; species: string; playerName: string } | null;
   spellNames: string[];
   delta: string;
   onDeltaChange: (v: string) => void;
@@ -42,12 +41,16 @@ export function CombatantDetailsPanel(props: {
   const [tempHp, setTempHp] = React.useState("0");
   const [acBonus, setAcBonus] = React.useState("0");
   const [hpMaxOverride, setHpMaxOverride] = React.useState("");
+  const [initiative, setInitiative] = React.useState("");
 
   React.useEffect(() => {
     const o = (selectedAny?.overrides ?? { tempHp: 0, acBonus: 0, hpMaxOverride: null });
     setTempHp(String(o.tempHp ?? 0));
     setAcBonus(String(o.acBonus ?? 0));
     setHpMaxOverride(o.hpMaxOverride != null ? String(o.hpMaxOverride) : "");
+    setInitiative(
+      Number.isFinite(selectedAny?.initiative) ? String(selectedAny.initiative) : ""
+    );
   }, [selectedAny?.id]);
 
   function commitOverrides(next: { tempHp?: number | null; acBonus?: number | null; hpMaxOverride?: number | null }) {
@@ -63,14 +66,11 @@ export function CombatantDetailsPanel(props: {
           <span>{props.selected ? selectedAny.label : "No selection"}</span>
           {props.selected ? (
             selectedAny.baseType === "monster" ? (
-              // Only show the base name if the label differs (otherwise we render it twice).
-              (String(selectedAny.label ?? "").trim() !== String(selectedAny.name ?? "").trim() ? (
-                <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>({selectedAny.name})</span>
-              ) : null)
+              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
+                ({selectedAny.name})
+              </span>
             ) : selectedAny.baseType === "player" ? (
-              (selectedAny.playerName ? (
-                <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>({selectedAny.playerName})</span>
-              ) : null)
+              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>(Player)</span>
             ) : null
           ) : null}
         </div>
@@ -114,18 +114,7 @@ export function CombatantDetailsPanel(props: {
                 border: `1px solid ${theme.colors.panelBorder}`
               }}
             >
-              {/* Replace the generic label with the player's build (or monster CR) so the order list can stay compact. */}
-              {selectedAny.baseType === "player" && props.selectedPlayer ? (
-                <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
-                  Lvl {props.selectedPlayer.level} {props.selectedPlayer.species} {props.selectedPlayer.class}
-                </div>
-              ) : selectedAny.baseType === "monster" ? (
-                <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
-                  CR {props.selectedMonster?.cr ?? "?"}
-                </div>
-              ) : (
-                <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>Vitals</div>
-              )}
+              <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>Vitals</div>
               <div style={{ marginTop: 10 }}>
                 <HPBar
                   cur={Number(selectedAny.hpCurrent ?? 0)}
@@ -149,15 +138,106 @@ export function CombatantDetailsPanel(props: {
               <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>Overrides</div>
 
               <div style={{ marginTop: 10, display: "grid", gap: 10 }}>
-                {selectedAny.baseType === "monster" || selectedAny.baseType === "inpc" ? (
-                  <>
-                    <label style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, fontWeight: 900 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                  <div>
+                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Initiative</div>
+                    <input
+                      value={initiative}
+                      onChange={(e) => setInitiative(e.target.value.replace(/[^0-9]/g, ""))}
+                      onBlur={() => {
+                        const v = initiative.trim();
+                        props.onUpdate({ initiative: v ? Math.max(1, Math.min(30, Number(v) || 1)) : null });
+                      }}
+                      placeholder="—"
+                      style={{
+                        width: "100%",
+                        padding: "6px 8px",
+                        borderRadius: 10,
+                        border: `1px solid ${theme.colors.panelBorder}`,
+                        background: theme.colors.panelBg,
+                        color: theme.colors.text,
+                        fontWeight: 900,
+                        fontSize: 12
+                      }}
+                    />
+                  </div>
+
+                  {selectedAny?.baseType !== "monster" ? (
+                    <>
+                      <div>
+                        <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>AC Bonus</div>
+                        <input
+                          value={acBonus}
+                          onChange={(e) => setAcBonus(e.target.value.replace(/[^0-9-]/g, ""))}
+                          onBlur={() => commitOverrides({ acBonus: Number(acBonus) || 0 })}
+                          placeholder="0"
+                          style={{
+                            width: "100%",
+                            padding: "6px 8px",
+                            borderRadius: 10,
+                            border: `1px solid ${theme.colors.panelBorder}`,
+                            background: theme.colors.panelBg,
+                            color: theme.colors.text,
+                            fontWeight: 900,
+                            fontSize: 12
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Temp HP</div>
+                        <input
+                          value={tempHp}
+                          onChange={(e) => setTempHp(e.target.value.replace(/[^0-9]/g, ""))}
+                          onBlur={() => commitOverrides({ tempHp: Math.max(0, Number(tempHp) || 0) })}
+                          placeholder="0"
+                          style={{
+                            width: "100%",
+                            padding: "6px 8px",
+                            borderRadius: 10,
+                            border: `1px solid ${theme.colors.panelBorder}`,
+                            background: theme.colors.panelBg,
+                            color: theme.colors.text,
+                            fontWeight: 900,
+                            fontSize: 12
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Max HP</div>
+                        <input
+                          value={hpMaxOverride}
+                          onChange={(e) => setHpMaxOverride(e.target.value.replace(/[^0-9]/g, ""))}
+                          onBlur={() => commitOverrides({ hpMaxOverride: hpMaxOverride ? Math.max(1, Number(hpMaxOverride) || 1) : null })}
+                          placeholder="—"
+                          style={{
+                            width: "100%",
+                            padding: "6px 8px",
+                            borderRadius: 10,
+                            border: `1px solid ${theme.colors.panelBorder}`,
+                            background: theme.colors.panelBg,
+                            color: theme.colors.text,
+                            fontWeight: 900,
+                            fontSize: 12
+                          }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ gridColumn: "span 2" }} />
+                  )}
+                </div>
+
+                {selectedAny?.baseType === "monster" ? (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignItems: "end" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
                       <input
                         type="checkbox"
                         checked={Boolean(selectedAny.friendly)}
-                        onChange={(e) => props.onUpdate({ friendly: Boolean(e.target.checked) })}
+                        onChange={(e) => props.onUpdate({ friendly: e.target.checked })}
                       />
-                      Friendly
+                      <span style={{ color: theme.colors.text, fontSize: 12, fontWeight: 900 }}>Friendly</span>
                     </label>
 
                     <div>
@@ -184,71 +264,8 @@ export function CombatantDetailsPanel(props: {
                         })}
                       </div>
                     </div>
-                  </>
-                ) : (
-                  // Player overrides remain numeric (color labels don't apply to players).
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-                    <div>
-                      <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>AC Bonus</div>
-                      <input
-                        value={acBonus}
-                        onChange={(e) => setAcBonus(e.target.value.replace(/[^0-9-]/g, ""))}
-                        onBlur={() => commitOverrides({ acBonus: Number(acBonus) || 0 })}
-                        placeholder="0"
-                        style={{
-                          width: "100%",
-                          padding: "6px 8px",
-                          borderRadius: 10,
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          background: theme.colors.panelBg,
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          fontSize: 12
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Temp HP</div>
-                      <input
-                        value={tempHp}
-                        onChange={(e) => setTempHp(e.target.value.replace(/[^0-9]/g, ""))}
-                        onBlur={() => commitOverrides({ tempHp: Math.max(0, Number(tempHp) || 0) })}
-                        placeholder="0"
-                        style={{
-                          width: "100%",
-                          padding: "6px 8px",
-                          borderRadius: 10,
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          background: theme.colors.panelBg,
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          fontSize: 12
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Max HP</div>
-                      <input
-                        value={hpMaxOverride}
-                        onChange={(e) => setHpMaxOverride(e.target.value.replace(/[^0-9]/g, ""))}
-                        onBlur={() => commitOverrides({ hpMaxOverride: hpMaxOverride ? Math.max(1, Number(hpMaxOverride) || 1) : null })}
-                        placeholder="—"
-                        style={{
-                          width: "100%",
-                          padding: "6px 8px",
-                          borderRadius: 10,
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          background: theme.colors.panelBg,
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          fontSize: 12
-                        }}
-                      />
-                    </div>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 

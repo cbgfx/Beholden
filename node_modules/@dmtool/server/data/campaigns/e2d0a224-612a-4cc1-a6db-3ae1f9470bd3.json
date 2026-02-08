@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770517907982,
-      "updatedAt": 1770518670441,
+      "updatedAt": 1770518817318,
       "combatants": [
         {
           "id": "d85ec826-9dde-4821-a8a6-07460da2ad8b",
@@ -357,7 +357,8 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770517917253,
-          "updatedAt": 1770517917253
+          "updatedAt": 1770518802489,
+          "initiative": 4
         },
         {
           "id": "f88888ce-a281-4f01-b316-43637456c697",
@@ -380,15 +381,17 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770517917253,
-          "updatedAt": 1770517917253
+          "updatedAt": 1770518797922,
+          "initiative": 15
         },
         {
-          "id": "01ee8c25-fe01-4f8e-8779-3d8a3460eafc",
+          "id": "dfb8a848-8143-459b-a72f-2d0d9da41cfc",
           "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
           "baseType": "monster",
           "baseId": "m_ancient copper dragon [2024]",
           "name": "Ancient Copper Dragon [2024]",
-          "label": "Ancient Copper Dragon [2024] 1",
+          "label": "Ancient Copper Dragon [2024]",
+          "initiative": 21,
           "friendly": false,
           "color": "red",
           "overrides": {
@@ -396,37 +399,14 @@
             "acBonus": 0,
             "hpMaxOverride": null
           },
-          "hpCurrent": 20,
-          "hpMax": 20,
-          "hpDetail": "(21d20+147)",
-          "ac": 20,
+          "hpCurrent": 184,
+          "hpMax": 184,
+          "hpDetail": null,
+          "ac": 18,
           "acDetail": null,
           "conditions": [],
-          "createdAt": 1770518670441,
-          "updatedAt": 1770518670441
-        },
-        {
-          "id": "2a9ddfcd-3379-466a-929a-8e7095c67fb5",
-          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-          "baseType": "monster",
-          "baseId": "m_ancient copper dragon [2024]",
-          "name": "Ancient Copper Dragon [2024]",
-          "label": "Ancient Copper Dragon [2024] 2",
-          "friendly": false,
-          "color": "red",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 20,
-          "hpMax": 20,
-          "hpDetail": "(21d20+147)",
-          "ac": 20,
-          "acDetail": null,
-          "conditions": [],
-          "createdAt": 1770518670441,
-          "updatedAt": 1770518670441
+          "createdAt": 1770518765230,
+          "updatedAt": 1770518817318
         }
       ]
     }

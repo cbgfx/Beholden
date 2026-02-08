@@ -749,6 +749,7 @@ app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
       baseId: p.id,
       name: p.characterName,
       label: p.characterName,
+      initiative: null,
       friendly: true,
       color: "green",
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
@@ -814,6 +815,7 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       baseId: monsterId,
       name: baseName,
       label,
+      initiative: null,
       friendly,
       color: friendly ? "lightgreen" : "red",
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
@@ -845,6 +847,7 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
   const t = now();
   const next = {
     ...existing,
+    initiative: req.body?.initiative !== undefined ? (req.body.initiative === null || req.body.initiative === "" ? null : Number(req.body.initiative)) : existing.initiative,
     label: req.body?.label != null ? String(req.body.label) : existing.label,
     friendly: req.body?.friendly != null ? Boolean(req.body.friendly) : existing.friendly,
     color: req.body?.color != null ? String(req.body.color) : existing.color,
@@ -853,6 +856,7 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
     hpDetail: req.body?.hpDetail != null ? String(req.body.hpDetail) : existing.hpDetail,
     ac: req.body?.ac != null ? Number(req.body.ac) : existing.ac,
     acDetail: req.body?.acDetail != null ? String(req.body.acDetail) : existing.acDetail,
+    initiative: req.body?.initiative === null ? null : (req.body?.initiative != null ? Number(req.body.initiative) : (existing.initiative ?? null)),
     overrides: req.body?.overrides != null ? req.body.overrides : existing.overrides,
     updatedAt: t
   };
