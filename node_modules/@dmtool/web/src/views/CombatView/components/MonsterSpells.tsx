@@ -1,6 +1,7 @@
 import React from "react";
 import { theme } from "../../../app/theme/theme";
-import { titleCase } from "../utils";
+import { titleCase } from "@/lib/format/titleCase";
+
 
 export function MonsterSpells(props: {
   spellNames: string[];

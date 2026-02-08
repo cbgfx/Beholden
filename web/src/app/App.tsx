@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ShellLayout } from "./layout/ShellLayout";
 import { TopBar } from "./layout/TopBar";
-import { StoreProvider, useStore } from "./state/store";
+import { StoreProvider, useStore } from "@/app/store";
 import { api } from "./services/api";
 import { useWs } from "./services/ws";
-import type { Adventure, Campaign, Combatant, Encounter, Meta, Note, Player } from "./types/domain";
+import type { Adventure, Campaign, Combatant, Encounter, Meta, Note, Player, AddMonsterOptions } from "./types/domain";
 import { HomeEmptyView } from "../views/HomeEmptyView";
 import { CompendiumView } from "../views/CompendiumView/CompendiumView";
 import { CampaignView } from "../views/CampaignView/CampaignView";
@@ -153,7 +153,7 @@ function AppInner() {
   async function addMonster(
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
+    opts?: AddMonsterOptions
   ) {
     if (!state.selectedEncounterId) return;
     const labelBase = opts?.labelBase;

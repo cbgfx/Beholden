@@ -1,15 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { theme } from "../../app/theme/theme";
-import { useStore } from "../../app/state/store";
+import { useStore } from "@/app/store";
+import type { AddMonsterOptions } from "../../app/types/domain";
 
-import { AdventuresPanel } from "./sections/AdventuresPanel";
-import { EncountersPanel } from "./sections/EncountersPanel";
-import { LooseEncountersPanel } from "./sections/LooseEncountersPanel";
-import { EncounterRosterPanel } from "./sections/EncounterRosterPanel";
-import { PlayersPanel } from "./sections/PlayersPanel";
-import { CampaignNotesPanel } from "./sections/CampaignNotesPanel";
-import { AdventureNotesPanel } from "./sections/AdventureNotesPanel";
+import { AdventuresPanel } from "./panels/AdventuresPanel";
+import { EncountersPanel } from "./panels/EncountersPanel";
+import { LooseEncountersPanel } from "./panels/LooseEncountersPanel";
+import { EncounterRosterPanel } from "./panels/EncounterRosterPanel";
+import { PlayersPanel } from "./panels/PlayersPanel";
+import { CampaignNotesPanel } from "./panels/CampaignNotesPanel";
+import { AdventureNotesPanel } from "./panels/AdventureNotesPanel";
 
 export function CampaignView(props: {
   onCreateAdventure: () => void;
@@ -39,7 +40,7 @@ export function CampaignView(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
+    opts?: AddMonsterOptions
   ) => void;
 
   onReorderAdventures: (ids: string[]) => void;

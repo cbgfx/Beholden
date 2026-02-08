@@ -1,10 +1,12 @@
 import React from "react";
 import { api } from "../../../app/services/api";
+import { parseLeadingNumber, splitLeadingNumberAndDetail } from "../../../lib/parse/statDetails";
 import { theme } from "../../../app/theme/theme";
+import type { AddMonsterOptions } from "../../../app/types/domain";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import { IconButton } from "../../../components/ui/IconButton";
-import { IconClose } from "../../../components/ui/Icons";
+import { IconClose } from "../../../components/icons";
 import { Modal } from "../../../components/overlay/Modal";
 
 export type CompendiumMonsterRow = {
@@ -247,7 +249,7 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
             }}
           >
             <div style={{ color: theme.colors.text, fontWeight: 900 }}>{t.name ?? t.title ?? "—"}</div>
-            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 12 }}>
+            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 13 }}>
               {t.text ?? t.description ?? ""}
             </div>
           </div>
@@ -280,7 +282,7 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
   return (
     <div style={{ display: "grid", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 5 }}>
-        <div style={{ fontSize: 12, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+        <div style={{ fontSize: 14, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
         <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
@@ -399,22 +401,22 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
               ) : spellDetail ? (
                 <div style={{ display: "grid", gap: 4 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 5, alignItems: "baseline" }}>
-                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 12 }}>{spellDetail.name}</div>
+                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                       {(Number(spellDetail.level) === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`)}
                       {spellDetail.school ? ` • ${spellDetail.school}` : ""}
                     </div>
                   </div>
 
-                  <div style={{ color: theme.colors.muted, fontSize: 12 }}>
+                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
                     {[spellDetail.time, spellDetail.range, spellDetail.duration].filter(Boolean).join(" • ")}
                   </div>
 
                   {spellDetail.components ? (
-                    <div style={{ color: theme.colors.muted, fontSize: 12 }}>Components: {spellDetail.components}</div>
+                    <div style={{ color: theme.colors.muted, fontSize: 13 }}>Components: {spellDetail.components}</div>
                   ) : null}
 
-                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 12 }}>
+                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 13 }}>
                     {Array.isArray(spellDetail.text) ? spellDetail.text.filter(Boolean).join("\n") : String(spellDetail.text ?? "")}
                   </div>
                 </div>
@@ -466,7 +468,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           props.onChange(Math.max(1, v - 1));
         }}
       >
-        <span style={{ fontWeight: 900, fontSize: 12, lineHeight: 0 }}>−</span>
+        <span style={{ fontWeight: 900, fontSize: 14, lineHeight: 0 }}>−</span>
       </IconButton>
 
       <div
@@ -494,7 +496,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           props.onChange(Math.min(20, v + 1));
         }}
       >
-        <span style={{ fontWeight: 900, fontSize: 12, lineHeight: 0 }}>+</span>
+        <span style={{ fontWeight: 900, fontSize: 14, lineHeight: 0 }}>+</span>
       </IconButton>
     </div>
   );
@@ -511,7 +513,7 @@ export function MonsterPickerModal(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
+    opts?: AddMonsterOptions
   ) => void;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
@@ -523,22 +525,6 @@ export function MonsterPickerModal(props: {
   const [hpById, setHpById] = React.useState<Record<string, string>>({});
   const [hpDetailById, setHpDetailById] = React.useState<Record<string, string>>({});
   const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
-
-  const splitNumberAndDetail = React.useCallback((raw: unknown): { numText: string; num: number | null; detail: string } => {
-    const s = String(raw ?? "").trim();
-    if (!s) return { numText: "", num: null, detail: "" };
-
-    const m = s.match(/-?\d+/);
-    if (!m || m.index == null) return { numText: "", num: null, detail: s };
-
-    const numText = m[0];
-    const num = Number(numText);
-    const after = s.slice(m.index + m[0].length).trim();
-
-    // Prefer dropping leading punctuation/brackets.
-    const detail = after.replace(/^[:\-–—]+\s*/, "").trim();
-    return { numText, num: Number.isFinite(num) ? num : null, detail };
-  }, []);
 
   const formatAcString = React.useCallback((m: any): string => {
     const raw = m?.raw_json ?? m;
@@ -634,21 +620,15 @@ export function MonsterPickerModal(props: {
     const id = selectedMonsterId;
     const defaultAcRaw = formatAcString(monster);
     const defaultHpRaw = formatHpString(monster);
-    const acSplit = splitNumberAndDetail(defaultAcRaw);
-    const hpSplit = splitNumberAndDetail(defaultHpRaw);
+    const acSplit = splitLeadingNumberAndDetail(defaultAcRaw);
+    const hpSplit = splitLeadingNumberAndDetail(defaultHpRaw);
 
     setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: acSplit.numText }));
     setAcDetailById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: acSplit.detail }));
     setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: hpSplit.numText }));
     setHpDetailById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: hpSplit.detail }));
     setFriendlyById((prev) => (prev[id] != null ? prev : { ...prev, [id]: false }));
-  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString, splitNumberAndDetail]);
-
-  const parseLeadingNumber = React.useCallback((v: unknown) => {
-    const s = String(v ?? "");
-    const m = s.match(/-?\d+/);
-    return m ? Number(m[0]) : NaN;
-  }, []);
+  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString]);
 
   return (
     <Modal
@@ -729,14 +709,14 @@ export function MonsterPickerModal(props: {
                           const hpDetail = hpDetailById[m.id] ?? "";
                           const friendly = friendlyById[m.id] ?? false;
 
-                          const acNum = acRaw != null && String(acRaw).trim() !== "" ? parseLeadingNumber(acRaw) : NaN;
-                          const hpNum = hpRaw != null && String(hpRaw).trim() !== "" ? parseLeadingNumber(hpRaw) : NaN;
+                          const acNum = parseLeadingNumber(acRaw);
+                          const hpNum = parseLeadingNumber(hpRaw);
 
                           props.onAddMonster(m.id, qty, {
                             labelBase,
-                            ac: Number.isFinite(acNum) ? acNum : undefined,
+                            ac: acNum ?? undefined,
                             acDetail: acDetail.trim() || undefined,
-                            hpMax: Number.isFinite(hpNum) ? hpNum : undefined,
+                            hpMax: hpNum ?? undefined,
                             hpDetail: hpDetail.trim() || undefined,
                             friendly
                           });
@@ -771,7 +751,7 @@ export function MonsterPickerModal(props: {
                 value={selectedAc ?? ""}
                 onChange={(e) => {
                   if (!selectedMonsterId) return;
-                  const next = splitNumberAndDetail(e.target.value);
+                  const next = splitLeadingNumberAndDetail(e.target.value);
                   setAcById((prev) => ({ ...prev, [selectedMonsterId]: next.numText }));
                   setAcDetailById((prev) => ({ ...prev, [selectedMonsterId]: next.detail }));
                 }}
@@ -782,7 +762,7 @@ export function MonsterPickerModal(props: {
                 value={selectedHp ?? ""}
                 onChange={(e) => {
                   if (!selectedMonsterId) return;
-                  const next = splitNumberAndDetail(e.target.value);
+                  const next = splitLeadingNumberAndDetail(e.target.value);
                   setHpById((prev) => ({ ...prev, [selectedMonsterId]: next.numText }));
                   setHpDetailById((prev) => ({ ...prev, [selectedMonsterId]: next.detail }));
                 }}

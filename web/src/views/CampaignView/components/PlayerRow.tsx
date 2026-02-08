@@ -1,7 +1,7 @@
 import React from "react";
 import { theme } from "../../../app/theme/theme";
 import { IconButton } from "../../../components/ui/IconButton";
-import { IconPencil, IconTrash, IconPerson, IconHeart, IconShield } from "../../../components/ui/Icons";
+import { IconPencil, IconTrash, IconPerson, IconHeart, IconShield } from "../../../components/icons";
 import { HPBar } from "../../../components/ui/HPBar";
 
 export type PlayerVM = {
@@ -40,15 +40,11 @@ export function PlayerRow(props: {
   const isBloody = pct <= 0.5 && pct > 0.25;
   const isQuarter = pct <= 0.25;
 
-  const defaultMetaRight = (
+  const metaRight = props.subtitle ?? (
     <>
       Lvl {p.level} {p.species} {p.class}
     </>
   );
-
-  // If subtitle is explicitly provided (even null), use it.
-  // This allows CombatView to suppress the right-side meta entirely for players.
-  const metaRight = props.subtitle !== undefined ? props.subtitle : defaultMetaRight;
 
   const vitalsRight = (
     <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-end" }}>
@@ -102,8 +98,7 @@ export function PlayerRow(props: {
                 textOverflow: "ellipsis"
               }}
             >
-            {p.characterName}
-            {p.playerName ? <span style={{ fontWeight: 700, opacity: 0.85 }}> ({p.playerName})</span> : null}
+              {p.characterName} <span style={{ fontWeight: 700, opacity: 0.85 }}></span>
             </div>
           </div>
 

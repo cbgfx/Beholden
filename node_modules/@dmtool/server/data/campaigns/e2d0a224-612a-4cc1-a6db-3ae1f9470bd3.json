@@ -27,17 +27,7 @@
       "updatedAt": 1770348779911
     }
   },
-  "encounters": {
-    "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e": {
-      "id": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
-      "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
-      "name": "Combat Wombat",
-      "status": "Open",
-      "createdAt": 1770517907982,
-      "updatedAt": 1770517907982
-    }
-  },
+  "encounters": {},
   "notes": {
     "8ba48ca9-a495-45c1-be1a-81af10a0d258": {
       "id": "8ba48ca9-a495-45c1-be1a-81af10a0d258",
@@ -328,87 +318,5 @@
       "updatedAt": 1770343870946
     }
   },
-  "combats": {
-    "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e": {
-      "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-      "round": 1,
-      "activeIndex": 0,
-      "createdAt": 1770517907982,
-      "updatedAt": 1770519986269,
-      "combatants": [
-        {
-          "id": "d85ec826-9dde-4821-a8a6-07460da2ad8b",
-          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-          "baseType": "player",
-          "baseId": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
-          "name": "Torin Sigurdsen",
-          "label": "Torin Sigurdsen",
-          "friendly": true,
-          "color": "green",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 135,
-          "hpMax": 135,
-          "hpDetail": null,
-          "ac": 18,
-          "acDetail": null,
-          "conditions": [],
-          "createdAt": 1770517917253,
-          "updatedAt": 1770519986269,
-          "initiative": 2
-        },
-        {
-          "id": "f88888ce-a281-4f01-b316-43637456c697",
-          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-          "baseType": "player",
-          "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
-          "name": "Diego Diego",
-          "label": "Diego Diego",
-          "friendly": true,
-          "color": "green",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 8,
-          "hpMax": 20,
-          "hpDetail": null,
-          "ac": 18,
-          "acDetail": null,
-          "conditions": [],
-          "createdAt": 1770517917253,
-          "updatedAt": 1770518879830,
-          "initiative": 12
-        },
-        {
-          "id": "dfb8a848-8143-459b-a72f-2d0d9da41cfc",
-          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-          "baseType": "monster",
-          "baseId": "m_ancient copper dragon [2024]",
-          "name": "Ancient Copper Dragon [2024]",
-          "label": "Ancient Copper Dragon [2024]",
-          "initiative": 21,
-          "friendly": false,
-          "color": "#ff5d5d",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 184,
-          "hpMax": 184,
-          "hpDetail": null,
-          "ac": 18,
-          "acDetail": null,
-          "conditions": [],
-          "createdAt": 1770518765230,
-          "updatedAt": 1770519092636
-        }
-      ]
-    }
-  }
+  "combats": {}
 }

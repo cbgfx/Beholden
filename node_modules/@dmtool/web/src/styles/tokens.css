@@ -1,14 +1,14 @@
 :root {
-  /* Typography (12px ceiling everywhere except the Beholden title) */
+  /* Typography: 12px ceiling everywhere except the Beholden title. */
   --fs-12: 12px;
   --fs-11: 11px;
   --fs-10: 10px;
+  --fs-title: 16px;
 
-  /* Spacing (tight / iPad-friendly) */
-  --gap-1: 4px;
-  --gap-2: 6px;
-  --gap-3: 8px;
-  --pad-1: 6px;
-  --pad-2: 8px;
-  --pad-3: 10px;
+  /* Density */
+  --gap-2: 2px;
+  --gap-4: 4px;
+  --gap-6: 6px;
+  --gap-8: 8px;
+  --gap-10: 10px;
 }

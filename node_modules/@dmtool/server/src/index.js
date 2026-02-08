@@ -728,19 +728,7 @@ app.delete("/api/notes/:noteId", (req,res)=>{
 app.get("/api/encounters/:encounterId/combatants", (req,res)=>{
   const { encounterId } = req.params;
   const combat = ensureCombat(encounterId);
-  // Backfill newer fields for older saved combats.
-  const out = combat.combatants.map((c) => {
-    if (c.baseType === "player") {
-      const p = userData.players?.[c.baseId];
-      return {
-        ...c,
-        playerName: c.playerName ?? (p ? p.playerName : ""),
-        initiative: c.initiative ?? null,
-      };
-    }
-    return { ...c, playerName: c.playerName ?? "", initiative: c.initiative ?? null };
-  });
-  res.json(out);
+  res.json(combat.combatants);
 });
 
 app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
@@ -760,12 +748,10 @@ app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
       baseType: "player",
       baseId: p.id,
       name: p.characterName,
-      playerName: p.playerName,
       label: p.characterName,
       friendly: true,
       color: "green",
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
-      initiative: null,
       hpCurrent: p.hpCurrent,
       hpMax: p.hpMax,
       hpDetail: null,
@@ -827,12 +813,10 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       baseType: "monster",
       baseId: monsterId,
       name: baseName,
-      playerName: "",
       label,
       friendly,
       color: friendly ? "lightgreen" : "red",
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
-      initiative: null,
       hpCurrent: hpMax,
       hpMax,
       hpDetail: hpDetail != null ? hpDetail : (defaultHpDetail != null ? String(defaultHpDetail) : null),
@@ -864,7 +848,6 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
     label: req.body?.label != null ? String(req.body.label) : existing.label,
     friendly: req.body?.friendly != null ? Boolean(req.body.friendly) : existing.friendly,
     color: req.body?.color != null ? String(req.body.color) : existing.color,
-    initiative: req.body?.initiative != null ? (req.body.initiative === "" ? null : Number(req.body.initiative)) : (existing.initiative ?? null),
     hpCurrent: req.body?.hpCurrent != null ? Number(req.body.hpCurrent) : existing.hpCurrent,
     hpMax: req.body?.hpMax != null ? Number(req.body.hpMax) : existing.hpMax,
     hpDetail: req.body?.hpDetail != null ? String(req.body.hpDetail) : existing.hpDetail,

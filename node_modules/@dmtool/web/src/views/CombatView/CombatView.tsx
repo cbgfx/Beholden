@@ -1,12 +1,12 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useStore } from "../../app/state/store";
+import { useStore } from "@/app/store";
 import { api } from "../../app/services/api";
 import { useWs } from "../../app/services/ws";
 import type { Combatant } from "../../app/types/domain";
 import { CombatHeader } from "./components/CombatHeader";
-import { CombatOrderPanel } from "./components/CombatOrderPanel";
-import { CombatantDetailsPanel } from "./components/CombatantDetailsPanel";
+import { CombatOrderPanel } from "./panels/CombatOrderPanel";
+import { CombatantDetailsPanel } from "./panels/CombatantDetailsPanel";
 import { SpellDetailModal } from "./components/SpellDetailModal";
 import type { MonsterDetail, SpellSummary, SpellDetail } from "./types";
 
@@ -31,21 +31,14 @@ function bestSpellMatch(rows: SpellSummary[], name: string): SpellSummary | null
   return starts ?? rows[0] ?? null;
 }
 
-function formatSeconds(totalSeconds: number): string {
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const mm = String(Math.floor(s / 60)).padStart(2, "0");
-  const ss = String(s % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
-}
-
 export function CombatView() {
   const { encounterId } = useParams();
   const { state } = useStore();
   const [combatants, setCombatants] = React.useState<Combatant[]>([]);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const [round, setRound] = React.useState(1);
-  const [delta, setDelta] = React.useState<string>("");
+  const [delta, setDelta] = React.useState<string>("5");
   const [isNarrow, setIsNarrow] = React.useState(false);
 
   const [monsterCache, setMonsterCache] = React.useState<Record<string, MonsterDetail>>({});
@@ -58,10 +51,6 @@ export function CombatView() {
     const rows = await api<Combatant[]>(`/api/encounters/${encounterId}/combatants`);
     setCombatants(rows);
     setSelectedId((prev) => {
-      if (prev && rows.some((c) => (c as any).id === prev)) return prev;
-      return (rows[0] as any)?.id ?? null;
-    });
-    setActiveId((prev) => {
       if (prev && rows.some((c) => (c as any).id === prev)) return prev;
       return (rows[0] as any)?.id ?? null;
     });
@@ -93,51 +82,19 @@ export function CombatView() {
     [combatants, selectedId]
   );
 
-  const orderedCombatants = React.useMemo(() => {
-    const rows = [...combatants];
-    // Sort by initiative desc; unset initiative sorts last; keep stable tie order by label/name.
-    rows.sort((a: any, b: any) => {
-      const ai = a?.initiative;
-      const bi = b?.initiative;
-      const aSet = typeof ai === "number" && Number.isFinite(ai);
-      const bSet = typeof bi === "number" && Number.isFinite(bi);
-      if (aSet && bSet) {
-        if (bi !== ai) return bi - ai;
-      }
-      if (aSet && !bSet) return -1;
-      if (!aSet && bSet) return 1;
-      const an = String(a?.label || a?.name || "");
-      const bn = String(b?.label || b?.name || "");
-      return an.localeCompare(bn);
-    });
-    return rows;
-  }, [combatants]);
-
-  const activeIndex = React.useMemo(() => {
-    if (!orderedCombatants.length) return 0;
-    if (!activeId) return 0;
-    const idx = orderedCombatants.findIndex((c: any) => c?.id === activeId);
-    return idx >= 0 ? idx : 0;
-  }, [orderedCombatants, activeId]);
-
-  const active = (orderedCombatants as any)[activeIndex] ?? null;
-
   React.useEffect(() => {
-    if (!orderedCombatants.length) return;
-    // Keep the activeId pinned to an existing combatant.
-    if (activeId && orderedCombatants.some((c: any) => c.id === activeId)) return;
-    setActiveId((orderedCombatants as any)[0]?.id ?? null);
-  }, [orderedCombatants, activeId]);
-
-  // Keep activeId valid when the roster changes.
-  React.useEffect(() => {
-    if (!orderedCombatants.length) {
-      setActiveId(null);
+    if (!combatants.length) {
+      setActiveIndex(0);
       return;
     }
-    if (activeId && orderedCombatants.some((c: any) => c?.id === activeId)) return;
-    setActiveId((orderedCombatants[0] as any)?.id ?? null);
-  }, [orderedCombatants, activeId]);
+    if (activeIndex >= combatants.length) setActiveIndex(0);
+  }, [combatants.length]);
+
+  const active = (combatants as any)[activeIndex] ?? null;
+
+  React.useEffect(() => {
+    if (active?.id) setSelectedId(active.id);
+  }, [active?.id]);
 
   const selectedAny: any = selected as any;
   const selectedMonster = selectedAny?.baseType === "monster" ? monsterCache[selectedAny.baseId] : null;
@@ -147,12 +104,6 @@ export function CombatView() {
     for (const p of state.players) m[p.id] = p;
     return m;
   }, [state.players]);
-
-  const selectedPlayer = React.useMemo(() => {
-    const s: any = selected as any;
-    if (!s || s.baseType !== "player") return null;
-    return playersById[s.baseId] ?? null;
-  }, [selected, playersById]);
 
   const monsterCrById = React.useMemo(() => {
     const m: Record<string, number | null | undefined> = {};
@@ -248,7 +199,7 @@ export function CombatView() {
       })
     });
     await refresh();
-    setDelta("");
+    setDelta("0");
   }
 
   async function updateSelectedCombatant(patch: any) {
@@ -262,24 +213,24 @@ export function CombatView() {
   }
 
   function nextTurn() {
-    if (!orderedCombatants.length) return;
+    if (!combatants.length) return;
     const n = activeIndex + 1;
-    if (n >= orderedCombatants.length) {
-      setActiveId((orderedCombatants as any)[0]?.id ?? null);
+    if (n >= combatants.length) {
+      setActiveIndex(0);
       setRound((r) => r + 1);
     } else {
-      setActiveId((orderedCombatants as any)[n]?.id ?? null);
+      setActiveIndex(n);
     }
   }
 
   function prevTurn() {
-    if (!orderedCombatants.length) return;
+    if (!combatants.length) return;
     const n = activeIndex - 1;
     if (n < 0) {
-      setActiveId((orderedCombatants as any)[Math.max(0, orderedCombatants.length - 1)]?.id ?? null);
+      setActiveIndex(Math.max(0, combatants.length - 1));
       setRound((r) => Math.max(1, r - 1));
     } else {
-      setActiveId((orderedCombatants as any)[n]?.id ?? null);
+      setActiveIndex(n);
     }
   }
 
@@ -310,32 +261,9 @@ export function CombatView() {
     return parseMonsterSpells(selectedMonster);
   }, [selectedMonster?.id]);
 
-  const allHaveInitiative = React.useMemo(() => {
-    if (!orderedCombatants.length) return false;
-    return orderedCombatants.every((c: any) => typeof c?.initiative === "number" && Number.isFinite(c.initiative));
-  }, [orderedCombatants]);
-
-  const elapsed = React.useMemo(() => formatSeconds((round - 1) * 6), [round]);
-
-  async function rollNpcInitiative() {
-    if (!encounterId) return;
-    const targets = orderedCombatants.filter((c: any) => c.baseType !== "player" && !(typeof c.initiative === "number" && Number.isFinite(c.initiative)));
-    if (!targets.length) return;
-    await Promise.all(
-      targets.map((c: any) =>
-        api(`/api/encounters/${encounterId}/combatants/${c.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ initiative: 1 + Math.floor(Math.random() * 20) })
-        })
-      )
-    );
-    await refresh();
-  }
-
   return (
     <div style={{ padding: 14 }}>
-      <CombatHeader round={round} elapsed={elapsed} canNavigate={allHaveInitiative} onPrev={prevTurn} onNext={nextTurn} />
+      <CombatHeader round={round} onPrev={prevTurn} onNext={nextTurn} />
 
       <div
         style={{
@@ -347,17 +275,14 @@ export function CombatView() {
         }}
       >
         <CombatOrderPanel
-          combatants={orderedCombatants}
+          combatants={combatants}
           playersById={playersById}
           monsterCrById={monsterCrById}
           activeIndex={activeIndex}
           selectedId={selectedId}
-          elapsed={elapsed}
-          canRollNpcs={orderedCombatants.some((c: any) => c.baseType !== "player" && !(typeof c.initiative === "number" && Number.isFinite(c.initiative)))}
-          onRollNpcs={rollNpcInitiative}
           onSelect={(id, idx) => {
             setSelectedId(id);
-            setActiveId(id);
+            setActiveIndex(idx);
           }}
         />
 
@@ -366,7 +291,6 @@ export function CombatView() {
             selected={selected}
             isNarrow={isNarrow}
             selectedMonster={selectedMonster}
-            selectedPlayer={selectedPlayer}
             spellNames={spellNames}
             delta={delta}
             onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}

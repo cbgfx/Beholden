@@ -1,0 +1,60 @@
+@import "./tokens.css";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #2e4057;
+  color: white;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: var(--fs-12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+/* --- Layout tightening / small-screen defaults (iPad-friendly) --- */
+
+.shellLayout {
+  padding: var(--gap-10);
+}
+
+@media (max-width: 900px) {
+  .shellLayout {
+    padding: var(--gap-8);
+  }
+}
+
+.campaignGrid {
+  margin-top: var(--gap-10);
+  display: grid;
+  grid-template-columns: 300px 1fr 340px;
+  gap: var(--gap-6);
+}
+
+.campaignCol {
+  display: grid;
+  gap: var(--gap-6);
+}
+
+/* Stack into a single column on smaller screens (iPad portrait). */
+@media (max-width: 1024px) {
+  .campaignGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PlayerRow responsiveness */
+@media (max-width: 1024px) {
+  .playerRowCampaign {
+    grid-template-columns: 1fr !important;
+  }
+  .playerRowCampaign .playerRowHp {
+    justify-content: flex-start !important;
+  }
+}

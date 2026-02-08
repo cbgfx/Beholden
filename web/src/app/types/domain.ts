@@ -13,6 +13,15 @@ export type CombatantOverrides = {
   hpMaxOverride: number | null;
 };
 
+export type AddMonsterOptions = {
+  labelBase?: string;
+  ac?: number;
+  acDetail?: string;
+  hpMax?: number;
+  hpDetail?: string;
+  friendly?: boolean;
+};
+
 export type Combatant = {
   id: string;
   encounterId: string;
@@ -24,8 +33,6 @@ export type Combatant = {
   friendly: boolean;
   color: string;
   overrides: CombatantOverrides | null;
-  // Initiative for combat ordering. Null means not yet set.
-  initiative: number | null;
   hpCurrent: number | null;
   hpMax: number | null;
   // Freeform details that accompany the numeric stat, e.g. "(natural armor)" or "(25d8+25)".

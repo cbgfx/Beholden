@@ -1,12 +1,12 @@
 
 import React from "react";
-import { theme } from "../theme/theme";
-import { Button } from "../../components/ui/Button";
-import { IconButton } from "../../components/ui/IconButton";
-import { Select } from "../../components/ui/Select";
-import { useStore } from "../state/store";
 import { Link, useLocation } from "react-router-dom";
-import { IconPencil, IconTrash } from "../../components/ui/Icons";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Select } from "@/components/ui/Select";
+import { IconPencil, IconTrash } from "@/components/icons";
+import { useStore } from "@/app/store";
+import { theme } from "@/app/theme/theme";
 
 
 function NavLink(props: { to: string; label: string }) {
@@ -38,8 +38,7 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <img src="/beholden_logo.png" alt="Beholden" style={{ width: 22, height: 22 }} />
-        {/* Only place in the UI where we intentionally exceed the 12px ceiling */}
-        <div style={{ fontSize: 16, fontWeight: 900, color: theme.colors.text }}>Beholden</div>
+        <div style={{ fontSize: "var(--fs-title)", fontWeight: 900, color: theme.colors.text }}>Beholden</div>
       </div>
 
       {campaigns.length ? (

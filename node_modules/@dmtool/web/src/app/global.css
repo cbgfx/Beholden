@@ -1,13 +1,10 @@
-@import "../styles/tokens.css";
-
 html, body {
   margin: 0;
   padding: 0;
   background: #2e4057;
   color: white;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size: var(--fs-12);
-  line-height: 1.25;
+  font-size: 12px;
 }
 
 * { box-sizing: border-box; }
@@ -17,12 +14,12 @@ a { color: inherit; }
 /* --- Layout tightening / small-screen defaults (iPad-friendly) --- */
 
 .shellLayout {
-  padding: var(--pad-3);
+  padding: 10px;
 }
 
 @media (max-width: 900px) {
   .shellLayout {
-    padding: var(--pad-2);
+    padding: 8px;
   }
 }
 
@@ -30,12 +27,12 @@ a { color: inherit; }
   margin-top: 10px;
   display: grid;
   grid-template-columns: 300px 1fr 340px;
-  gap: var(--gap-2);
+  gap: 6px;
 }
 
 .campaignCol {
   display: grid;
-  gap: var(--gap-2);
+  gap: 6px;
 }
 
 /* Stack into a single column on smaller screens (iPad portrait). */
