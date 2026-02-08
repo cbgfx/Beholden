@@ -11,53 +11,37 @@ export function CombatOrderPanel(props: {
   monsterCrById: Record<string, number | null | undefined>;
   activeIndex: number;
   selectedId: string | null;
-  elapsedSeconds: number;
-  canAdvance: boolean;
-  onRollNpcInitiative: () => void;
+  elapsed: string;
+  canRollNpcs: boolean;
+  onRollNpcs: () => void;
   onSelect: (id: string, index: number) => void;
 }) {
-  const mm = String(Math.floor(props.elapsedSeconds / 60)).padStart(2, "0");
-  const ss = String(props.elapsedSeconds % 60).padStart(2, "0");
-  const elapsed = `${mm}:${ss}`;
-
-  const missingNpc = props.combatants.some((c: any) => c?.baseType !== "player" && !Number.isFinite(c?.initiative));
-  const missingPlayers = props.combatants.some((c: any) => c?.baseType === "player" && !Number.isFinite(c?.initiative));
-
   return (
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span>INITIATIVE</span>
-            <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>{elapsed}</span>
-          </div>
-
-          {!props.canAdvance ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {missingNpc ? (
-                <button
-                  type="button"
-                  onClick={props.onRollNpcInitiative}
-                  style={{
-                    border: `1px solid ${theme.colors.panelBorder}`,
-                    background: theme.colors.panelBg,
-                    color: theme.colors.text,
-                    fontSize: 12,
-                    fontWeight: 900,
-                    padding: "6px 10px",
-                    borderRadius: 999,
-                    cursor: "pointer"
-                  }}
-                  title="Roll initiative for all non-player combatants"
-                >
-                  Roll NPCs
-                </button>
-              ) : null}
-
-              {missingPlayers ? (
-                <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>Set player rolls</span>
-              ) : null}
-            </div>
+            <span style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 900 }}>{props.elapsed}</span>
+          </span>
+          {props.canRollNpcs ? (
+            <button
+              type="button"
+              onClick={props.onRollNpcs}
+              style={{
+                padding: "4px 8px",
+                borderRadius: 10,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: theme.colors.panelBg,
+                color: theme.colors.text,
+                fontSize: 11,
+                fontWeight: 900,
+                cursor: "pointer"
+              }}
+              title="Roll initiative for non-player combatants"
+            >
+              Roll NPCs
+            </button>
           ) : null}
         </div>
       }
@@ -104,8 +88,8 @@ export function CombatOrderPanel(props: {
           const cr = c.baseType === "monster" ? props.monsterCrById[c.baseId] : null;
 
           const metaRight = c.baseType === "monster"
-            ? <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>CR {cr ?? "?"}</span>
-            : <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>Lvl {vm.level}</span>;
+            ? <span style={{ fontSize: 11, fontWeight: 900, color: theme.colors.muted, whiteSpace: "nowrap" }}>CR {cr ?? "?"}</span>
+            : null;
 
           const iconColor = isDead
             ? theme.colors.muted
@@ -151,7 +135,9 @@ export function CombatOrderPanel(props: {
                     p={vm}
                     icon={icon}
                     variant="combatList"
-                    subtitle={null}
+                    // Players: suppress meta (we show level/species/class in the details panel).
+                    // Monsters: show CR on the right.
+                    subtitle={metaRight}
                     actions={null}
                   />
                 </div>

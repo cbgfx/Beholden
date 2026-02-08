@@ -24,13 +24,13 @@ export type Combatant = {
   friendly: boolean;
   color: string;
   overrides: CombatantOverrides | null;
+  // Initiative for combat ordering. Null means not yet set.
+  initiative: number | null;
   hpCurrent: number | null;
   hpMax: number | null;
   // Freeform details that accompany the numeric stat, e.g. "(natural armor)" or "(25d8+25)".
   hpDetail: string | null;
   ac: number | null;
   acDetail: string | null;
-  // Initiative for turn order. Null means not set yet.
-  initiative: number | null;
 };
 export type Meta = { ok: boolean; ips: string[]; host: string; port: number; hasCompendium: boolean };
