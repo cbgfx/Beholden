@@ -38,7 +38,7 @@ export function CombatView() {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [round, setRound] = React.useState(1);
-  const [delta, setDelta] = React.useState<string>("5");
+  const [delta, setDelta] = React.useState<string>("");
   const [isNarrow, setIsNarrow] = React.useState(false);
 
   const [monsterCache, setMonsterCache] = React.useState<Record<string, MonsterDetail>>({});
@@ -104,6 +104,12 @@ export function CombatView() {
     for (const p of state.players) m[p.id] = p;
     return m;
   }, [state.players]);
+
+  const selectedPlayer = React.useMemo(() => {
+    const s: any = selected as any;
+    if (!s || s.baseType !== "player") return null;
+    return playersById[s.baseId] ?? null;
+  }, [selected, playersById]);
 
   const monsterCrById = React.useMemo(() => {
     const m: Record<string, number | null | undefined> = {};
@@ -199,7 +205,7 @@ export function CombatView() {
       })
     });
     await refresh();
-    setDelta("0");
+    setDelta("");
   }
 
   async function updateSelectedCombatant(patch: any) {
@@ -291,6 +297,7 @@ export function CombatView() {
             selected={selected}
             isNarrow={isNarrow}
             selectedMonster={selectedMonster}
+            selectedPlayer={selectedPlayer}
             spellNames={spellNames}
             delta={delta}
             onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}

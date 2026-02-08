@@ -28,14 +28,14 @@
     }
   },
   "encounters": {
-    "d86a65a2-cba6-4c94-bd29-34dec0aef6f7": {
-      "id": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+    "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e": {
+      "id": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
       "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
       "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
-      "name": "Fight Cliub",
+      "name": "Combat Wombat",
       "status": "Open",
-      "createdAt": 1770490488182,
-      "updatedAt": 1770490488182
+      "createdAt": 1770517907982,
+      "updatedAt": 1770517907982
     }
   },
   "notes": {
@@ -329,75 +329,81 @@
     }
   },
   "combats": {
-    "d86a65a2-cba6-4c94-bd29-34dec0aef6f7": {
-      "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+    "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e": {
+      "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
       "round": 1,
       "activeIndex": 0,
-      "createdAt": 1770490488182,
-      "updatedAt": 1770516577721,
+      "createdAt": 1770517907982,
+      "updatedAt": 1770517917253,
       "combatants": [
         {
-          "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+          "id": "6d640865-d500-4d52-80ec-4f8c4a4ab468",
+          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
+          "baseType": "monster",
+          "baseId": "m_ancient black dragon [2024]",
+          "name": "Ancient Black Dragon [2024]",
+          "label": "Ancient Black Dragon [2024]",
+          "friendly": false,
+          "color": "red",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 195,
+          "hpMax": 195,
+          "hpDetail": null,
+          "ac": 19,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770517915131,
+          "updatedAt": 1770517915131
+        },
+        {
+          "id": "d85ec826-9dde-4821-a8a6-07460da2ad8b",
+          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
           "baseType": "player",
           "baseId": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
           "name": "Torin Sigurdsen",
           "label": "Torin Sigurdsen",
           "friendly": true,
-          "color": "#26c6da",
+          "color": "green",
           "overrides": {
             "tempHp": 0,
             "acBonus": 0,
             "hpMaxOverride": null
           },
-          "hpCurrent": 35,
-          "hpMax": 35,
-          "ac": 30,
+          "hpCurrent": 135,
+          "hpMax": 135,
+          "hpDetail": null,
+          "ac": 18,
+          "acDetail": null,
           "conditions": [],
-          "createdAt": 1770490493664,
-          "updatedAt": 1770516315643
+          "createdAt": 1770517917253,
+          "updatedAt": 1770517917253
         },
         {
-          "id": "96a85c77-dc37-4b94-b260-e69d10c870c3",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+          "id": "f88888ce-a281-4f01-b316-43637456c697",
+          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
           "baseType": "player",
           "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
           "name": "Diego Diego",
           "label": "Diego Diego",
           "friendly": true,
-          "color": "#f48fb1",
+          "color": "green",
           "overrides": {
             "tempHp": 0,
             "acBonus": 0,
             "hpMaxOverride": null
           },
-          "hpCurrent": 17,
+          "hpCurrent": 8,
           "hpMax": 20,
+          "hpDetail": null,
           "ac": 18,
+          "acDetail": null,
           "conditions": [],
-          "createdAt": 1770490493664,
-          "updatedAt": 1770516304659
-        },
-        {
-          "id": "50819e2e-f18a-460c-9692-5b67f78955ab",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
-          "baseType": "monster",
-          "baseId": "m_adult black dragon [2024]",
-          "name": "Adult Black Dragon [2024]",
-          "label": "Adult Black Dragon [2024]",
-          "friendly": false,
-          "color": "#7dc56d",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 45,
-          "hpMax": 45,
-          "ac": 16,
-          "conditions": [],
-          "createdAt": 1770515761306,
-          "updatedAt": 1770516577721
+          "createdAt": 1770517917253,
+          "updatedAt": 1770517917253
         }
       ]
     }

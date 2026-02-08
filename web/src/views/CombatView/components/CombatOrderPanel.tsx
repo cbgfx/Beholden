@@ -63,8 +63,8 @@ export function CombatOrderPanel(props: {
           const cr = c.baseType === "monster" ? props.monsterCrById[c.baseId] : null;
 
           const metaRight = c.baseType === "monster"
-            ? <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>CR {cr ?? "?"}</span>
-            : <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>Lvl {vm.level}</span>;
+            ? <span style={{ fontSize: 11, fontWeight: 900, color: theme.colors.muted, whiteSpace: "nowrap" }}>CR {cr ?? "?"}</span>
+            : null;
 
           const iconColor = isDead
             ? theme.colors.muted
@@ -110,7 +110,9 @@ export function CombatOrderPanel(props: {
                     p={vm}
                     icon={icon}
                     variant="combatList"
-                    subtitle={null}
+                    // Players: suppress meta (we show level/species/class in the details panel).
+                    // Monsters: show CR on the right.
+                    subtitle={metaRight}
                     actions={null}
                   />
                 </div>

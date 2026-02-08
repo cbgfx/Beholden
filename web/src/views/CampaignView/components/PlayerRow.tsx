@@ -40,11 +40,15 @@ export function PlayerRow(props: {
   const isBloody = pct <= 0.5 && pct > 0.25;
   const isQuarter = pct <= 0.25;
 
-  const metaRight = props.subtitle ?? (
+  const defaultMetaRight = (
     <>
       Lvl {p.level} {p.species} {p.class}
     </>
   );
+
+  // If subtitle is explicitly provided (even null), use it.
+  // This allows CombatView to suppress the right-side meta entirely for players.
+  const metaRight = props.subtitle !== undefined ? props.subtitle : defaultMetaRight;
 
   const vitalsRight = (
     <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-end" }}>
@@ -98,7 +102,8 @@ export function PlayerRow(props: {
                 textOverflow: "ellipsis"
               }}
             >
-              {p.characterName} <span style={{ fontWeight: 700, opacity: 0.85 }}></span>
+            {p.characterName}
+            {p.playerName ? <span style={{ fontWeight: 700, opacity: 0.85 }}> ({p.playerName})</span> : null}
             </div>
           </div>
 
