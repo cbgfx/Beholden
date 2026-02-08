@@ -7,6 +7,8 @@ import { PlayerRow, type PlayerVM } from "../../CampaignView/components/PlayerRo
 
 export function CombatOrderPanel(props: {
   combatants: Combatant[];
+  playersById: Record<string, { playerName: string; characterName: string; class: string; species: string; level: number; ac: number; hpMax: number; hpCurrent: number }>;
+  monsterCrById: Record<string, number | null | undefined>;
   activeIndex: number;
   selectedId: string | null;
   onSelect: (id: string, index: number) => void;
@@ -43,9 +45,7 @@ export function CombatOrderPanel(props: {
 
           const vm: PlayerVM = {
             id: c.id,
-            // We don't have the actual Player record here (only baseId), so keep this generic.
-            // The important part is that the *characterName* always shows.
-            playerName: c.baseType === "player" ? "Player" : c.baseType === "monster" ? "Monster" : "NPC",
+            playerName: "",
             characterName: displayName,
             class: "",
             species: "",
@@ -54,6 +54,21 @@ export function CombatOrderPanel(props: {
             hpMax,
             hpCurrent
           };
+
+          const playerRec = c.baseType === "player" ? props.playersById[c.baseId] : undefined;
+          if (playerRec) {
+            vm.playerName = playerRec.playerName;
+            vm.characterName = playerRec.characterName || vm.characterName;
+            vm.class = playerRec.class;
+            vm.species = playerRec.species;
+            vm.level = Number(playerRec.level ?? 0) || 0;
+          }
+
+          const cr = c.baseType === "monster" ? props.monsterCrById[c.baseId] : null;
+
+          const metaRight = c.baseType === "monster"
+            ? <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>CR {cr ?? "?"}</span>
+            : <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>Lvl {vm.level}</span>;
 
           const iconColor = isDead
             ? theme.colors.muted
@@ -100,6 +115,7 @@ export function CombatOrderPanel(props: {
                     icon={icon}
                     variant="combatList"
                     subtitle={null}
+                    metaRight={metaRight}
                     actions={null}
                   />
                 </div>

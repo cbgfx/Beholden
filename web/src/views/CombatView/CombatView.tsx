@@ -1,5 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useStore } from "../../app/state/store";
 import { api } from "../../app/services/api";
 import { useWs } from "../../app/services/ws";
 import type { Combatant } from "../../app/types/domain";
@@ -32,6 +33,7 @@ function bestSpellMatch(rows: SpellSummary[], name: string): SpellSummary | null
 
 export function CombatView() {
   const { encounterId } = useParams();
+  const { state } = useStore();
   const [combatants, setCombatants] = React.useState<Combatant[]>([]);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -97,6 +99,18 @@ export function CombatView() {
   const selectedAny: any = selected as any;
   const selectedMonster = selectedAny?.baseType === "monster" ? monsterCache[selectedAny.baseId] : null;
 
+  const playersById = React.useMemo(() => {
+    const m: Record<string, any> = {};
+    for (const p of state.players) m[p.id] = p;
+    return m;
+  }, [state.players]);
+
+  const monsterCrById = React.useMemo(() => {
+    const m: Record<string, number | null | undefined> = {};
+    for (const [id, d] of Object.entries(monsterCache)) m[id] = (d as any)?.cr ?? null;
+    return m;
+  }, [monsterCache]);
+
   React.useEffect(() => {
     let alive = true;
     (async () => {
@@ -114,6 +128,34 @@ export function CombatView() {
       alive = false;
     };
   }, [selectedAny?.id, selectedAny?.baseType, selectedAny?.baseId]);
+
+  // Preload CR data for all monsters in the order list so rows don't show Lvl 0.
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      const monsterIds = Array.from(
+        new Set(
+          combatants
+            .filter((c: any) => c?.baseType === "monster" && typeof c?.baseId === "string")
+            .map((c: any) => c.baseId)
+        )
+      );
+      for (const id of monsterIds) {
+        if (!alive) return;
+        if (monsterCache[id]) continue;
+        try {
+          const d = await api<MonsterDetail>(`/api/compendium/monsters/${id}`);
+          if (!alive) return;
+          setMonsterCache((prev) => ({ ...prev, [id]: d }));
+        } catch {
+          // ignore
+        }
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [combatants, monsterCache]);
 
   const damageAmount = React.useMemo(() => {
     const n = Number(delta);
@@ -234,6 +276,8 @@ export function CombatView() {
       >
         <CombatOrderPanel
           combatants={combatants}
+          playersById={playersById}
+          monsterCrById={monsterCrById}
           activeIndex={activeIndex}
           selectedId={selectedId}
           onSelect={(id, idx) => {

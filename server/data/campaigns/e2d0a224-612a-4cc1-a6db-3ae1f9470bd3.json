@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770513248936,
+      "updatedAt": 1770514146179,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -420,6 +420,27 @@
           "conditions": [],
           "createdAt": 1770505214160,
           "updatedAt": 1770510949822
+        },
+        {
+          "id": "048a20ef-24aa-4569-b89a-04dbb7fb4c87",
+          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
+          "baseType": "monster",
+          "baseId": "m_necromancer wizard",
+          "name": "Necromancer Wizard",
+          "label": "Necromancer Wizard",
+          "friendly": false,
+          "color": "#ff5d5d",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 110,
+          "hpMax": 110,
+          "ac": 12,
+          "conditions": [],
+          "createdAt": 1770514137541,
+          "updatedAt": 1770514146179
         }
       ]
     }
