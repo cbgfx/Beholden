@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770514146179,
+      "updatedAt": 1770515193117,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -379,13 +379,17 @@
           "label": "Spell Dick 1",
           "friendly": false,
           "color": "#ff5d5d",
-          "overrides": null,
-          "hpCurrent": 12,
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 1,
           "hpMax": 25,
           "ac": 10,
           "conditions": [],
           "createdAt": 1770490571273,
-          "updatedAt": 1770513248936
+          "updatedAt": 1770515193117
         },
         {
           "id": "f9b02138-8b0e-4916-b5ee-8bed7b68b2a6",

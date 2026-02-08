@@ -17,10 +17,7 @@ export function CombatOrderPanel(props: {
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span>Order</span>
-          <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
-            {props.combatants.length} combatants
-          </span>
+          <span>INITIATIVE</span>
         </div>
       }
     >
@@ -58,7 +55,6 @@ export function CombatOrderPanel(props: {
           const playerRec = c.baseType === "player" ? props.playersById[c.baseId] : undefined;
           if (playerRec) {
             vm.playerName = playerRec.playerName;
-            vm.characterName = playerRec.characterName || vm.characterName;
             vm.class = playerRec.class;
             vm.species = playerRec.species;
             vm.level = Number(playerRec.level ?? 0) || 0;
@@ -115,7 +111,6 @@ export function CombatOrderPanel(props: {
                     icon={icon}
                     variant="combatList"
                     subtitle={null}
-                    metaRight={metaRight}
                     actions={null}
                   />
                 </div>
