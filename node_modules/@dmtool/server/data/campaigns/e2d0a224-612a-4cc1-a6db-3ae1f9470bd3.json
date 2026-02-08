@@ -27,7 +27,17 @@
       "updatedAt": 1770348779911
     }
   },
-  "encounters": {},
+  "encounters": {
+    "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d": {
+      "id": "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d",
+      "campaignId": "e2d0a224-612a-4cc1-a6db-3ae1f9470bd3",
+      "adventureId": "612980c5-4b0d-4e3d-87fb-05eb7246f1e6",
+      "name": "Kobold Fight",
+      "status": "Open",
+      "createdAt": 1770522734146,
+      "updatedAt": 1770522734146
+    }
+  },
   "notes": {
     "8ba48ca9-a495-45c1-be1a-81af10a0d258": {
       "id": "8ba48ca9-a495-45c1-be1a-81af10a0d258",
@@ -318,5 +328,84 @@
       "updatedAt": 1770343870946
     }
   },
-  "combats": {}
+  "combats": {
+    "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d": {
+      "encounterId": "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d",
+      "round": 1,
+      "activeIndex": 0,
+      "createdAt": 1770522734146,
+      "updatedAt": 1770522744708,
+      "combatants": [
+        {
+          "id": "f0220179-ad97-4a46-a498-e0ed9904d0d0",
+          "encounterId": "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d",
+          "baseType": "player",
+          "baseId": "ea6382ed-bf68-4623-ad88-3d2af848ca01",
+          "name": "Torin Sigurdsen",
+          "label": "Torin Sigurdsen",
+          "friendly": true,
+          "color": "green",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 135,
+          "hpMax": 135,
+          "hpDetail": null,
+          "ac": 18,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770522737130,
+          "updatedAt": 1770522737130
+        },
+        {
+          "id": "fa0f1be0-7f04-44e0-96b7-a1ccd83c9e69",
+          "encounterId": "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d",
+          "baseType": "player",
+          "baseId": "886428e8-d513-4648-8604-a8330f36f4a2",
+          "name": "Diego Diego",
+          "label": "Diego Diego",
+          "friendly": true,
+          "color": "green",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 8,
+          "hpMax": 20,
+          "hpDetail": null,
+          "ac": 18,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770522737130,
+          "updatedAt": 1770522737130
+        },
+        {
+          "id": "f3990ed5-7890-402f-bc19-1f53c913fd9c",
+          "encounterId": "5a9a0afb-c3bb-4f2d-a128-be8731c40c4d",
+          "baseType": "monster",
+          "baseId": "m_adult copper dragon [2024]",
+          "name": "Adult Copper Dragon [2024]",
+          "label": "Adult Copper Dragon [2024]",
+          "friendly": false,
+          "color": "red",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 44,
+          "hpMax": 44,
+          "hpDetail": "(16d12+80)",
+          "ac": 15,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770522744708,
+          "updatedAt": 1770522744708
+        }
+      ]
+    }
+  }
 }
