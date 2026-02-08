@@ -2,7 +2,7 @@
 import React from "react";
 import { theme } from "../../app/theme/theme";
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "ghost" | "danger" };
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "ghost" | "danger" | "health" };
 
 export function Button({ variant = "primary", style, ...rest }: Props) {
   const base: React.CSSProperties = {
@@ -19,7 +19,8 @@ export function Button({ variant = "primary", style, ...rest }: Props) {
   const variants: Record<string, React.CSSProperties> = {
     primary: { background: theme.colors.accent, color: "#0b0f14", border: "1px solid rgba(0,0,0,0.2)" },
     ghost: { background: "transparent" },
-    danger: { background: theme.colors.danger, color: "#0b0f14", border: "1px solid rgba(0,0,0,0.2)" }
+    danger: { background: theme.colors.danger, color: "rgb(255, 255, 255)", border: "1px solid rgba(0,0,0,0.2)" },
+    health: { background: theme.colors.health, color: "#ffffff", border: "1px solid rgba(0,0,0,0.2)" },
   };
 
   return <button {...rest} style={{ ...base, ...variants[variant], ...style }} />;

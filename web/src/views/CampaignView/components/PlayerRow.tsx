@@ -18,30 +18,39 @@ export type PlayerVM = {
 
 export function PlayerRow(props: {
   p: PlayerVM;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  subtitle?: React.ReactNode;
+  icon?: React.ReactNode;
+  actions?: React.ReactNode | null;
+  variant?: "campaign" | "combatList";
 }) {
   const p = props.p;
+  const variant = props.variant ?? "campaign";
+  const actionsWidth = props.actions === null ? 0 : 92;
+  const hpWidth = variant === "combatList" ? 240 : 360;
+  const padding = variant === "combatList" ? "10px 12px" : "12px 14px";
+  const background = variant === "combatList" ? "transparent" : "rgba(0,0,0,0.14)";
+  const border = variant === "combatList" ? "none" : `1px solid ${theme.colors.panelBorder}`;
+  const borderRadius = variant === "combatList" ? 0 : 14;
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 360px 92px",
+        gridTemplateColumns: `1fr ${hpWidth}px ${actionsWidth}px`,
         alignItems: "center",
         gap: 14,
-        padding: "12px 14px",
-        borderRadius: 14,
-        background: "rgba(0,0,0,0.14)",
-        border: `1px solid ${theme.colors.panelBorder}`
+        padding,
+        borderRadius,
+        background,
+        border
       }}
     >
       {/* Left identity block */}
       <div style={{ minWidth: 0 }}>
         <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
-          <span style={{ display: "inline-flex", opacity: 0.9 }}>
-            <IconPerson />
-          </span>
+          <span style={{ display: "inline-flex", opacity: 0.9 }}>{props.icon ?? <IconPerson />}</span>
 
           <div style={{ fontWeight: 900, color: theme.colors.text, fontSize: 16, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {p.characterName} <span style={{ fontWeight: 700, opacity: 0.85 }}>({p.playerName})</span>
@@ -49,23 +58,41 @@ export function PlayerRow(props: {
         </div>
 
         <div style={{ marginTop: 4, fontSize: 12, color: theme.colors.muted }}>
-          Lvl {p.level} {p.class} • {p.species} • AC {p.ac}
+          {props.subtitle ?? (
+            <>
+              Lvl {p.level} {p.class} • {p.species} • AC {p.ac}
+            </>
+          )}
         </div>
       </div>
 
       {/* Middle HP bar */}
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <HPBar cur={p.hpCurrent} max={p.hpMax} />
+        <HPBar cur={p.hpCurrent} max={p.hpMax} ac={p.ac} />
       </div>
 
       {/* Right actions */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <IconButton title="Edit" onClick={(e) => (e.stopPropagation(), props.onEdit())}>
-          <IconPencil />
-        </IconButton>
-        <IconButton title="Delete" onClick={(e) => (e.stopPropagation(), props.onDelete())}>
-          <IconTrash />
-        </IconButton>
+        {props.actions === undefined ? (
+          <>
+            <IconButton
+              title="Edit"
+              onClick={(e) => (e.stopPropagation(), props.onEdit?.())}
+              disabled={!props.onEdit}
+            >
+              <IconPencil />
+            </IconButton>
+            <IconButton
+              title="Delete"
+              onClick={(e) => (e.stopPropagation(), props.onDelete?.())}
+              disabled={!props.onDelete}
+            >
+              <IconTrash />
+            </IconButton>
+          </>
+        ) : (
+          props.actions
+        )}
       </div>
     </div>
   );
