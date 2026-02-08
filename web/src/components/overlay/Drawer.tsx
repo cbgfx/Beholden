@@ -37,7 +37,7 @@ export function Drawer(props: {
         }}
       >
         <div style={{ padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-          <div style={{ fontSize: 18, fontWeight: 900, color: theme.colors.text }}>{props.title}</div>
+          <div style={{ fontSize: 12, fontWeight: 900, color: theme.colors.text }}>{props.title}</div>
           <Button variant="ghost" onClick={props.onClose}>Close</Button>
         </div>
 

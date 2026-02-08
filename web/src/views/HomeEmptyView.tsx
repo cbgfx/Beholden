@@ -18,7 +18,7 @@ export function HomeEmptyView(props: { onCreate: () => void }) {
       <div style={{ maxWidth: 720 }}>
         
         <div style={{ 
-          fontSize: 42, 
+          fontSize: 12, 
           fontWeight: 1000, 
           color: theme.colors.text, 
           display: 'flex', 
@@ -30,12 +30,12 @@ export function HomeEmptyView(props: { onCreate: () => void }) {
           BEHOLDEN
         </div>
 
-        <div style={{ marginTop: 10, fontSize: 18, color: theme.colors.muted, lineHeight: 1.4 }}>
+        <div style={{ marginTop: 10, fontSize: 12, color: theme.colors.muted, lineHeight: 1.4 }}>
           Create your first campaign to start building adventures, encounters, rosters, and notes.
         </div>
 
         <div style={{ marginTop: 24 }}>
-          <Button onClick={props.onCreate} style={{ padding: "12px 16px", fontSize: 16 }}>
+          <Button onClick={props.onCreate} style={{ padding: "10px 12px", fontSize: 12 }}>
             Create Campaign
           </Button>
         </div>

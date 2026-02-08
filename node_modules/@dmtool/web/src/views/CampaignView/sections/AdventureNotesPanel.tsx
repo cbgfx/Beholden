@@ -10,7 +10,7 @@ import { NoteAccordionItem } from "../components/NoteAccordionItem";
 export function AdventureNotesPanel(props: {
   selectedAdventureId: string | null;
   notes: Note[];
-  expandedNoteId: string | null;
+  expandedNoteIds: string[];
   onToggle: (noteId: string) => void;
   onAdd: () => void;
   onEdit: (noteId: string) => void;
@@ -36,7 +36,7 @@ export function AdventureNotesPanel(props: {
         notes.length ? (
           <DraggableList
             items={notes.map((n) => ({ id: n.id }))}
-            activeId={props.expandedNoteId}
+          activeIds={props.expandedNoteIds}
             onSelect={(id) => props.onToggle(id)}
             onReorder={props.onReorder}
             renderItem={(it) => {
@@ -44,7 +44,7 @@ export function AdventureNotesPanel(props: {
               return (
                 <NoteAccordionItem
                   note={n}
-                  expanded={props.expandedNoteId === n.id}
+                expanded={props.expandedNoteIds.includes(n.id)}
                   onToggle={() => props.onToggle(n.id)}
                   onEdit={() => props.onEdit(n.id)}
                   onDelete={() => props.onDelete(n.id)}

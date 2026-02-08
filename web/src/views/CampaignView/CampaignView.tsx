@@ -61,7 +61,7 @@ export function CampaignView(props: {
     combatants,
     campaignNotes,
     adventureNotes,
-    expandedNoteId,
+    expandedNoteIds,
   } = state;
 
   const selectedEncounter = React.useMemo(() => {
@@ -71,15 +71,10 @@ export function CampaignView(props: {
 
   return (
     <div
-      style={{
-        marginTop: 14,
-        display: "grid",
-        gridTemplateColumns: "340px 1fr 380px",
-        gap: theme.spacing.gap,
-      }}
+      className="campaignGrid"
     >
       {/* LEFT SIDEBAR */}
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="campaignCol">
         <AdventuresPanel
           adventures={adventures}
           selectedAdventureId={selectedAdventureId}
@@ -127,7 +122,7 @@ export function CampaignView(props: {
       </div>
 
       {/* MAIN COLUMN */}
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="campaignCol">
         <EncounterRosterPanel
           selectedEncounter={selectedEncounter ? { id: selectedEncounter.id, name: selectedEncounter.name } : null}
           combatants={combatants}
@@ -153,10 +148,10 @@ export function CampaignView(props: {
       </div>
 
       {/* RIGHT SIDEBAR */}
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="campaignCol">
         <CampaignNotesPanel
           notes={campaignNotes}
-          expandedNoteId={expandedNoteId}
+          expandedNoteIds={expandedNoteIds}
           onToggle={(noteId) => dispatch({ type: "toggleNote", noteId })}
           onAdd={props.onAddCampaignNote}
           onEdit={props.onEditCampaignNote}
@@ -167,7 +162,7 @@ export function CampaignView(props: {
         <AdventureNotesPanel
           selectedAdventureId={selectedAdventureId}
           notes={adventureNotes}
-          expandedNoteId={expandedNoteId}
+          expandedNoteIds={expandedNoteIds}
           onToggle={(noteId) => dispatch({ type: "toggleNote", noteId })}
           onAdd={props.onAddAdventureNote}
           onEdit={props.onEditAdventureNote}

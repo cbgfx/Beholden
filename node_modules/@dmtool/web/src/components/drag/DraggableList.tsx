@@ -11,6 +11,7 @@ export type DragItem = { id: string; title?: string; meta?: string };
 export function DraggableList(props: {
   items: DragItem[];
   activeId?: string | null;
+  activeIds?: string[];
   onSelect?: (id: string) => void;
   onReorder: (ids: string[]) => void;
   renderItem?: (item: DragItem) => React.ReactNode;
@@ -31,14 +32,16 @@ export function DraggableList(props: {
   return (
     <div>
       {props.items.map((it) => {
-        const isActive = it.id === props.activeId;
+        const isActive = props.activeIds
+          ? props.activeIds.includes(it.id)
+          : it.id === props.activeId;
         const isDragging = dragId === it.id;
 
         const bg = isActive
-          ? "rgba(236,167,44,0.22)"
+          ? "rgba(236,167,44,0.18)"
           : isDragging
           ? "rgba(236,167,44,0.10)"
-          : "rgba(0,0,0,0.18)";
+          : "rgba(0,0,0,0.14)";
 
         return (
           <div
@@ -52,8 +55,8 @@ export function DraggableList(props: {
             }}
             onClick={() => props.onSelect?.(it.id)}
             style={{
-              borderRadius: 12,
-              marginBottom: 8,
+              borderRadius: 10,
+              marginBottom: 4,
               userSelect: "none",
               cursor: props.onSelect ? "pointer" : "default",
               background: bg,
@@ -66,12 +69,12 @@ export function DraggableList(props: {
             ) : (
               <div
                 style={{
-                  padding: 5,
-                  borderRadius: 12,
+                  padding: 4,
+                  borderRadius: 10,
                   color: theme.colors.text,
                   display: "flex",
                   justifyContent: "space-between",
-                  gap: 6,
+                  gap: 4,
                 }}
               >
                 <span>{it.title ?? it.id}</span>

@@ -16,5 +16,6 @@ export const theme = {
     player: "#4aa3ff",
   },
   radius: { panel: 14, control: 10 },
-  spacing: { pagePad: 16, gap: 7 }
+  // Default spacing is compact; small-screen overrides happen via CSS where possible.
+  spacing: { pagePad: 10, gap: 6 }
 };

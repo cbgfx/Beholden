@@ -38,7 +38,7 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <img src="/beholden_logo.png" alt="Beholden" style={{ width: 22, height: 22 }} />
-        <div style={{ fontSize: 20, fontWeight: 900, color: theme.colors.text }}>Beholden</div>
+        <div style={{ fontSize: 12, fontWeight: 900, color: theme.colors.text }}>Beholden</div>
       </div>
 
       {campaigns.length ? (
@@ -54,7 +54,7 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
         <Button onClick={props.onCreateCampaign}>Create first campaign</Button>
       )}
 
-      <div style={{ marginLeft: "auto", color: theme.colors.muted, fontSize: 13 }}>
+      <div style={{ marginLeft: "auto", color: theme.colors.muted, fontSize: 12 }}>
               <NavLink to="/" label="Campaign" />
       <NavLink to="/compendium" label="Compendium" />
         {meta?.ips?.length ? <> {meta.ips.map((ip) => <code key={ip} style={{ marginLeft: 6 }}>{ip}</code>)}:5173</> : null}

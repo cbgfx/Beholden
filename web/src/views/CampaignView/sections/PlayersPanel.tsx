@@ -1,9 +1,9 @@
 import React from "react";
 import { Panel } from "../../../components/ui/Panel";
 import { IconButton } from "../../../components/ui/IconButton";
-import { HPBar } from "../../../components/ui/HPBar";
 import { theme } from "../../../app/theme/theme";
-import { IconPerson, IconPlus, IconSkull, IconPencil, IconTrash } from "../../../components/ui/Icons";
+import { IconPerson, IconPlus, IconSkull } from "../../../components/ui/Icons";
+import { PlayerRow } from "../components/PlayerRow";
 
 export function PlayersPanel(props: {
   players: any[];
@@ -29,65 +29,20 @@ export function PlayersPanel(props: {
       }
     >
       {players.length ? (
-        <div style={{ display: "grid", gap: 10 }}>
+        <div style={{ display: "grid", gap: 6 }}>
           {players.map((p) => (
-            <div
+            <PlayerRow
               key={p.id}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "minmax(320px, 1fr) 360px 92px",
-                alignItems: "center",
-                gap: 14,
-                padding: "12px 14px",
-                borderRadius: 14,
-                background: "rgba(0,0,0,0.14)",
-                border: `1px solid ${theme.colors.panelBorder}`,
-              }}
-            >
-              <div style={{ minWidth: 0, display: "grid", gap: 6 }}>
-                <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
-                  <span style={{ display: "inline-flex", opacity: 0.9 }}>
-                   {p.hpCurrent > 0? <IconPerson />: <IconSkull />}
-                  </span>
-
-                  <div
-                    style={{
-                      color: theme.colors.text,
-                      fontWeight: 900,
-                      fontSize: 14,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {p.characterName}{" "}
-                    <span style={{ color: theme.colors.muted, fontWeight: 600, opacity: 0.9, fontSize: 11 }}>({p.playerName})</span>
-                  </div>
-                </div>
-
-                <div style={{ color: theme.colors.muted, fontSize: 12 }}>
-                  Lvl {p.level} {p.species} {p.class}
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
-                  <div style={{ width: 320 }}>
-                    <HPBar cur={p.hpCurrent} max={p.hpMax} ac={p.ac} />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                <IconButton variant="ghost" onClick={() => props.onEditPlayer(p.id)} title="Edit">
-                  <IconPencil />
-                </IconButton>
-
-                <IconButton variant="ghost" onClick={() => props.onDeletePlayer(p.id)} title="Delete">
-                  <IconTrash />
-                </IconButton>
-              </div>
-            </div>
+              p={p}
+              icon={p.hpCurrent > 0 ? <IconPerson /> : <IconSkull />}
+              subtitle={
+                <>
+                  Lvl {p.level} {p.class} • {p.species} • AC {p.ac}
+                </>
+              }
+              onEdit={() => props.onEditPlayer(p.id)}
+              onDelete={() => props.onDeletePlayer(p.id)}
+            />
           ))}
         </div>
       ) : (

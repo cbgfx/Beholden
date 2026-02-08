@@ -28,7 +28,7 @@ export function PlayerRow(props: {
   const p = props.p;
   const variant = props.variant ?? "campaign";
   const actionsWidth = props.actions === null ? 0 : 92;
-  const padding = variant === "combatList" ? "8px 10px" : "12px 14px";
+  const padding = variant === "combatList" ? "8px 10px" : "8px 10px";
   const background = variant === "combatList" ? "transparent" : "rgba(0,0,0,0.14)";
   const border = variant === "combatList" ? "none" : `1px solid ${theme.colors.panelBorder}`;
   const borderRadius = variant === "combatList" ? 0 : 14;
@@ -90,26 +90,27 @@ export function PlayerRow(props: {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `1fr 360px ${actionsWidth}px`,
+        gridTemplateColumns: `1fr 260px ${actionsWidth}px`,
         alignItems: "center",
-        gap: 14,
+        gap: 8,
         padding,
         borderRadius,
         background,
         border
       }}
+      className="playerRowCampaign"
     >
       {/* Left identity block */}
       <div style={{ minWidth: 0 }}>
         <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
           <span style={{ display: "inline-flex", opacity: 0.9 }}>{props.icon ?? <IconPerson />}</span>
 
-          <div style={{ fontWeight: 900, color: theme.colors.text, fontSize: 16, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontWeight: 900, color: theme.colors.text, fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {p.characterName} <span style={{ fontWeight: 700, opacity: 0.85 }}>({p.playerName})</span>
           </div>
         </div>
 
-        <div style={{ marginTop: 4, fontSize: 12, color: theme.colors.muted }}>
+        <div style={{ marginTop: 2, fontSize: 11, color: theme.colors.muted }}>
           {props.subtitle ?? (
             <>
               Lvl {p.level} {p.class} • {p.species} • AC {p.ac}
@@ -119,7 +120,7 @@ export function PlayerRow(props: {
       </div>
 
       {/* Middle HP bar */}
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div className="playerRowHp" style={{ display: "flex", justifyContent: "center" }}>
         <HPBar cur={p.hpCurrent} max={p.hpMax} ac={p.ac} />
       </div>
 

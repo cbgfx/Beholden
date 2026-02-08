@@ -30,7 +30,7 @@ type State = {
   combatants: Combatant[];
   campaignNotes: Note[];
   adventureNotes: Note[];
-  expandedNoteId: string | null;
+  expandedNoteIds: string[];
   drawer: DrawerState;
 };
 
@@ -47,7 +47,7 @@ const initial: State = {
   combatants: [],
   campaignNotes: [],
   adventureNotes: [],
-  expandedNoteId: null,
+  expandedNoteIds: [],
   drawer: null
 };
 
@@ -83,7 +83,15 @@ function reducer(state: State, action: Action): State {
     case "setCombatants": return { ...state, combatants: action.combatants };
     case "setCampaignNotes": return { ...state, campaignNotes: action.notes };
     case "setAdventureNotes": return { ...state, adventureNotes: action.notes };
-    case "toggleNote": return { ...state, expandedNoteId: state.expandedNoteId === action.noteId ? null : action.noteId };
+    case "toggleNote": {
+      const exists = state.expandedNoteIds.includes(action.noteId);
+      return {
+        ...state,
+        expandedNoteIds: exists
+          ? state.expandedNoteIds.filter((id) => id !== action.noteId)
+          : [...state.expandedNoteIds, action.noteId]
+      };
+    }
     case "openDrawer": return { ...state, drawer: action.drawer };
     case "closeDrawer": return { ...state, drawer: null };
     default: return state;
