@@ -58,7 +58,7 @@ export function EncounterRosterPanel(props: {
 
   return (
     <Panel
-      title="Combat"
+      title="Combat Roster"
       actions={
         encounter ? (
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>

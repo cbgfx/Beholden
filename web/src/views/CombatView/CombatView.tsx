@@ -38,10 +38,11 @@ export function CombatView() {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [round, setRound] = React.useState(1);
-  const [delta, setDelta] = React.useState<string>("5");
+  const [delta, setDelta] = React.useState<string>("0");
   const [isNarrow, setIsNarrow] = React.useState(false);
 
   const [monsterCache, setMonsterCache] = React.useState<Record<string, MonsterDetail>>({});
+  const [spellLevelCache, setSpellLevelCache] = React.useState<Record<string, number | null>>({});
   const [spellDetail, setSpellDetail] = React.useState<SpellDetail | null>(null);
   const [spellError, setSpellError] = React.useState<string | null>(null);
   const [spellLoading, setSpellLoading] = React.useState(false);
@@ -82,6 +83,23 @@ export function CombatView() {
     [combatants, selectedId]
   );
 
+  const allHaveInitiative = React.useMemo(() => {
+    if (!combatants.length) return false;
+    return combatants.every((c: any) => Number.isFinite(Number(c?.initiative)));
+  }, [combatants]);
+
+  const orderedCombatants = React.useMemo(() => {
+    const rows = [...combatants] as any[];
+    // Always sort by initiative desc; unset initiative floats to the bottom.
+    rows.sort((a, b) => {
+      const ai = Number.isFinite(Number(a?.initiative)) ? Number(a.initiative) : -9999;
+      const bi = Number.isFinite(Number(b?.initiative)) ? Number(b.initiative) : -9999;
+      if (bi !== ai) return bi - ai;
+      return String(a.label || a.name || "").localeCompare(String(b.label || b.name || ""));
+    });
+    return rows as Combatant[];
+  }, [combatants]);
+
   React.useEffect(() => {
     if (!combatants.length) {
       setActiveIndex(0);
@@ -90,11 +108,21 @@ export function CombatView() {
     if (activeIndex >= combatants.length) setActiveIndex(0);
   }, [combatants.length]);
 
-  const active = (combatants as any)[activeIndex] ?? null;
+  const active = (orderedCombatants as any)[activeIndex] ?? null;
 
   React.useEffect(() => {
     if (active?.id) setSelectedId(active.id);
   }, [active?.id]);
+
+  // When initiative becomes fully set (combat "starts"), snap to Round 1, first in order.
+  const prevAllHaveInitRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!prevAllHaveInitRef.current && allHaveInitiative) {
+      setRound(1);
+      setActiveIndex(0);
+    }
+    prevAllHaveInitRef.current = allHaveInitiative;
+  }, [allHaveInitiative]);
 
   const selectedAny: any = selected as any;
   const selectedMonster = selectedAny?.baseType === "monster" ? monsterCache[selectedAny.baseId] : null;
@@ -213,9 +241,10 @@ export function CombatView() {
   }
 
   function nextTurn() {
-    if (!combatants.length) return;
+    if (!orderedCombatants.length) return;
+    if (!allHaveInitiative) return;
     const n = activeIndex + 1;
-    if (n >= combatants.length) {
+    if (n >= orderedCombatants.length) {
       setActiveIndex(0);
       setRound((r) => r + 1);
     } else {
@@ -224,14 +253,56 @@ export function CombatView() {
   }
 
   function prevTurn() {
-    if (!combatants.length) return;
+    if (!orderedCombatants.length) return;
+    if (!allHaveInitiative) return;
     const n = activeIndex - 1;
     if (n < 0) {
-      setActiveIndex(Math.max(0, combatants.length - 1));
+      setActiveIndex(Math.max(0, orderedCombatants.length - 1));
       setRound((r) => Math.max(1, r - 1));
     } else {
       setActiveIndex(n);
     }
+  }
+
+  function dexModFromMonster(d: MonsterDetail | null): number {
+    const dex = Number((d as any)?.dex ?? (d as any)?.raw_json?.dex);
+    if (!Number.isFinite(dex)) return 0;
+    return Math.floor((dex - 10) / 2);
+  }
+
+  async function rollInitiativeForMonsters() {
+    if (!encounterId) return;
+    // Only roll for monsters that don't have initiative yet.
+    const targets = orderedCombatants.filter((c: any) => c?.baseType === "monster" && !Number.isFinite(Number(c?.initiative))) as any[];
+    if (!targets.length) return;
+
+    // Ensure monster details are available (for Dex mod).
+    const localCache: Record<string, MonsterDetail> = { ...monsterCache };
+    for (const c of targets) {
+      if (!localCache[c.baseId]) {
+        try {
+          const d = await api<MonsterDetail>(`/api/compendium/monsters/${c.baseId}`);
+          localCache[c.baseId] = d;
+        } catch {
+          // ignore
+        }
+      }
+    }
+    setMonsterCache(localCache);
+
+    // Apply initiative.
+    for (const c of targets) {
+      const d = localCache[c.baseId] ?? null;
+      const mod = dexModFromMonster(d);
+      const roll = 1 + Math.floor(Math.random() * 20);
+      const init = roll + mod;
+      await api(`/api/encounters/${encounterId}/combatants/${c.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initiative: init })
+      });
+    }
+    await refresh();
   }
 
   async function openSpellByName(name: string) {
@@ -261,9 +332,52 @@ export function CombatView() {
     return parseMonsterSpells(selectedMonster);
   }, [selectedMonster?.id]);
 
+  // Load spell levels (light cache) so we can sort by spell level.
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      const names = spellNames;
+      for (const n of names) {
+        const key = n.trim().toLowerCase();
+        if (!key) continue;
+        if (spellLevelCache[key] !== undefined) continue;
+        try {
+          const rows = await api<SpellSummary[]>(`/api/spells/search?q=${encodeURIComponent(n)}&limit=5`);
+          const best = bestSpellMatch(rows, n);
+          const lvl = best ? Number(best.level) : null;
+          if (!alive) return;
+          setSpellLevelCache((prev) => ({ ...prev, [key]: Number.isFinite(lvl) ? lvl : null }));
+        } catch {
+          if (!alive) return;
+          setSpellLevelCache((prev) => ({ ...prev, [key]: null }));
+        }
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [spellNames.join("|"), spellLevelCache]);
+
+  const sortedSpellNames = React.useMemo(() => {
+    const rows = [...spellNames];
+    rows.sort((a, b) => {
+      const al = spellLevelCache[a.trim().toLowerCase()] ?? 99;
+      const bl = spellLevelCache[b.trim().toLowerCase()] ?? 99;
+      if (al !== bl) return al - bl;
+      return a.localeCompare(b);
+    });
+    return rows;
+  }, [spellNames, spellLevelCache]);
+
   return (
     <div style={{ padding: 14 }}>
-      <CombatHeader round={round} onPrev={prevTurn} onNext={nextTurn} />
+      <CombatHeader
+        round={round}
+        canNavigate={allHaveInitiative}
+        onRollMonsters={rollInitiativeForMonsters}
+        onPrev={prevTurn}
+        onNext={nextTurn}
+      />
 
       <div
         style={{
@@ -275,7 +389,7 @@ export function CombatView() {
         }}
       >
         <CombatOrderPanel
-          combatants={combatants}
+          combatants={orderedCombatants}
           playersById={playersById}
           monsterCrById={monsterCrById}
           activeIndex={activeIndex}
@@ -291,7 +405,7 @@ export function CombatView() {
             selected={selected}
             isNarrow={isNarrow}
             selectedMonster={selectedMonster}
-            spellNames={spellNames}
+            spellNames={sortedSpellNames}
             delta={delta}
             onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}
             onDamage={() => applyHpDelta("damage")}

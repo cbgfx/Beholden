@@ -22,24 +22,8 @@ export function CombatantDetailsPanel(props: {
   onOpenSpell: (name: string) => void;
 }) {
   const selectedAny: any = props.selected as any;
-
-  const titleParts = React.useMemo(() => {
-    if (!props.selected) return { main: "No selection", sub: null as React.ReactNode };
-    const label = String(selectedAny?.label ?? "").trim();
-    const name = String(selectedAny?.name ?? "").trim();
-    const baseType = String(selectedAny?.baseType ?? "");
-
-    // Avoid repeating label + name when they're identical.
-    const showName = baseType === "monster" && name && label && name.toLowerCase() !== label.toLowerCase();
-
-    if (baseType === "monster") {
-      return { main: label || name || "(Unnamed)", sub: showName ? <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>({name})</span> : null };
-    }
-    if (baseType === "player") {
-      return { main: label || name || "(Unnamed)", sub: <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>(Player)</span> };
-    }
-    return { main: label || name || "(Unnamed)", sub: null };
-  }, [props.selected, selectedAny?.id]);
+  const isMonster = selectedAny?.baseType === "monster";
+  const isPlayer = selectedAny?.baseType === "player";
 
   const colorChoices = React.useMemo(
     () => [
@@ -67,7 +51,8 @@ export function CombatantDetailsPanel(props: {
     setTempHp(String(o.tempHp ?? 0));
     setAcBonus(String(o.acBonus ?? 0));
     setHpMaxOverride(o.hpMaxOverride != null ? String(o.hpMaxOverride) : "");
-    setInitiative(selectedAny?.initiative != null ? String(selectedAny.initiative) : "");
+    const ini = selectedAny?.initiative;
+    setInitiative(ini != null && Number.isFinite(Number(ini)) ? String(Number(ini)) : "");
   }, [selectedAny?.id]);
 
   function commitOverrides(next: { tempHp?: number | null; acBonus?: number | null; hpMaxOverride?: number | null }) {
@@ -80,8 +65,16 @@ export function CombatantDetailsPanel(props: {
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span>{titleParts.main}</span>
-          {titleParts.sub}
+          <span>{props.selected ? selectedAny.label : "No selection"}</span>
+          {props.selected ? (
+            selectedAny.baseType === "monster" ? (
+              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
+                ({selectedAny.name})
+              </span>
+            ) : selectedAny.baseType === "player" ? (
+              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>(Player)</span>
+            ) : null
+          ) : null}
         </div>
       }
       actions={
@@ -147,6 +140,26 @@ export function CombatantDetailsPanel(props: {
               <div style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>Overrides</div>
 
               <div style={{ marginTop: 10, display: "grid", gap: 10 }}>
+                <div>
+                  <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Initiative</div>
+                  <input
+                    value={initiative}
+                    onChange={(e) => setInitiative(e.target.value.replace(/[^0-9-]/g, ""))}
+                    onBlur={() => props.onUpdate({ initiative: initiative === "" ? null : Number(initiative) })}
+                    placeholder="—"
+                    style={{
+                      width: "100%",
+                      padding: "6px 8px",
+                      borderRadius: 10,
+                      border: `1px solid ${theme.colors.panelBorder}`,
+                      background: theme.colors.panelBg,
+                      color: theme.colors.text,
+                      fontWeight: 900,
+                      fontSize: 12
+                    }}
+                  />
+                </div>
+
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                   <div>
                     <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>AC Bonus</div>
@@ -209,47 +222,29 @@ export function CombatantDetailsPanel(props: {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {isMonster ? (
                   <div>
-                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Initiative</div>
-                    <input
-                      value={initiative}
-                      onChange={(e) => setInitiative(e.target.value.replace(/[^0-9-]/g, ""))}
-                      onBlur={() => props.onUpdate({ initiative: initiative === "" ? null : Number(initiative) || 0 })}
-                      placeholder="—"
-                      style={{
-                        width: "100%",
-                        padding: "6px 8px",
-                        borderRadius: 10,
-                        border: `1px solid ${theme.colors.panelBorder}`,
-                        background: theme.colors.panelBg,
-                        color: theme.colors.text,
-                        fontWeight: 900,
-                        fontSize: 12
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Allegiance</div>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Friendly</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       <Button
-                        variant={selectedAny.friendly ? "health" : "ghost"}
+                        variant={selectedAny.friendly ? "primary" : "ghost"}
                         onClick={() => props.onUpdate({ friendly: true })}
+                        style={{ padding: "6px 10px" }}
                       >
                         Friendly
                       </Button>
                       <Button
                         variant={!selectedAny.friendly ? "danger" : "ghost"}
                         onClick={() => props.onUpdate({ friendly: false })}
+                        style={{ padding: "6px 10px" }}
                       >
                         Hostile
                       </Button>
                     </div>
                   </div>
-                </div>
+                ) : null}
 
-                {selectedAny?.baseType === "player" ? null : (
+                {isMonster ? (
                   <div>
                     <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Color label</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -274,7 +269,7 @@ export function CombatantDetailsPanel(props: {
                       })}
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 

@@ -30,6 +30,8 @@ export function CombatOrderPanel(props: {
           const hpCurrent = Number(c.hpCurrent ?? 0);
           const rawHpMax = Number(c.hpMax ?? 1);
           const overrides = c.overrides ?? null;
+          const tempHp = Number(overrides?.tempHp ?? 0) || 0;
+          const acBonus = Number(overrides?.acBonus ?? 0) || 0;
           const hpMax = Number(overrides?.hpMaxOverride ?? rawHpMax) || rawHpMax || 1;
           const ac = Number(c.ac ?? 0);
 
@@ -57,10 +59,11 @@ export function CombatOrderPanel(props: {
             vm.species = playerRec.species;
             vm.level = Number(playerRec.level ?? 0) || 0;
           }
-          const initiative = c.initiative;
+
+          const init = Number.isFinite(Number((c as any).initiative)) ? Number((c as any).initiative) : null;
           const metaRight = (
             <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>
-              Init {initiative != null && Number.isFinite(Number(initiative)) ? Number(initiative) : "—"}
+              Init {init != null ? init : "—"}
             </span>
           );
 
@@ -108,7 +111,11 @@ export function CombatOrderPanel(props: {
                     p={vm}
                     icon={icon}
                     variant="combatList"
-                    subtitle={metaRight}
+                    subtitle={
+                      <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>
+                        Init {Number.isFinite(Number((c as any).initiative)) ? Number((c as any).initiative) : "—"}
+                      </span>
+                    }
                     actions={null}
                   />
                 </div>

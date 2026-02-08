@@ -128,6 +128,13 @@ export function CampaignView(props: {
 
       {/* MAIN COLUMN */}
       <div className="campaignCol">
+        <PlayersPanel
+          players={players}
+          onCreatePlayer={props.onCreatePlayer}
+          onEditPlayer={props.onEditPlayer}
+          onDeletePlayer={props.onDeletePlayer}
+        />
+
         <EncounterRosterPanel
           selectedEncounter={selectedEncounter ? { id: selectedEncounter.id, name: selectedEncounter.name } : null}
           combatants={combatants}
@@ -142,13 +149,6 @@ export function CampaignView(props: {
           }}
           onEditCombatant={props.onEditCombatant}
           onRemoveCombatant={props.onRemoveCombatant}
-        />
-
-        <PlayersPanel
-          players={players}
-          onCreatePlayer={props.onCreatePlayer}
-          onEditPlayer={props.onEditPlayer}
-          onDeletePlayer={props.onDeletePlayer}
         />
       </div>
 

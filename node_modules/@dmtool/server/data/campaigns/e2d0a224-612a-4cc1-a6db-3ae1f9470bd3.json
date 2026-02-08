@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770522734146,
-      "updatedAt": 1770523556743,
+      "updatedAt": 1770524134797,
       "combatants": [
         {
           "id": "f0220179-ad97-4a46-a498-e0ed9904d0d0",
@@ -357,7 +357,8 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770522737130,
-          "updatedAt": 1770523448148
+          "updatedAt": 1770524134797,
+          "initiative": 8
         },
         {
           "id": "fa0f1be0-7f04-44e0-96b7-a1ccd83c9e69",
@@ -380,7 +381,8 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770522737130,
-          "updatedAt": 1770522737130
+          "updatedAt": 1770524129706,
+          "initiative": 22
         },
         {
           "id": "f3990ed5-7890-402f-bc19-1f53c913fd9c",
@@ -396,14 +398,15 @@
             "acBonus": 0,
             "hpMaxOverride": null
           },
-          "hpCurrent": 44,
+          "hpCurrent": 39,
           "hpMax": 44,
           "hpDetail": "(16d12+80)",
           "ac": 15,
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770522744708,
-          "updatedAt": 1770523556743
+          "updatedAt": 1770524123313,
+          "initiative": 20
         }
       ]
     }
