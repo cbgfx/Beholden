@@ -648,7 +648,7 @@ export function DrawerHost(props: {
                       ) : spellDetail ? (
                         <div style={{ display: "grid", gap: 4 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline" }}>
-                            <div style={{ color: theme.colors.text, fontWeight: 900, fontSize: 13 }}>{spellDetail.name}</div>
+                            <div style={{ color: theme.colors.text, fontWeight: 900, fontSize: 12 }}>{spellDetail.name}</div>
                             <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                               {(Number(spellDetail.level) === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`)}
                               {spellDetail.school ? ` • ${spellDetail.school}` : ""}

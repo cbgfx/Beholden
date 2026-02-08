@@ -37,8 +37,9 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <img src="/beholden_logo.png" alt="Beholden" style={{ width: 50, height: 50 }} />
-        <div style={{ fontSize: 30, fontWeight: 900, color: theme.colors.text }}>Beholden</div>
+        <img src="/beholden_logo.png" alt="Beholden" style={{ width: 22, height: 22 }} />
+        {/* Only place in the UI where we intentionally exceed the 12px ceiling */}
+        <div style={{ fontSize: 16, fontWeight: 900, color: theme.colors.text }}>Beholden</div>
       </div>
 
       {campaigns.length ? (

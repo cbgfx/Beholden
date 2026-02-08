@@ -247,7 +247,7 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
             }}
           >
             <div style={{ color: theme.colors.text, fontWeight: 900 }}>{t.name ?? t.title ?? "—"}</div>
-            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 13 }}>
+            <div style={{ color: theme.colors.muted, whiteSpace: "pre-wrap", fontSize: 12 }}>
               {t.text ?? t.description ?? ""}
             </div>
           </div>
@@ -280,7 +280,7 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
   return (
     <div style={{ display: "grid", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 5 }}>
-        <div style={{ fontSize: 14, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
+        <div style={{ fontSize: 12, fontWeight: 900, color: theme.colors.text }}>{m.name}</div>
         <div style={{ color: theme.colors.muted, fontWeight: 700 }}>CR {m.cr ?? m.challenge_rating ?? "?"}</div>
       </div>
 
@@ -399,22 +399,22 @@ function MonsterStatblock(props: { monster: any | null; hideSummary?: boolean })
               ) : spellDetail ? (
                 <div style={{ display: "grid", gap: 4 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 5, alignItems: "baseline" }}>
-                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 16 }}>{spellDetail.name}</div>
+                    <div style={{ color: theme.colors.text, fontWeight: 1000, fontSize: 12 }}>{spellDetail.name}</div>
                     <div style={{ color: theme.colors.muted, fontWeight: 800 }}>
                       {(Number(spellDetail.level) === 0 ? "Cantrip" : `L${spellDetail.level ?? "?"}`)}
                       {spellDetail.school ? ` • ${spellDetail.school}` : ""}
                     </div>
                   </div>
 
-                  <div style={{ color: theme.colors.muted, fontSize: 13 }}>
+                  <div style={{ color: theme.colors.muted, fontSize: 12 }}>
                     {[spellDetail.time, spellDetail.range, spellDetail.duration].filter(Boolean).join(" • ")}
                   </div>
 
                   {spellDetail.components ? (
-                    <div style={{ color: theme.colors.muted, fontSize: 13 }}>Components: {spellDetail.components}</div>
+                    <div style={{ color: theme.colors.muted, fontSize: 12 }}>Components: {spellDetail.components}</div>
                   ) : null}
 
-                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 13 }}>
+                  <div style={{ color: theme.colors.text, whiteSpace: "pre-wrap", fontSize: 12 }}>
                     {Array.isArray(spellDetail.text) ? spellDetail.text.filter(Boolean).join("\n") : String(spellDetail.text ?? "")}
                   </div>
                 </div>
@@ -466,7 +466,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           props.onChange(Math.max(1, v - 1));
         }}
       >
-        <span style={{ fontWeight: 900, fontSize: 14, lineHeight: 0 }}>−</span>
+        <span style={{ fontWeight: 900, fontSize: 12, lineHeight: 0 }}>−</span>
       </IconButton>
 
       <div
@@ -494,7 +494,7 @@ function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
           props.onChange(Math.min(20, v + 1));
         }}
       >
-        <span style={{ fontWeight: 900, fontSize: 14, lineHeight: 0 }}>+</span>
+        <span style={{ fontWeight: 900, fontSize: 12, lineHeight: 0 }}>+</span>
       </IconButton>
     </div>
   );
