@@ -751,7 +751,7 @@ app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
       label: p.characterName,
       friendly: true,
       color: "green",
-      overrides: null,
+      overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       hpCurrent: p.hpCurrent,
       hpMax: p.hpMax,
       ac: p.ac,
@@ -810,7 +810,7 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       label,
       friendly,
       color: friendly ? "lightgreen" : "red",
-      overrides: null,
+      overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       hpCurrent: hpMax,
       hpMax,
       ac,
@@ -843,6 +843,7 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
     hpCurrent: req.body?.hpCurrent != null ? Number(req.body.hpCurrent) : existing.hpCurrent,
     hpMax: req.body?.hpMax != null ? Number(req.body.hpMax) : existing.hpMax,
     ac: req.body?.ac != null ? Number(req.body.ac) : existing.ac,
+    overrides: req.body?.overrides != null ? req.body.overrides : existing.overrides,
     updatedAt: t
   };
   combat.combatants[idx] = next;

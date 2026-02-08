@@ -2,7 +2,7 @@ import React from "react";
 import type { Combatant } from "../../../app/types/domain";
 import { theme } from "../../../app/theme/theme";
 import { Panel } from "../../../components/ui/Panel";
-import { IconDragon, IconEncounter, IconPerson, IconSkull } from "../../../components/ui/Icons";
+import { IconDragon, IconPerson, IconSkull } from "../../../components/ui/Icons";
 import { PlayerRow, type PlayerVM } from "../../CampaignView/components/PlayerRow";
 
 export function CombatOrderPanel(props: {
@@ -29,7 +29,11 @@ export function CombatOrderPanel(props: {
           // Combatants in this codebase use baseType/baseId (not sourceType/sourceId).
           // hp/ac can be nullable in the domain type, so normalize to numbers for rendering.
           const hpCurrent = Number(c.hpCurrent ?? 0);
-          const hpMax = Number(c.hpMax ?? 1);
+          const rawHpMax = Number(c.hpMax ?? 1);
+          const overrides = c.overrides ?? null;
+          const tempHp = Number(overrides?.tempHp ?? 0) || 0;
+          const acBonus = Number(overrides?.acBonus ?? 0) || 0;
+          const hpMax = Number(overrides?.hpMaxOverride ?? rawHpMax) || rawHpMax || 1;
           const ac = Number(c.ac ?? 0);
 
           // Prefer an explicit label (if set), otherwise fall back to the combatant name.
@@ -53,25 +57,13 @@ export function CombatOrderPanel(props: {
 
           const iconColor = isDead
             ? theme.colors.muted
-            : c.baseType === "player"
-              ? theme.colors.player
-              : friendly
-                ? theme.colors.health
-                : theme.colors.danger;
+            : (c.baseType === "player" ? theme.colors.player : (c.color || (friendly ? theme.colors.health : theme.colors.danger)));
 
-          const icon = (
-            <span style={{ color: iconColor }}>
-              {isDead ? (
-                <IconSkull title="Dead" />
-              ) : c.baseType === "player" ? (
-                <IconPerson title="Player" />
-              ) : c.baseType === "monster" ? (
-                <IconDragon title="Monster" />
-              ) : (
-                <IconEncounter title="NPC" />
-              )}
-            </span>
-          );
+          const icon = isDead
+            ? <span style={{ color: iconColor }}><IconSkull size={28} /></span>
+            : c.baseType === "player"
+              ? <span style={{ color: iconColor }}><IconPerson size={28} /></span>
+              : <span style={{ color: iconColor }}><IconDragon size={28} /></span>;
 
           return (
             <button
@@ -88,15 +80,11 @@ export function CombatOrderPanel(props: {
                   <div
                     style={{
                       position: "absolute",
-                      right: 12,
-                      top: 12,
-                      color: theme.colors.accent,
-                      fontSize: 12,
-                      fontWeight: 900
+                      inset: 0,
+                      borderRadius: 14,
+                      boxShadow: `0 0 0 2px ${theme.colors.accent} inset`
                     }}
-                  >
-                    ●
-                  </div>
+                  />
                 ) : null}
 
                 <div
@@ -111,11 +99,7 @@ export function CombatOrderPanel(props: {
                     p={vm}
                     icon={icon}
                     variant="combatList"
-                    subtitle={
-                      <>
-                        {c.baseType === "player" ? "Player" : c.baseType === "monster" ? "Monster" : "NPC"}
-                      </>
-                    }
+                    subtitle={null}
                     actions={null}
                   />
                 </div>

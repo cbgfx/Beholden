@@ -37,6 +37,7 @@ export function CombatView() {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [round, setRound] = React.useState(1);
   const [delta, setDelta] = React.useState<string>("5");
+  const [isNarrow, setIsNarrow] = React.useState(false);
 
   const [monsterCache, setMonsterCache] = React.useState<Record<string, MonsterDetail>>({});
   const [spellDetail, setSpellDetail] = React.useState<SpellDetail | null>(null);
@@ -56,6 +57,19 @@ export function CombatView() {
   React.useEffect(() => {
     refresh();
   }, [encounterId]);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 980px)");
+    const onChange = () => setIsNarrow(Boolean(mq.matches));
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    // Safari fallback
+    mq.addListener?.(onChange);
+    return () => {
+      mq.removeEventListener?.("change", onChange);
+      mq.removeListener?.(onChange);
+    };
+  }, []);
 
   useWs((msg) => {
     if (msg.type === "encounter:combatantsChanged" && msg.payload?.encounterId === encounterId) refresh();
@@ -110,20 +124,48 @@ export function CombatView() {
     if (!encounterId || !selectedAny) return;
     if (damageAmount <= 0) return;
     const cur = selectedAny.hpCurrent;
-    const max = selectedAny.hpMax;
+    const overrides = selectedAny.overrides || null;
+    const rawMax = selectedAny.hpMax;
+    const max = overrides?.hpMaxOverride != null ? overrides.hpMaxOverride : rawMax;
+    const tempHp = Math.max(0, Number(overrides?.tempHp ?? 0) || 0);
     if (cur == null) return;
 
-    let next = cur;
-    if (kind === "damage") next = Math.max(0, cur - damageAmount);
+    let nextHp = cur;
+    let nextTemp = tempHp;
+
+    if (kind === "damage") {
+      // Damage consumes temp HP first.
+      const fromTemp = Math.min(nextTemp, damageAmount);
+      nextTemp -= fromTemp;
+      const remaining = damageAmount - fromTemp;
+      nextHp = Math.max(0, nextHp - remaining);
+    }
     if (kind === "heal") {
-      if (max != null) next = Math.min(max, cur + damageAmount);
-      else next = cur + damageAmount;
+      if (max != null) nextHp = Math.min(max, nextHp + damageAmount);
+      else nextHp = nextHp + damageAmount;
     }
 
     await api(`/api/encounters/${encounterId}/combatants/${selectedAny.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hpCurrent: next })
+      body: JSON.stringify({
+        hpCurrent: nextHp,
+        overrides: {
+          ...(overrides ?? { tempHp: 0, acBonus: 0, hpMaxOverride: null }),
+          tempHp: nextTemp
+        }
+      })
+    });
+    await refresh();
+    setDelta("0");
+  }
+
+  async function updateSelectedCombatant(patch: any) {
+    if (!encounterId || !selectedAny) return;
+    await api(`/api/encounters/${encounterId}/combatants/${selectedAny.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch)
     });
     await refresh();
   }
@@ -185,7 +227,7 @@ export function CombatView() {
         style={{
           marginTop: 14,
           display: "grid",
-          gridTemplateColumns: "340px 1fr",
+          gridTemplateColumns: isNarrow ? "1fr" : "minmax(250px, 300px) minmax(0, 1fr)",
           gap: 14,
           alignItems: "start"
         }}
@@ -203,12 +245,14 @@ export function CombatView() {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <CombatantDetailsPanel
             selected={selected}
+            isNarrow={isNarrow}
             selectedMonster={selectedMonster}
             spellNames={spellNames}
             delta={delta}
             onDeltaChange={(v) => setDelta(v.replace(/[^0-9]/g, ""))}
             onDamage={() => applyHpDelta("damage")}
             onHeal={() => applyHpDelta("heal")}
+            onUpdate={updateSelectedCombatant}
             onOpenSpell={(name) => openSpellByName(name)}
           />
         </div>

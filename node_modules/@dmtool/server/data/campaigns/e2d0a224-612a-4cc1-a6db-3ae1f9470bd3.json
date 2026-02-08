@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770509925417,
+      "updatedAt": 1770510953488,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -378,14 +378,14 @@
           "name": "Acolyte",
           "label": "Spell Dick 1",
           "friendly": false,
-          "color": "red",
+          "color": "#f48fb1",
           "overrides": null,
           "hpCurrent": 12,
           "hpMax": 25,
           "ac": 10,
           "conditions": [],
           "createdAt": 1770490571273,
-          "updatedAt": 1770504615780
+          "updatedAt": 1770510953488
         },
         {
           "id": "f9b02138-8b0e-4916-b5ee-8bed7b68b2a6",
@@ -395,14 +395,14 @@
           "name": "Acolyte",
           "label": "Spell Dick 2",
           "friendly": false,
-          "color": "red",
+          "color": "#ff5d5d",
           "overrides": null,
           "hpCurrent": 20,
           "hpMax": 25,
           "ac": 10,
           "conditions": [],
           "createdAt": 1770490571273,
-          "updatedAt": 1770509925417
+          "updatedAt": 1770510947179
         },
         {
           "id": "50653b1f-e5b2-4ec7-9717-41ed3dc8b8a4",
@@ -412,14 +412,14 @@
           "name": "Thug",
           "label": "Thug",
           "friendly": false,
-          "color": "red",
+          "color": "#ff5d5d",
           "overrides": null,
           "hpCurrent": 5,
           "hpMax": 5,
           "ac": 20,
           "conditions": [],
           "createdAt": 1770505214160,
-          "updatedAt": 1770505214160
+          "updatedAt": 1770510949822
         }
       ]
     }
