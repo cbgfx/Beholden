@@ -334,31 +334,8 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770517907982,
-      "updatedAt": 1770517917253,
+      "updatedAt": 1770518670441,
       "combatants": [
-        {
-          "id": "6d640865-d500-4d52-80ec-4f8c4a4ab468",
-          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
-          "baseType": "monster",
-          "baseId": "m_ancient black dragon [2024]",
-          "name": "Ancient Black Dragon [2024]",
-          "label": "Ancient Black Dragon [2024]",
-          "friendly": false,
-          "color": "red",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 195,
-          "hpMax": 195,
-          "hpDetail": null,
-          "ac": 19,
-          "acDetail": null,
-          "conditions": [],
-          "createdAt": 1770517915131,
-          "updatedAt": 1770517915131
-        },
         {
           "id": "d85ec826-9dde-4821-a8a6-07460da2ad8b",
           "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
@@ -404,6 +381,52 @@
           "conditions": [],
           "createdAt": 1770517917253,
           "updatedAt": 1770517917253
+        },
+        {
+          "id": "01ee8c25-fe01-4f8e-8779-3d8a3460eafc",
+          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
+          "baseType": "monster",
+          "baseId": "m_ancient copper dragon [2024]",
+          "name": "Ancient Copper Dragon [2024]",
+          "label": "Ancient Copper Dragon [2024] 1",
+          "friendly": false,
+          "color": "red",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 20,
+          "hpMax": 20,
+          "hpDetail": "(21d20+147)",
+          "ac": 20,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770518670441,
+          "updatedAt": 1770518670441
+        },
+        {
+          "id": "2a9ddfcd-3379-466a-929a-8e7095c67fb5",
+          "encounterId": "cc79b932-6f7a-4ef2-b1a3-b2fe2974745e",
+          "baseType": "monster",
+          "baseId": "m_ancient copper dragon [2024]",
+          "name": "Ancient Copper Dragon [2024]",
+          "label": "Ancient Copper Dragon [2024] 2",
+          "friendly": false,
+          "color": "red",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 20,
+          "hpMax": 20,
+          "hpDetail": "(21d20+147)",
+          "ac": 20,
+          "acDetail": null,
+          "conditions": [],
+          "createdAt": 1770518670441,
+          "updatedAt": 1770518670441
         }
       ]
     }
