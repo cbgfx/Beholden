@@ -99,11 +99,11 @@
       "class": "Bard",
       "species": "Human",
       "hpMax": 35,
-      "hpCurrent": 22,
+      "hpCurrent": 35,
       "ac": 30,
       "color": "green",
       "createdAt": 1770343942957,
-      "updatedAt": 1770487294173
+      "updatedAt": 1770513816150
     },
     "886428e8-d513-4648-8604-a8330f36f4a2": {
       "id": "886428e8-d513-4648-8604-a8330f36f4a2",

@@ -183,3 +183,35 @@ export function IconDragon({ size = 32, title }: Props) {
     </svg>
   );
 }
+
+export function IconShield({ size = 14, title }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-label={title}
+    >
+      {title ? <title>{title}</title> : null}
+      <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" />
+    </svg>
+  );
+}
+
+export function IconHeart({ size = 14, title }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-label={title}
+    >
+      {title ? <title>{title}</title> : null}
+      <path d="M12 21s-7-4.6-9.5-8.7C.4 9 .9 5.9 3.4 4.2c2-1.4 4.7-1 6.3.9 1.6-1.9 4.3-2.3 6.3-.9 2.5 1.7 3 4.8.9 8.1C19 16.4 12 21 12 21z" />
+    </svg>
+  );
+}
