@@ -153,7 +153,7 @@ function AppInner() {
   async function addMonster(
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; hpMax?: number }
+    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
   ) {
     if (!state.selectedEncounterId) return;
     const labelBase = opts?.labelBase;
@@ -163,10 +163,12 @@ function AppInner() {
       body: JSON.stringify({
         monsterId,
         qty,
-        friendly: false,
+        friendly: Boolean(opts?.friendly ?? false),
         labelBase: labelBase?.trim() || undefined,
         ac: opts?.ac,
-        hpMax: opts?.hpMax
+        acDetail: opts?.acDetail ?? undefined,
+        hpMax: opts?.hpMax,
+        hpDetail: opts?.hpDetail ?? undefined
       })
     });
     await refreshEncounter(state.selectedEncounterId);

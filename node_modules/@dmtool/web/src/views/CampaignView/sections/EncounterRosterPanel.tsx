@@ -28,7 +28,7 @@ export function EncounterRosterPanel(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; hpMax?: number; friendly?: boolean }
+    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
   ) => void;
 
   onAddAllPlayers: () => void;

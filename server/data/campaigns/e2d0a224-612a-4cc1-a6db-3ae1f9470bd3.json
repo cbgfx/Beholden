@@ -98,12 +98,12 @@
       "level": 5,
       "class": "Bard",
       "species": "Human",
-      "hpMax": 35,
-      "hpCurrent": 35,
-      "ac": 30,
+      "hpMax": 135,
+      "hpCurrent": 135,
+      "ac": 18,
       "color": "green",
       "createdAt": 1770343942957,
-      "updatedAt": 1770513816150
+      "updatedAt": 1770515275089
     },
     "886428e8-d513-4648-8604-a8330f36f4a2": {
       "id": "886428e8-d513-4648-8604-a8330f36f4a2",
@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770515193117,
+      "updatedAt": 1770516577721,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -344,14 +344,18 @@
           "name": "Torin Sigurdsen",
           "label": "Torin Sigurdsen",
           "friendly": true,
-          "color": "green",
-          "overrides": null,
-          "hpCurrent": 22,
+          "color": "#26c6da",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 35,
           "hpMax": 35,
           "ac": 30,
           "conditions": [],
           "createdAt": 1770490493664,
-          "updatedAt": 1770490596326
+          "updatedAt": 1770516315643
         },
         {
           "id": "96a85c77-dc37-4b94-b260-e69d10c870c3",
@@ -361,90 +365,39 @@
           "name": "Diego Diego",
           "label": "Diego Diego",
           "friendly": true,
-          "color": "green",
-          "overrides": null,
-          "hpCurrent": 20,
+          "color": "#f48fb1",
+          "overrides": {
+            "tempHp": 0,
+            "acBonus": 0,
+            "hpMaxOverride": null
+          },
+          "hpCurrent": 17,
           "hpMax": 20,
           "ac": 18,
           "conditions": [],
           "createdAt": 1770490493664,
-          "updatedAt": 1770509364888
+          "updatedAt": 1770516304659
         },
         {
-          "id": "27f85bee-76ed-421d-b043-82e4de5c8e70",
+          "id": "50819e2e-f18a-460c-9692-5b67f78955ab",
           "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
           "baseType": "monster",
-          "baseId": "m_acolyte",
-          "name": "Acolyte",
-          "label": "Spell Dick 1",
+          "baseId": "m_adult black dragon [2024]",
+          "name": "Adult Black Dragon [2024]",
+          "label": "Adult Black Dragon [2024]",
           "friendly": false,
-          "color": "#ff5d5d",
+          "color": "#7dc56d",
           "overrides": {
             "tempHp": 0,
             "acBonus": 0,
             "hpMaxOverride": null
           },
-          "hpCurrent": 1,
-          "hpMax": 25,
-          "ac": 10,
+          "hpCurrent": 45,
+          "hpMax": 45,
+          "ac": 16,
           "conditions": [],
-          "createdAt": 1770490571273,
-          "updatedAt": 1770515193117
-        },
-        {
-          "id": "f9b02138-8b0e-4916-b5ee-8bed7b68b2a6",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
-          "baseType": "monster",
-          "baseId": "m_acolyte",
-          "name": "Acolyte",
-          "label": "Spell Dick 2",
-          "friendly": false,
-          "color": "#ff5d5d",
-          "overrides": null,
-          "hpCurrent": 20,
-          "hpMax": 25,
-          "ac": 10,
-          "conditions": [],
-          "createdAt": 1770490571273,
-          "updatedAt": 1770510947179
-        },
-        {
-          "id": "50653b1f-e5b2-4ec7-9717-41ed3dc8b8a4",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
-          "baseType": "monster",
-          "baseId": "m_thug",
-          "name": "Thug",
-          "label": "Thug",
-          "friendly": false,
-          "color": "#ff5d5d",
-          "overrides": null,
-          "hpCurrent": 5,
-          "hpMax": 5,
-          "ac": 20,
-          "conditions": [],
-          "createdAt": 1770505214160,
-          "updatedAt": 1770510949822
-        },
-        {
-          "id": "048a20ef-24aa-4569-b89a-04dbb7fb4c87",
-          "encounterId": "d86a65a2-cba6-4c94-bd29-34dec0aef6f7",
-          "baseType": "monster",
-          "baseId": "m_necromancer wizard",
-          "name": "Necromancer Wizard",
-          "label": "Necromancer Wizard",
-          "friendly": false,
-          "color": "#ff5d5d",
-          "overrides": {
-            "tempHp": 0,
-            "acBonus": 0,
-            "hpMaxOverride": null
-          },
-          "hpCurrent": 110,
-          "hpMax": 110,
-          "ac": 12,
-          "conditions": [],
-          "createdAt": 1770514137541,
-          "updatedAt": 1770514146179
+          "createdAt": 1770515761306,
+          "updatedAt": 1770516577721
         }
       ]
     }

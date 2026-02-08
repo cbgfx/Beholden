@@ -511,7 +511,7 @@ export function MonsterPickerModal(props: {
   onAddMonster: (
     monsterId: string,
     qty: number,
-    opts?: { labelBase?: string; ac?: number; hpMax?: number; friendly?: boolean }
+    opts?: { labelBase?: string; ac?: number; acDetail?: string; hpMax?: number; hpDetail?: string; friendly?: boolean }
   ) => void;
 }) {
   const [selectedMonsterId, setSelectedMonsterId] = React.useState<string | null>(null);
@@ -519,8 +519,26 @@ export function MonsterPickerModal(props: {
   const [qtyById, setQtyById] = React.useState<Record<string, number>>({});
   const [labelById, setLabelById] = React.useState<Record<string, string>>({});
   const [acById, setAcById] = React.useState<Record<string, string>>({});
+  const [acDetailById, setAcDetailById] = React.useState<Record<string, string>>({});
   const [hpById, setHpById] = React.useState<Record<string, string>>({});
+  const [hpDetailById, setHpDetailById] = React.useState<Record<string, string>>({});
   const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
+
+  const splitNumberAndDetail = React.useCallback((raw: unknown): { numText: string; num: number | null; detail: string } => {
+    const s = String(raw ?? "").trim();
+    if (!s) return { numText: "", num: null, detail: "" };
+
+    const m = s.match(/-?\d+/);
+    if (!m || m.index == null) return { numText: "", num: null, detail: s };
+
+    const numText = m[0];
+    const num = Number(numText);
+    const after = s.slice(m.index + m[0].length).trim();
+
+    // Prefer dropping leading punctuation/brackets.
+    const detail = after.replace(/^[:\-–—]+\s*/, "").trim();
+    return { numText, num: Number.isFinite(num) ? num : null, detail };
+  }, []);
 
   const formatAcString = React.useCallback((m: any): string => {
     const raw = m?.raw_json ?? m;
@@ -601,7 +619,9 @@ export function MonsterPickerModal(props: {
 
   const selectedLabel = selectedMonsterId ? labelById[selectedMonsterId] : "";
   const selectedAc = selectedMonsterId ? acById[selectedMonsterId] : "";
+  const selectedAcDetail = selectedMonsterId ? acDetailById[selectedMonsterId] : "";
   const selectedHp = selectedMonsterId ? hpById[selectedMonsterId] : "";
+  const selectedHpDetail = selectedMonsterId ? hpDetailById[selectedMonsterId] : "";
   const selectedFriendly = selectedMonsterId ? (friendlyById[selectedMonsterId] ?? false) : false;
 
   // When a monster is selected and its detail loads, prefill the editable fields
@@ -612,13 +632,17 @@ export function MonsterPickerModal(props: {
     if (!monster) return;
 
     const id = selectedMonsterId;
-    const defaultAc = formatAcString(monster);
-    const defaultHp = formatHpString(monster);
+    const defaultAcRaw = formatAcString(monster);
+    const defaultHpRaw = formatHpString(monster);
+    const acSplit = splitNumberAndDetail(defaultAcRaw);
+    const hpSplit = splitNumberAndDetail(defaultHpRaw);
 
-    setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultAc }));
-    setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: defaultHp }));
+    setAcById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: acSplit.numText }));
+    setAcDetailById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: acSplit.detail }));
+    setHpById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: hpSplit.numText }));
+    setHpDetailById((prev) => (prev[id] != null && prev[id] !== "" ? prev : { ...prev, [id]: hpSplit.detail }));
     setFriendlyById((prev) => (prev[id] != null ? prev : { ...prev, [id]: false }));
-  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString]);
+  }, [props.isOpen, selectedMonsterId, monster, formatAcString, formatHpString, splitNumberAndDetail]);
 
   const parseLeadingNumber = React.useCallback((v: unknown) => {
     const s = String(v ?? "");
@@ -701,6 +725,8 @@ export function MonsterPickerModal(props: {
                           const labelBase = labelById[m.id] ?? m.name;
                           const acRaw = acById[m.id];
                           const hpRaw = hpById[m.id];
+                          const acDetail = acDetailById[m.id] ?? "";
+                          const hpDetail = hpDetailById[m.id] ?? "";
                           const friendly = friendlyById[m.id] ?? false;
 
                           const acNum = acRaw != null && String(acRaw).trim() !== "" ? parseLeadingNumber(acRaw) : NaN;
@@ -709,7 +735,9 @@ export function MonsterPickerModal(props: {
                           props.onAddMonster(m.id, qty, {
                             labelBase,
                             ac: Number.isFinite(acNum) ? acNum : undefined,
+                            acDetail: acDetail.trim() || undefined,
                             hpMax: Number.isFinite(hpNum) ? hpNum : undefined,
+                            hpDetail: hpDetail.trim() || undefined,
                             friendly
                           });
                         }}
@@ -739,20 +767,24 @@ export function MonsterPickerModal(props: {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, paddingBottom: 10 }}>
-              Armor Class ({selectedAc}): <Input
+              Armor Class{selectedAcDetail ? ` (${selectedAcDetail})` : ""}: <Input
                 value={selectedAc ?? ""}
                 onChange={(e) => {
                   if (!selectedMonsterId) return;
-                  setAcById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                  const next = splitNumberAndDetail(e.target.value);
+                  setAcById((prev) => ({ ...prev, [selectedMonsterId]: next.numText }));
+                  setAcDetailById((prev) => ({ ...prev, [selectedMonsterId]: next.detail }));
                 }}
                 placeholder="AC"
                 disabled={!selectedMonsterId}
               />
-              Hit Points ({selectedHp}): <Input
+              Hit Points{selectedHpDetail ? ` (${selectedHpDetail})` : ""}: <Input
                 value={selectedHp ?? ""}
                 onChange={(e) => {
                   if (!selectedMonsterId) return;
-                  setHpById((prev) => ({ ...prev, [selectedMonsterId]: e.target.value }));
+                  const next = splitNumberAndDetail(e.target.value);
+                  setHpById((prev) => ({ ...prev, [selectedMonsterId]: next.numText }));
+                  setHpDetailById((prev) => ({ ...prev, [selectedMonsterId]: next.detail }));
                 }}
                 placeholder="HP"
                 disabled={!selectedMonsterId}

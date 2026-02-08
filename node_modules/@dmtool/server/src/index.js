@@ -754,7 +754,9 @@ app.post("/api/encounters/:encounterId/combatants/addPlayers", (req,res)=>{
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       hpCurrent: p.hpCurrent,
       hpMax: p.hpMax,
+      hpDetail: null,
       ac: p.ac,
+      acDetail: null,
       conditions: [],
       createdAt: t,
       updatedAt: t
@@ -779,7 +781,9 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const labelBaseRaw = req.body?.labelBase;
   const labelBase = labelBaseRaw != null ? String(labelBaseRaw).trim() : "";
   const acOverride = req.body?.ac != null ? Number(req.body.ac) : null;
+  const acDetail = req.body?.acDetail != null ? String(req.body.acDetail) : null;
   const hpMaxOverride = req.body?.hpMax != null ? Number(req.body.hpMax) : null;
+  const hpDetail = req.body?.hpDetail != null ? String(req.body.hpDetail) : null;
 
   const m = compendiumState.monsters.find(x => x.id === monsterId);
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
@@ -787,6 +791,8 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
   const r = m.raw_json ?? {};
   const defaultAc = r?.ac?.value ?? r?.ac ?? null;
   const defaultHp = r?.hp?.average ?? r?.hp ?? null;
+  const defaultAcDetail = (r?.ac?.note ?? r?.ac?.type ?? null);
+  const defaultHpDetail = (r?.hp?.formula ?? r?.hp?.roll ?? null);
 
   const combat = ensureCombat(encounterId);
   const t = now();
@@ -813,7 +819,9 @@ app.post("/api/encounters/:encounterId/combatants/addMonster", (req,res)=>{
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       hpCurrent: hpMax,
       hpMax,
+      hpDetail: hpDetail != null ? hpDetail : (defaultHpDetail != null ? String(defaultHpDetail) : null),
       ac,
+      acDetail: acDetail != null ? acDetail : (defaultAcDetail != null ? String(defaultAcDetail) : null),
       conditions: [],
       createdAt: t,
       updatedAt: t
@@ -842,7 +850,9 @@ app.put("/api/encounters/:encounterId/combatants/:combatantId", (req,res)=>{
     color: req.body?.color != null ? String(req.body.color) : existing.color,
     hpCurrent: req.body?.hpCurrent != null ? Number(req.body.hpCurrent) : existing.hpCurrent,
     hpMax: req.body?.hpMax != null ? Number(req.body.hpMax) : existing.hpMax,
+    hpDetail: req.body?.hpDetail != null ? String(req.body.hpDetail) : existing.hpDetail,
     ac: req.body?.ac != null ? Number(req.body.ac) : existing.ac,
+    acDetail: req.body?.acDetail != null ? String(req.body.acDetail) : existing.acDetail,
     overrides: req.body?.overrides != null ? req.body.overrides : existing.overrides,
     updatedAt: t
   };

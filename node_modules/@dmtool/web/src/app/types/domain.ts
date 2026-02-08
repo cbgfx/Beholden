@@ -26,6 +26,9 @@ export type Combatant = {
   overrides: CombatantOverrides | null;
   hpCurrent: number | null;
   hpMax: number | null;
+  // Freeform details that accompany the numeric stat, e.g. "(natural armor)" or "(25d8+25)".
+  hpDetail: string | null;
   ac: number | null;
+  acDetail: string | null;
 };
 export type Meta = { ok: boolean; ips: string[]; host: string; port: number; hasCompendium: boolean };
