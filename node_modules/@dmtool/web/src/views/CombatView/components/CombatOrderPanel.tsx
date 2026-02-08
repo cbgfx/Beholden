@@ -2,7 +2,7 @@ import React from "react";
 import type { Combatant } from "../../../app/types/domain";
 import { theme } from "../../../app/theme/theme";
 import { Panel } from "../../../components/ui/Panel";
-import { IconEncounter, IconPerson, IconSkull } from "../../../components/ui/Icons";
+import { IconDragon, IconEncounter, IconPerson, IconSkull } from "../../../components/ui/Icons";
 import { PlayerRow, type PlayerVM } from "../../CampaignView/components/PlayerRow";
 
 export function CombatOrderPanel(props: {
@@ -51,7 +51,27 @@ export function CombatOrderPanel(props: {
             hpCurrent
           };
 
-          const icon = isDead ? <IconSkull /> : c.baseType === "player" ? <IconPerson /> : <IconEncounter />;
+          const iconColor = isDead
+            ? theme.colors.muted
+            : c.baseType === "player"
+              ? theme.colors.player
+              : friendly
+                ? theme.colors.health
+                : theme.colors.danger;
+
+          const icon = (
+            <span style={{ color: iconColor }}>
+              {isDead ? (
+                <IconSkull title="Dead" />
+              ) : c.baseType === "player" ? (
+                <IconPerson title="Player" />
+              ) : c.baseType === "monster" ? (
+                <IconDragon title="Monster" />
+              ) : (
+                <IconEncounter title="NPC" />
+              )}
+            </span>
+          );
 
           return (
             <button
@@ -64,18 +84,6 @@ export function CombatOrderPanel(props: {
               }}
             >
               <div style={{ position: "relative" }}>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: 10,
-                    top: 14,
-                    width: 10,
-                    height: 10,
-                    borderRadius: 999,
-                    background: c.color || (friendly ? theme.colors.health : theme.colors.danger),
-                    boxShadow: `0 0 0 2px ${theme.colors.bg}`
-                  }}
-                />
                 {isActive ? (
                   <div
                     style={{

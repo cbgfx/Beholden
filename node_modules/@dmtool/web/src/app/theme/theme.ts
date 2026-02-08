@@ -3,6 +3,8 @@ export const theme = {
   colors: {
     bg: "#2e4057",
     accent: "#eca72c",
+    // Canonical default colors (can be made user-editable later)
+    player: "#4da3ff",
     selected: "#2b2f779b",
     text: "#ffffff",
     muted: "rgba(255,255,255,0.72)",

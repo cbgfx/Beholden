@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770490488182,
-      "updatedAt": 1770505214160,
+      "updatedAt": 1770509925417,
       "combatants": [
         {
           "id": "51aaa147-3fb5-4652-944c-dab454c64c22",
@@ -363,12 +363,12 @@
           "friendly": true,
           "color": "green",
           "overrides": null,
-          "hpCurrent": 7,
+          "hpCurrent": 20,
           "hpMax": 20,
           "ac": 18,
           "conditions": [],
           "createdAt": 1770490493664,
-          "updatedAt": 1770490493664
+          "updatedAt": 1770509364888
         },
         {
           "id": "27f85bee-76ed-421d-b043-82e4de5c8e70",
@@ -397,12 +397,12 @@
           "friendly": false,
           "color": "red",
           "overrides": null,
-          "hpCurrent": 25,
+          "hpCurrent": 20,
           "hpMax": 25,
           "ac": 10,
           "conditions": [],
           "createdAt": 1770490571273,
-          "updatedAt": 1770495765821
+          "updatedAt": 1770509925417
         },
         {
           "id": "50653b1f-e5b2-4ec7-9717-41ed3dc8b8a4",
