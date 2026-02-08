@@ -27,6 +27,8 @@ export type Combatant = {
   encounterId: string;
   baseType: "player" | "monster" | "inpc";
   baseId: string;
+  // Initiative score used to order turns (displayed in Combat View).
+  initiative: number | null;
   name: string;
   playerName: string;
   label: string;

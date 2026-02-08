@@ -334,7 +334,7 @@
       "round": 1,
       "activeIndex": 0,
       "createdAt": 1770522734146,
-      "updatedAt": 1770522744708,
+      "updatedAt": 1770523556743,
       "combatants": [
         {
           "id": "f0220179-ad97-4a46-a498-e0ed9904d0d0",
@@ -357,7 +357,7 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770522737130,
-          "updatedAt": 1770522737130
+          "updatedAt": 1770523448148
         },
         {
           "id": "fa0f1be0-7f04-44e0-96b7-a1ccd83c9e69",
@@ -390,7 +390,7 @@
           "name": "Adult Copper Dragon [2024]",
           "label": "Adult Copper Dragon [2024]",
           "friendly": false,
-          "color": "red",
+          "color": "#ff5d5d",
           "overrides": {
             "tempHp": 0,
             "acBonus": 0,
@@ -403,7 +403,7 @@
           "acDetail": null,
           "conditions": [],
           "createdAt": 1770522744708,
-          "updatedAt": 1770522744708
+          "updatedAt": 1770523556743
         }
       ]
     }

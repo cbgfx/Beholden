@@ -23,6 +23,24 @@ export function CombatantDetailsPanel(props: {
 }) {
   const selectedAny: any = props.selected as any;
 
+  const titleParts = React.useMemo(() => {
+    if (!props.selected) return { main: "No selection", sub: null as React.ReactNode };
+    const label = String(selectedAny?.label ?? "").trim();
+    const name = String(selectedAny?.name ?? "").trim();
+    const baseType = String(selectedAny?.baseType ?? "");
+
+    // Avoid repeating label + name when they're identical.
+    const showName = baseType === "monster" && name && label && name.toLowerCase() !== label.toLowerCase();
+
+    if (baseType === "monster") {
+      return { main: label || name || "(Unnamed)", sub: showName ? <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>({name})</span> : null };
+    }
+    if (baseType === "player") {
+      return { main: label || name || "(Unnamed)", sub: <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>(Player)</span> };
+    }
+    return { main: label || name || "(Unnamed)", sub: null };
+  }, [props.selected, selectedAny?.id]);
+
   const colorChoices = React.useMemo(
     () => [
       { name: "Blue", value: "#4aa3ff" },
@@ -42,12 +60,14 @@ export function CombatantDetailsPanel(props: {
   const [tempHp, setTempHp] = React.useState("0");
   const [acBonus, setAcBonus] = React.useState("0");
   const [hpMaxOverride, setHpMaxOverride] = React.useState("");
+  const [initiative, setInitiative] = React.useState("");
 
   React.useEffect(() => {
     const o = (selectedAny?.overrides ?? { tempHp: 0, acBonus: 0, hpMaxOverride: null });
     setTempHp(String(o.tempHp ?? 0));
     setAcBonus(String(o.acBonus ?? 0));
     setHpMaxOverride(o.hpMaxOverride != null ? String(o.hpMaxOverride) : "");
+    setInitiative(selectedAny?.initiative != null ? String(selectedAny.initiative) : "");
   }, [selectedAny?.id]);
 
   function commitOverrides(next: { tempHp?: number | null; acBonus?: number | null; hpMaxOverride?: number | null }) {
@@ -60,16 +80,8 @@ export function CombatantDetailsPanel(props: {
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span>{props.selected ? selectedAny.label : "No selection"}</span>
-          {props.selected ? (
-            selectedAny.baseType === "monster" ? (
-              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>
-                ({selectedAny.name})
-              </span>
-            ) : selectedAny.baseType === "player" ? (
-              <span style={{ color: theme.colors.muted, fontSize: 12, fontWeight: 900 }}>(Player)</span>
-            ) : null
-          ) : null}
+          <span>{titleParts.main}</span>
+          {titleParts.sub}
         </div>
       }
       actions={
@@ -197,30 +209,72 @@ export function CombatantDetailsPanel(props: {
                   </div>
                 </div>
 
-                <div>
-                  <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Color label</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {colorChoices.map((c) => {
-                      const active = String(selectedAny.color || "") === c.value;
-                      return (
-                        <button
-                          key={c.value}
-                          type="button"
-                          title={c.name}
-                          onClick={() => props.onUpdate({ color: c.value })}
-                          style={{
-                            width: 18,
-                            height: 18,
-                            borderRadius: 6,
-                            border: active ? `2px solid ${theme.colors.accent}` : `1px solid ${theme.colors.panelBorder}`,
-                            background: c.value,
-                            cursor: "pointer"
-                          }}
-                        />
-                      );
-                    })}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div>
+                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Initiative</div>
+                    <input
+                      value={initiative}
+                      onChange={(e) => setInitiative(e.target.value.replace(/[^0-9-]/g, ""))}
+                      onBlur={() => props.onUpdate({ initiative: initiative === "" ? null : Number(initiative) || 0 })}
+                      placeholder="—"
+                      style={{
+                        width: "100%",
+                        padding: "6px 8px",
+                        borderRadius: 10,
+                        border: `1px solid ${theme.colors.panelBorder}`,
+                        background: theme.colors.panelBg,
+                        color: theme.colors.text,
+                        fontWeight: 900,
+                        fontSize: 12
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Allegiance</div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <Button
+                        variant={selectedAny.friendly ? "health" : "ghost"}
+                        onClick={() => props.onUpdate({ friendly: true })}
+                      >
+                        Friendly
+                      </Button>
+                      <Button
+                        variant={!selectedAny.friendly ? "danger" : "ghost"}
+                        onClick={() => props.onUpdate({ friendly: false })}
+                      >
+                        Hostile
+                      </Button>
+                    </div>
                   </div>
                 </div>
+
+                {selectedAny?.baseType === "player" ? null : (
+                  <div>
+                    <div style={{ color: theme.colors.muted, fontSize: 11, fontWeight: 800, marginBottom: 6 }}>Color label</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {colorChoices.map((c) => {
+                        const active = String(selectedAny.color || "") === c.value;
+                        return (
+                          <button
+                            key={c.value}
+                            type="button"
+                            title={c.name}
+                            onClick={() => props.onUpdate({ color: c.value })}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: 6,
+                              border: active ? `2px solid ${theme.colors.accent}` : `1px solid ${theme.colors.panelBorder}`,
+                              background: c.value,
+                              cursor: "pointer"
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -30,8 +30,6 @@ export function CombatOrderPanel(props: {
           const hpCurrent = Number(c.hpCurrent ?? 0);
           const rawHpMax = Number(c.hpMax ?? 1);
           const overrides = c.overrides ?? null;
-          const tempHp = Number(overrides?.tempHp ?? 0) || 0;
-          const acBonus = Number(overrides?.acBonus ?? 0) || 0;
           const hpMax = Number(overrides?.hpMaxOverride ?? rawHpMax) || rawHpMax || 1;
           const ac = Number(c.ac ?? 0);
 
@@ -59,12 +57,12 @@ export function CombatOrderPanel(props: {
             vm.species = playerRec.species;
             vm.level = Number(playerRec.level ?? 0) || 0;
           }
-
-          const cr = c.baseType === "monster" ? props.monsterCrById[c.baseId] : null;
-
-          const metaRight = c.baseType === "monster"
-            ? <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>CR {cr ?? "?"}</span>
-            : <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>Lvl {vm.level}</span>;
+          const initiative = c.initiative;
+          const metaRight = (
+            <span style={{ fontSize: 12, fontWeight: 900, color: theme.colors.muted }}>
+              Init {initiative != null && Number.isFinite(Number(initiative)) ? Number(initiative) : "—"}
+            </span>
+          );
 
           const iconColor = isDead
             ? theme.colors.muted
@@ -110,7 +108,7 @@ export function CombatOrderPanel(props: {
                     p={vm}
                     icon={icon}
                     variant="combatList"
-                    subtitle={null}
+                    subtitle={metaRight}
                     actions={null}
                   />
                 </div>
