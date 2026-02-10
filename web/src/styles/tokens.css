@@ -1,0 +1,24 @@
+:root {
+  /* Typography tokens. Prefer these over hard-coded fontSize numbers. */
+  --fs-hero: 30px;      /* App title / hero */
+  --fs-stat: 16px;      /* Big numeric stats (AC/HP/Speed) */
+  --fs-title: 17px;     /* Panel titles / section headers */
+  --fs-large: 15px;     /* Body text */
+  --fs-subtitle: 13px;  /* Secondary headings / compact titles */
+  --fs-medium: 15px;    /* Labels / metadata */
+  --fs-pill: 14px;      /* Pill / chip labels (conditions, small tags) */
+  --fs-small: 14px;     /* Tiny metadata */
+  --fs-tiny: 10px;      /* Micro text (rare) */
+  --fs-body: 16px;
+  --fs-h3: 18px;
+
+  /* Density */
+  --gap-2: 2px;
+  --gap-4: 4px;
+  --gap-6: 6px;
+  --gap-8: 8px;
+  --gap-10: 10px;
+  --space-page: 14px;
+  --space-gap: 14px;
+
+}

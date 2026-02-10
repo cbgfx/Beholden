@@ -1,0 +1,10 @@
+# Dependencies / build
+node_modules/
+dist/
+.DS_Store
+
+# Generated compendium (do not ship)
+server/data/compendium.json
+
+# Campaign runtime data (do not ship)
+server/data/campaigns/

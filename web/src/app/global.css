@@ -1,0 +1,67 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #2e4057;
+  color: white;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+}
+
+* { box-sizing: border-box; }
+
+a { color: inherit; }
+
+/* --- Layout tightening / small-screen defaults (iPad-friendly) --- */
+
+.shellLayout {
+  padding: 10px;
+}
+
+@media (max-width: 900px) {
+  .shellLayout {
+    padding: 8px;
+  }
+}
+
+.campaignGrid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 6fr) minmax(0, 7fr);
+  gap: 5px;
+}
+
+.campaignCol {
+  display: grid;
+  gap: 5px;
+}
+
+/* Stack into a single column on smaller screens (iPad portrait). */
+@media (max-width: 1024px) {
+  .campaignGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PlayerRow responsiveness */
+@media (max-width: 1024px) {
+  .playerRowCampaign {
+    grid-template-columns: 1fr !important;
+  }
+  .playerRowCampaign .playerRowHp {
+    justify-content: flex-start !important;
+  }
+}
+
+/* Native dropdown (select) styling.
+   Note: <option> styling is browser-dependent, but this gives reasonable defaults.
+*/
+select {
+  background: #2e4057;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+select option {
+  background: #2e4057;
+  color: white;
+}

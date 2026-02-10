@@ -1,0 +1,77 @@
+import * as React from "react";
+import { theme } from "@/app/theme/theme";
+import { Button } from "@/components/ui/Button";
+import type { AddMonsterOptions } from "@/app/types/domain";
+import type { CompendiumMonsterRow, AttackOverridesByMonsterId } from "../types";
+import { formatCr, parseLeadingNumberLoose } from "../utils";
+import { QtyStepper } from "./QtyStepper";
+
+export function MonsterRow(props: {
+  row: CompendiumMonsterRow;
+  active: boolean;
+  qty: number;
+  onSelect: () => void;
+  onChangeQty: (n: number) => void;
+  labelBase: string;
+  acRaw: string;
+  acDetail: string;
+  hpRaw: string;
+  hpDetail: string;
+  friendly: boolean;
+  attackOverridesById: AttackOverridesByMonsterId;
+  onSetLabelBase: (s: string) => void;
+  onAddMonster: (monsterId: string, qty: number, opts?: AddMonsterOptions) => void;
+}) {
+  const m = props.row;
+  return (
+    <div
+      onClick={props.onSelect}
+      style={{
+        padding: 10,
+        borderRadius: 12,
+        border: `1px solid ${theme.colors.panelBorder}`,
+        background: props.active ? "rgba(236,167,44,0.18)" : "rgba(0,0,0,0.10)",
+        marginBottom: 8,
+        cursor: "pointer",
+        display: "grid",
+        gridTemplateColumns: "1fr auto",
+        gap: 5,
+        alignItems: "center"
+      }}
+    >
+      <div>
+        <div style={{ color: theme.colors.text, fontWeight: 900 }}>{m.name}</div>
+        <div style={{ color: theme.colors.muted, fontSize: "var(--fs-medium)" }}>
+          {`CR ${formatCr(m.cr)}`}
+          {m.type ? ` • ${m.type}` : ""}
+          {m.environment ? ` • ${m.environment}` : ""}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+        <QtyStepper value={props.qty} onChange={props.onChangeQty} />
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const acNum = parseLeadingNumberLoose(props.acRaw);
+            const hpNum = parseLeadingNumberLoose(props.hpRaw);
+
+            props.onAddMonster(m.id, props.qty, {
+              labelBase: props.labelBase,
+              ac: Number.isFinite(acNum) ? acNum : undefined,
+              acDetail: props.acDetail.trim() || undefined,
+              hpMax: Number.isFinite(hpNum) ? hpNum : undefined,
+              hpDetail: props.hpDetail.trim() || undefined,
+              friendly: props.friendly,
+              attackOverrides: props.attackOverridesById[m.id]
+            });
+          }}
+        >
+          Add
+        </Button>
+      </div>
+    </div>
+  );
+}
