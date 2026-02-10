@@ -7,6 +7,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { IconClose, IconPlus } from "@/components/icons";
 import { Modal } from "@/components/overlay/Modal";
 import type { CompendiumItemDetail, CompendiumItemRow } from "@/app/types/compendium";
+import { titleCase } from "@/lib/format/titleCase";
 
 export type AddItemPayload =
   | { source: "compendium"; itemId: string }
@@ -14,6 +15,12 @@ export type AddItemPayload =
 
 function uniqSorted(xs: string[]) {
   return Array.from(new Set(xs.filter(Boolean))).sort((a, b) => a.localeCompare(b));
+}
+
+function formatMetaPart(v: string | null | undefined): string | null {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  return titleCase(s);
 }
 
 export function ItemPickerModal(props: {
@@ -161,7 +168,7 @@ export function ItemPickerModal(props: {
                 <option value="">All rarities</option>
                 {rarityOptions.map((r) => (
                   <option key={r} value={r}>
-                    {r}
+                    {titleCase(r)}
                   </option>
                 ))}
               </select>
@@ -169,7 +176,7 @@ export function ItemPickerModal(props: {
                 <option value="">All types</option>
                 {typeOptions.map((t) => (
                   <option key={t} value={t}>
-                    {t}
+                    {titleCase(t)}
                   </option>
                 ))}
               </select>
@@ -210,7 +217,9 @@ export function ItemPickerModal(props: {
                     >
                       <div style={{ fontWeight: 900 }}>{r.name}</div>
                       <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)" }}>
-                        {[r.rarity, r.type, r.attunement ? "attunement" : null].filter(Boolean).join(" • ")}
+                        {[formatMetaPart(r.rarity), formatMetaPart(r.type), r.attunement ? "Attunement" : null]
+                          .filter(Boolean)
+                          .join(" • ")}
                       </div>
                     </button>
                   );
@@ -272,7 +281,7 @@ export function ItemPickerModal(props: {
           ) : detail ? (
             <div style={{ display: "grid", gap: 10 }}>
               <div style={{ color: theme.colors.muted }}>
-                {[detail.rarity, detail.type, detail.attunement ? "requires attunement" : null]
+                {[formatMetaPart(detail.rarity), formatMetaPart(detail.type), detail.attunement ? "Requires Attunement" : null]
                   .filter(Boolean)
                   .join(" • ")}
               </div>
