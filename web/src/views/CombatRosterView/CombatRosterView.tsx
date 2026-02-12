@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStore } from "@/app/store";
 import { api } from "@/app/services/api";
 import type { AddMonsterOptions, INpc } from "@/app/types/domain";
+import { useConfirm } from "@/app/confirm/ConfirmContext";
 
 import { PlayersPanel } from "@/views/CampaignView/panels/PlayersPanel";
 import { INpcsPanel } from "@/views/CampaignView/panels/INpcsPanel";
@@ -19,6 +20,7 @@ export function CombatRosterView() {
   const { encounterId } = useParams();
   const nav = useNavigate();
   const { state, dispatch } = useStore();
+  const confirm = useConfirm();
 
   const { combatants, refresh } = useEncounterCombatants(encounterId, dispatch);
 
@@ -211,6 +213,7 @@ export function CombatRosterView() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <CombatRosterHeader
+        backTo={encounter ? `/campaign/${encounter.campaignId}` : "/"}
         title={encounter ? `Combat Roster: ${encounter.name}` : "Combat Roster"}
         totalXp={totalXp}
         difficulty={difficulty}
@@ -265,8 +268,7 @@ export function CombatRosterView() {
             }}
             onEditINpc={(inpcId) => dispatch({ type: "openDrawer", drawer: { type: "editINpc", inpcId } })}
             onDeleteINpc={async (inpcId) => {
-              const ok = window.confirm("Delete this iNPC?");
-              if (!ok) return;
+              if (!(await confirm({ title: "Delete iNPC", message: "Delete this iNPC?", intent: "danger" }))) return;
               await api(`/api/inpcs/${inpcId}`, { method: "DELETE" });
               const cid = state.selectedCampaignId;
               if (cid) dispatch({ type: "setINpcs", inpcs: await api<INpc[]>(`/api/campaigns/${cid}/inpcs`) });

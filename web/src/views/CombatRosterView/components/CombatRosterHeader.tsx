@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 
 type Props = {
   title: string;
+  backTo: string;
   totalXp?: number;
   difficulty?: {
     label: string;
@@ -39,7 +40,7 @@ export function CombatRosterHeader(props: Props) {
     <Panel
       title={
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Button variant="ghost" onClick={() => nav("/")} title="Back to Campaign">
+          <Button variant="ghost" onClick={() => nav(props.backTo)} title="Back to Campaign">
             ← Back
           </Button>
           <span style={{ fontSize: "var(--fs-title)", fontWeight: 900, color: theme.colors.text }}>

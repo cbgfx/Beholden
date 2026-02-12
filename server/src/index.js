@@ -58,6 +58,14 @@ function asText(v){
   }
   return "";
 }
+
+function parseLeadingInt(v){
+  const s = String(v ?? "").trim();
+  const m = s.match(/^(-?\d+)/);
+  if(!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? n : null;
+}
 function asArray(v){ if(!v) return []; return Array.isArray(v) ? v : [v]; }
 
 // Challenge Rating parsing must support fractional CRs from XML like "1/2" and "1/4".
@@ -456,7 +464,9 @@ compendiumState.spells = (raw.spells ?? []).map((s) => {
     // Spell identity must NOT collapse variants like "Aid" vs "Aid [2024]".
     // Use the full display name for id/nameKey. The bracket-stripped name is stored separately
     // for loose searching only.
-    const displayName = (asText(s?.name) || "Unknown").trim();
+    const displayName = asText(s?.name).trim();
+    // Skip malformed spell records (prevents "[object Object]" rows and click crashes).
+    if(!displayName) return null;
     const fullKey = normalizeKey(asText(s?.name_key ?? s?.nameKey) || displayName);
     const id = s?.id ?? `s_${fullKey.replace(/\s/g,"_")}`;
 
@@ -471,15 +481,15 @@ compendiumState.spells = (raw.spells ?? []).map((s) => {
       baseName,
       baseKey,
       level: s?.level != null ? Number(s.level) : null,
-      school: s?.school ?? null,
-      time: s?.time ?? null,
-      range: s?.range ?? null,
-      components: s?.components ?? null,
-      duration: s?.duration ?? null,
+      school: asText(s?.school) || (s?.school ?? null),
+      time: asText(s?.time) || (s?.time ?? null),
+      range: asText(s?.range) || (s?.range ?? null),
+      components: asText(s?.components) || (s?.components ?? null),
+      duration: asText(s?.duration) || (s?.duration ?? null),
       classes: s?.classes ?? null,
       text: texts
     };
-  });
+  }).filter(Boolean);
 
   compendiumState.items = (raw.items ?? []).map((it) => {
     const name = (it?.name ?? "Unknown").toString().trim();
@@ -884,10 +894,16 @@ app.post("/api/campaigns/:campaignId/inpcs", (req,res)=>{
   const m = compendiumState.monsters.find(x => x.id === monsterId);
   if(!m) return res.status(404).json({ ok:false, message:"Monster not found in compendium" });
 
-  const defaultAc = m?.ac ?? null;
-  const defaultHp = (m?.hp?.average ?? m?.hp) ?? null;
-  const defaultAcDetail = (m?.ac?.note ?? m?.ac?.type ?? null);
-  const defaultHpDetail = (m?.hp?.formula ?? m?.hp?.roll ?? null);
+  // Compendium data varies (numbers vs strings like "52 (8d8+16)").
+  // Parse safe defaults so iNPCs never get NaN/0 unless the source is actually missing.
+  const defaultAcRaw = m?.ac ?? null;
+  const defaultHpRaw = (m?.hp?.average ?? m?.hp) ?? null;
+
+  const defaultAc = parseLeadingInt(defaultAcRaw);
+  const defaultHp = parseLeadingInt(defaultHpRaw);
+
+  const defaultAcDetail = (m?.ac?.note ?? m?.ac?.type ?? (defaultAcRaw != null ? String(defaultAcRaw).replace(/^(-?\d+)\s*/, "").trim() : null)) || null;
+  const defaultHpDetail = (m?.hp?.formula ?? m?.hp?.roll ?? (defaultHpRaw != null ? String(defaultHpRaw).replace(/^(-?\d+)\s*/, "").trim() : null)) || null;
 
   const t = now();
   const created = [];
@@ -895,8 +911,8 @@ app.post("/api/campaigns/:campaignId/inpcs", (req,res)=>{
   for(let i=0;i<qty;i++){
     const id = uid();
     const name = String(b.name ?? "").trim() || m.name;
-    const hpMax = (b.hpMax != null && Number.isFinite(Number(b.hpMax))) ? Number(b.hpMax) : (defaultHp != null ? Number(defaultHp) : 1);
-    const ac = (b.ac != null && Number.isFinite(Number(b.ac))) ? Number(b.ac) : (defaultAc != null ? Number(defaultAc) : 10);
+    const hpMax = (b.hpMax != null && Number.isFinite(Number(b.hpMax))) ? Number(b.hpMax) : (defaultHp != null ? defaultHp : 1);
+    const ac = (b.ac != null && Number.isFinite(Number(b.ac))) ? Number(b.ac) : (defaultAc != null ? defaultAc : 10);
     userData.inpcs[id] = {
       id,
       campaignId,

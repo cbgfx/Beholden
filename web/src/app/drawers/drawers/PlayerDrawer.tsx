@@ -4,6 +4,7 @@ import { api, jsonInit } from "@/app/services/api";
 import { useStore, type DrawerState } from "@/app/store";
 import type { DrawerContent } from "@/app/drawers/types";
 import { PlayerForm, type PlayerFormHandlers, type PlayerFormState } from "@/app/drawers/drawers/player/PlayerForm";
+import { useConfirm } from "@/app/confirm/ConfirmContext";
 
 type PlayerDrawerState = Exclude<Extract<DrawerState, { type: "createPlayer"; campaignId: string } | { type: "editPlayer"; playerId: string }>, null>;
 
@@ -13,6 +14,7 @@ export function PlayerDrawer(props: {
   refreshCampaign: (cid: string) => Promise<void>;
 }): DrawerContent {
   const { state } = useStore();
+  const confirm = useConfirm();
 
   const [form, setForm] = React.useState<PlayerFormState>({
     playerName: "",
@@ -132,13 +134,18 @@ export function PlayerDrawer(props: {
   const deletePlayer = React.useCallback(async () => {
     const d = props.drawer;
     if (d.type !== "editPlayer") return;
-    // Minimal guardrail against misclicks; destructive actions live in drawers.
-    const ok = window.confirm("Delete this player? This cannot be undone.");
-    if (!ok) return;
+    if (
+      !(await confirm({
+        title: "Delete player",
+        message: "Delete this player? This cannot be undone.",
+        intent: "danger"
+      }))
+    )
+      return;
     await api(`/api/players/${d.playerId}`, { method: "DELETE" });
     await props.refreshCampaign(state.selectedCampaignId);
     props.close();
-  }, [props, state.selectedCampaignId]);
+  }, [confirm, props, state.selectedCampaignId]);
 
   const handlers: PlayerFormHandlers = React.useMemo(
     () => ({

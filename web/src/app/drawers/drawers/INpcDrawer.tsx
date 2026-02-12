@@ -5,6 +5,7 @@ import { Select } from "@/components/ui/Select";
 import { api, jsonInit } from "@/app/services/api";
 import { theme } from "@/app/theme/theme";
 import { useStore, type DrawerState } from "@/app/store";
+import { useConfirm } from "@/app/confirm/ConfirmContext";
 import type { DrawerContent } from "@/app/drawers/types";
 import { MonsterPreview } from "@/app/drawers/drawers/combatant/MonsterPreview";
 
@@ -16,6 +17,7 @@ export function INpcDrawer(props: {
   refreshCampaign: (cid: string) => Promise<void>;
 }): DrawerContent {
   const { state } = useStore();
+  const confirm = useConfirm();
   const inpc = React.useMemo(() => state.inpcs.find((i) => i.id === props.drawer.inpcId) ?? null, [state.inpcs, props.drawer.inpcId]);
 
   const [name, setName] = React.useState("");
@@ -66,12 +68,18 @@ export function INpcDrawer(props: {
 
   const deleteINpc = React.useCallback(async () => {
     if (!inpc) return;
-    const ok = window.confirm("Delete this iNPC? This cannot be undone.");
-    if (!ok) return;
+    if (
+      !(await confirm({
+        title: "Delete iNPC",
+        message: "Delete this iNPC? This cannot be undone.",
+        intent: "danger"
+      }))
+    )
+      return;
     await api(`/api/inpcs/${inpc.id}`, { method: "DELETE" });
     await props.refreshCampaign(state.selectedCampaignId);
     props.close();
-  }, [inpc, props, state.selectedCampaignId]);
+  }, [confirm, inpc, props, state.selectedCampaignId]);
 
   return {
     body: !inpc ? (

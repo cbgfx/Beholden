@@ -124,3 +124,76 @@ a {
   min-height: 0;
   overflow: auto;
 }
+
+/* ==============================
+   Confirm dialog (delete modal)
+   ============================== */
+
+.confirmBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirmCard {
+  width: min(520px, 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+  padding: 16px;
+}
+
+.confirmTitle {
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.confirmMessage {
+  font-size: var(--fs-base);
+  opacity: 0.9;
+  margin: 0 0 14px 0;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn:hover {
+  filter: brightness(1.05);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btnDanger {
+  border-color: rgba(255, 80, 80, 0.45);
+  background: rgba(255, 80, 80, 0.18);
+}
+
+.btnNeutral {
+  opacity: 0.95;
+}

@@ -13,10 +13,12 @@ import { CampaignView } from "../views/CampaignView/CampaignView";
 import { CombatView } from "../views/CombatView/CombatView";
 import { CombatRosterView } from "../views/CombatRosterView/CombatRosterView";
 import { DrawerHost } from "./DrawerHost";
+import { ConfirmProvider, useConfirm } from "./confirm/ConfirmContext";
 
 function AppInner() {
   const { state, dispatch } = useStore();
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [compQ, setCompQ] = useState("");
   const [compendiumIndex, setCompendiumIndex] = useState<any[]>([]);
   const [compRows, setCompRows] = useState<any[]>([]);
@@ -250,7 +252,7 @@ function AppInner() {
 
   async function deleteINpc(inpcId: string) {
     if (!state.selectedCampaignId) return;
-    if (!confirm("Delete this iNPC?")) return;
+    if (!(await confirm({ title: "Delete iNPC", message: "Delete this iNPC?", intent: "danger" }))) return;
     await api(`/api/inpcs/${inpcId}`, { method: "DELETE" });
     await refreshCampaign(state.selectedCampaignId);
   }
@@ -269,7 +271,11 @@ function AppInner() {
         onEditCampaign={(id) => dispatch({ type: "openDrawer", drawer: { type: "editCampaign", campaignId: id } })}
         onDeleteCampaign={async (id) => {
           if (!id) return;
-          if (!confirm("Delete this campaign? This will delete ALL its adventures, encounters, players, notes, etc.")) return;
+          if (!(await confirm({
+            title: "Delete campaign",
+            message: "Delete this campaign? This will delete ALL its adventures, encounters, players, notes, etc.",
+            intent: "danger"
+          }))) return;
           await api(`/api/campaigns/${id}`, { method: "DELETE" });
           await refreshAll();
         }}
@@ -306,14 +312,18 @@ function AppInner() {
                 }}
                 onEditAdventure={(adventureId) => dispatch({ type: "openDrawer", drawer: { type: "editAdventure", adventureId } })}
                 onDeleteAdventure={async (adventureId) => {
-                  if (!confirm("Delete this adventure? This will also delete its encounters and notes.")) return;
+                  if (!(await confirm({
+                    title: "Delete adventure",
+                    message: "Delete this adventure? This will also delete its encounters and notes.",
+                    intent: "danger"
+                  }))) return;
                   await api(`/api/adventures/${adventureId}`, { method: "DELETE" });
                   await refreshCampaign(state.selectedCampaignId);
                   await refreshAdventure(state.selectedAdventureId);
                 }}
                 onEditEncounter={(encounterId) => dispatch({ type: "openDrawer", drawer: { type: "editEncounter", encounterId } })}
                 onDeleteEncounter={async (encounterId) => {
-                  if (!confirm("Delete this encounter?")) return;
+                  if (!(await confirm({ title: "Delete encounter", message: "Delete this encounter?", intent: "danger" }))) return;
                   await api(`/api/encounters/${encounterId}`, { method: "DELETE" });
                   await refreshAdventure(state.selectedAdventureId);
                   await refreshCampaign(state.selectedCampaignId);
@@ -321,14 +331,14 @@ function AppInner() {
                 onAddCampaignNote={() => dispatch({ type: "openDrawer", drawer: { type: "note", scope: "campaign", campaignId: state.selectedCampaignId } })}
                 onEditCampaignNote={(noteId) => dispatch({ type: "openDrawer", drawer: { type: "editNote", noteId } })}
                 onDeleteCampaignNote={async (noteId) => {
-                  if (!confirm("Delete this note?")) return;
+                  if (!(await confirm({ title: "Delete note", message: "Delete this note?", intent: "danger" }))) return;
                   await api(`/api/notes/${noteId}`, { method: "DELETE" });
                   await refreshCampaign(state.selectedCampaignId);
                 }}
                 onAddAdventureNote={() => state.selectedAdventureId ? dispatch({ type: "openDrawer", drawer: { type: "note", scope: "adventure", campaignId: state.selectedCampaignId, adventureId: state.selectedAdventureId } }) : undefined}
                 onEditAdventureNote={(noteId) => dispatch({ type: "openDrawer", drawer: { type: "editNote", noteId } })}
                 onDeleteAdventureNote={async (noteId) => {
-                  if (!confirm("Delete this note?")) return;
+                  if (!(await confirm({ title: "Delete note", message: "Delete this note?", intent: "danger" }))) return;
                   await api(`/api/notes/${noteId}`, { method: "DELETE" });
                   await refreshAdventure(state.selectedAdventureId);
                 }}
@@ -363,9 +373,11 @@ function AppInner() {
 export default function App() {
   return (
     <StoreProvider>
-      <BrowserRouter>
-        <AppInner />
-      </BrowserRouter>
+      <ConfirmProvider>
+        <BrowserRouter>
+          <AppInner />
+        </BrowserRouter>
+      </ConfirmProvider>
     </StoreProvider>
   );
 }

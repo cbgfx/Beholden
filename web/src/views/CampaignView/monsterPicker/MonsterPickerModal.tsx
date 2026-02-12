@@ -3,7 +3,6 @@ import { api } from "@/app/services/api";
 import { splitLeadingNumberAndDetail } from "@/lib/parse/statDetails";
 import type { AddMonsterOptions } from "@/app/types/domain";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
 import { IconClose } from "@/components/icons";
 import { Modal } from "@/components/overlay/Modal";
 
@@ -39,6 +38,33 @@ export function MonsterPickerModal(props: {
   const [hpDetailById, setHpDetailById] = React.useState<Record<string, string>>({});
   const [friendlyById, setFriendlyById] = React.useState<Record<string, boolean>>({});
   const [attackOverridesById, setAttackOverridesById] = React.useState<AttackOverridesByMonsterId>({});
+
+  const monsterCache = React.useRef<Record<string, any>>({});
+
+  const hydrateMonster = React.useCallback(async (monsterId: string) => {
+    if (monsterCache.current[monsterId]) return monsterCache.current[monsterId];
+    const m = await api<any>(`/api/compendium/monsters/${monsterId}`);
+    monsterCache.current[monsterId] = m;
+
+    // Fill defaults if we don't already have overrides for that monster.
+    // splitLeadingNumberAndDetail has evolved over time; support both shapes.
+    const acSplit = splitLeadingNumberAndDetail(String(m.ac ?? "")) as any;
+    const hpSplit = splitLeadingNumberAndDetail(String(m.hp ?? "")) as any;
+    const acNumText = acSplit?.numText ?? String(acSplit?.leadingNumber ?? "");
+    const acDetailText = acSplit?.detail ?? "";
+    const hpNumText = hpSplit?.numText ?? String(hpSplit?.leadingNumber ?? "");
+    const hpDetailText = hpSplit?.detail ?? "";
+
+    setQtyById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? 1 }));
+    setLabelById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? "" }));
+    setAcById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? acNumText }));
+    setAcDetailById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? acDetailText }));
+    setHpById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? hpNumText }));
+    setHpDetailById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? hpDetailText }));
+    setFriendlyById((prev) => ({ ...prev, [monsterId]: prev[monsterId] ?? false }));
+
+    return m;
+  }, []);
 
   // List controls
   const [sortMode, setSortMode] = React.useState<SortMode>("az");
@@ -178,6 +204,35 @@ export function MonsterPickerModal(props: {
   const selectedHpDetail = selectedMonsterId ? hpDetailById[selectedMonsterId] ?? "" : "";
   const selectedFriendly = selectedMonsterId ? friendlyById[selectedMonsterId] ?? false : false;
 
+  const handleAddMonster = React.useCallback(
+    async (monsterId: string, qty: number, opts?: { friendly?: boolean }) => {
+      // If the user clicks "Add" without selecting a monster first, hydrate defaults on-demand.
+      let acRaw = acById[monsterId];
+      let hpRaw = hpById[monsterId];
+
+      if (acRaw == null || hpRaw == null) {
+        const m = await hydrateMonster(monsterId);
+
+        // Derive sane defaults from the monster's base AC/HP.
+        const acSplitAny: any = splitLeadingNumberAndDetail(formatAcString(m));
+        const hpSplitAny: any = splitLeadingNumberAndDetail(formatHpString(m));
+
+        acRaw = String(acSplitAny.numText ?? acSplitAny.leadingNumber ?? "");
+        hpRaw = String(hpSplitAny.numText ?? hpSplitAny.leadingNumber ?? "");
+      }
+
+      props.onAddMonster(monsterId, qty, {
+        friendly: opts?.friendly ?? (friendlyById[monsterId] ?? false),
+        labelBase: (labelById[monsterId] ?? "").trim() || undefined,
+        ac: Number.isFinite(Number(acRaw)) ? Number(acRaw) : undefined,
+        acDetail: (acDetailById[monsterId] ?? "").trim() || undefined,
+        hpMax: Number.isFinite(Number(hpRaw)) ? Number(hpRaw) : undefined,
+        hpDetail: (hpDetailById[monsterId] ?? "").trim() || undefined
+      });
+    },
+    [acById, hpById, friendlyById, labelById, acDetailById, hpDetailById, hydrateMonster, props]
+  );
+
   return (
     <Modal
       isOpen={props.isOpen}
@@ -233,7 +288,7 @@ export function MonsterPickerModal(props: {
             hpDetailById={hpDetailById}
             friendlyById={friendlyById}
             attackOverridesById={attackOverridesById}
-            onAddMonster={props.onAddMonster}
+            onAddMonster={handleAddMonster}
             onProvideScrollToIndex={(fn) => {
               listScrollToIndexRef.current = fn;
             }}
