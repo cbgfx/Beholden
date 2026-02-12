@@ -11,7 +11,7 @@ import { theme } from "@/app/theme/theme";
 
 function NavLink(props: { to: string; label: string }) {
   const loc = useLocation();
-  const active = loc.pathname === props.to || (props.to === "/" && loc.pathname === "/");
+  const active = loc.pathname === props.to || (props.to !== "/" && loc.pathname.startsWith(props.to + "/")) || (props.to === "/" && loc.pathname === "/");
   return (
     <Link
       to={props.to}
@@ -55,7 +55,7 @@ export function TopBar(props: { onCreateCampaign: () => void; onSelectCampaign: 
       )}
 
       <div style={{ marginLeft: "auto", color: theme.colors.muted, fontSize: "var(--fs-medium)" }}>
-              <NavLink to="/campaign" label="Campaign" />
+              {selectedCampaignId ? <NavLink to={`/campaign/${selectedCampaignId}`} label="Campaign" /> : <NavLink to="/" label="Campaign" /> }
       <NavLink to="/compendium" label="Compendium" />
         {meta?.ips?.length ? <> {meta.ips.map((ip) => <code key={ip} style={{ marginLeft: 6 }}>{ip}</code>)}:5173</> : null}
       </div>

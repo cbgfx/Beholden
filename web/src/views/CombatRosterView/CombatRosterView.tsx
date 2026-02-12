@@ -17,7 +17,7 @@ import { getMonsterXp } from "@/app/utils/xp";
 import { calcEncounterDifficulty, estimateMonsterDpr } from "@/app/utils/difficulty";
 
 export function CombatRosterView() {
-  const { encounterId } = useParams();
+  const { campaignId, encounterId } = useParams();
   const nav = useNavigate();
   const { state, dispatch } = useStore();
   const confirm = useConfirm();
@@ -288,7 +288,7 @@ export function CombatRosterView() {
             compRows={[]}
             onAddMonster={addMonster}
             onAddAllPlayers={addAllPlayers}
-            onOpenCombat={() => encounterId && nav(`/combat/${encounterId}`)}
+            onOpenCombat={() => encounterId && nav(campaignId ? `/campaign/${campaignId}/combat/${encounterId}` : `/combat/${encounterId}`)}
             onEditCombatant={(combatantId) =>
               encounterId ? dispatch({ type: "openDrawer", drawer: { type: "editCombatant", encounterId, combatantId } }) : undefined
             }

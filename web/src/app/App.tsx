@@ -292,14 +292,14 @@ function AppInner() {
               onCreateCampaign={() => dispatch({ type: "openDrawer", drawer: { type: "createCampaign" } })}
               onOpenCampaign={(campaignId) => {
                 dispatch({ type: "selectCampaign", campaignId });
-                navigate("/campaign");
+                navigate(`/campaign/${campaignId}`);
               }}
             />
           }
         />
 
         <Route
-          path="/campaign"
+          path="/campaign/:campaignId"
           element={
             !hasCampaigns ? (
               <Navigate to="/" replace />
@@ -361,8 +361,8 @@ function AppInner() {
               />
   )}
           />
-          <Route path="/roster/:encounterId" element={<CombatRosterView />} />
-          <Route path="/combat/:encounterId" element={<CombatView />} />
+          <Route path="/campaign/:campaignId/roster/:encounterId" element={<CombatRosterView />} />
+          <Route path="/campaign/:campaignId/combat/:encounterId" element={<CombatView />} />
           <Route path="/compendium" element={<CompendiumView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

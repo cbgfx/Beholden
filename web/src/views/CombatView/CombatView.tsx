@@ -53,7 +53,7 @@ function applyMonsterAttackOverrides(monster: any | null, combatant: any | null)
 import { allHaveInitiative, orderCombatants } from "./utils/combat";
 
 export function CombatView() {
-  const { encounterId } = useParams();
+  const { campaignId, encounterId } = useParams();
   const { state, dispatch } = useStore();
 
   const encounter = React.useMemo(() => {

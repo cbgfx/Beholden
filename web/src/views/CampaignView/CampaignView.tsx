@@ -222,8 +222,8 @@ export function CampaignView(props: {
               encounterId: id === selectedEncounterId ? null : id,
             })
           }
-          onBuild={(id) => nav(`/roster/${id}`)}
-          onPlay={(id) => nav(`/combat/${id}`)}
+          onBuild={(id) => state.selectedCampaignId ? nav(`/campaign/${state.selectedCampaignId}/roster/${id}`) : nav(`/roster/${id}`)}
+          onPlay={(id) => state.selectedCampaignId ? nav(`/campaign/${state.selectedCampaignId}/combat/${id}`) : nav(`/combat/${id}`)}
           onCreate={props.onCreateEncounter}
           onEdit={props.onEditEncounter}
           onDelete={props.onDeleteEncounter}
