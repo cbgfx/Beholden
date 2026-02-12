@@ -154,7 +154,8 @@ export function ItemPickerModal(props: {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search"
-              style={{ width: "100%" }}
+              style={{ width: "100%", background: theme.colors.panelBg,
+                      color: theme.colors.text }}
             />
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
