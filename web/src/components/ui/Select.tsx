@@ -1,233 +1,235 @@
-import * as React from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import { theme } from "@/app/theme/theme";
+import { theme } from "../../app/theme/theme";
 
-type OptionItem = {
-  value: string;
-  label: string;
-  disabled?: boolean;
-};
+type OptionLike = { value: string; label: string; disabled?: boolean };
 
-function extractOptions(children: React.ReactNode): OptionItem[] {
-  const nodes = React.Children.toArray(children) as any[];
-  const out: OptionItem[] = [];
-
-  for (const n of nodes) {
-    if (!React.isValidElement(n)) continue;
-
-    // <option>
-    if ((n.type as any) === "option") {
-      const value = String((n.props as any).value ?? "");
-      const label = String((n.props as any).children ?? "");
-      const disabled = Boolean((n.props as any).disabled);
+function toOptionList(children: React.ReactNode): OptionLike[] {
+  const out: OptionLike[] = [];
+  React.Children.forEach(children, (child) => {
+    if (!React.isValidElement(child)) return;
+    // Support <option> only (keeps Beholden simple and predictable)
+    if ((child.type as any) === "option") {
+      const value = String((child.props as any).value ?? "");
+      const label = String((child.props as any).children ?? "");
+      const disabled = Boolean((child.props as any).disabled ?? false);
       out.push({ value, label, disabled });
-      continue;
     }
-
-    // <optgroup> (optional)
-    if ((n.type as any) === "optgroup") {
-      const groupChildren = React.Children.toArray((n.props as any).children) as any[];
-      for (const gc of groupChildren) {
-        if (!React.isValidElement(gc)) continue;
-        if ((gc.type as any) !== "option") continue;
-        const value = String((gc.props as any).value ?? "");
-        const label = String((gc.props as any).children ?? "");
-        const disabled = Boolean((gc.props as any).disabled);
-        out.push({ value, label, disabled });
-      }
-    }
-  }
-
+  });
   return out;
 }
 
-function menuSolidBg() {
-  // theme.colors.panelBg is intentionally translucent for panels, but dropdown menus must be opaque.
-  // Derive an opaque menu bg from the app bg color.
-  const bg = theme.colors.bg; // e.g. #2e4057
-  return bg;
-}
-
-type MenuPos = { top: number; left: number; width: number };
-
 export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  const { children, value, defaultValue, onChange, disabled, style, title, ...rest } = props;
+  const { children, value, defaultValue, onChange, disabled, style, ...rest } = props;
 
-  const options = React.useMemo(() => extractOptions(children), [children]);
+  const options = React.useMemo(() => toOptionList(children), [children]);
 
-  const isControlled = value !== undefined;
-  const [internalValue, setInternalValue] = React.useState<string>(String(defaultValue ?? options[0]?.value ?? ""));
-  const selectedValue = String(isControlled ? value : internalValue);
+  const isControlled = value != null;
+  const [internalValue, setInternalValue] = React.useState<string>(() => {
+    if (isControlled) return String(value);
+    if (defaultValue != null) return String(defaultValue);
+    return options[0]?.value ?? "";
+  });
 
-  const selectedLabel =
-    options.find((o) => o.value === selectedValue)?.label ??
-    options[0]?.label ??
-    "";
+  React.useEffect(() => {
+    if (isControlled) setInternalValue(String(value));
+  }, [isControlled, value]);
+
+  const currentValue = isControlled ? String(value) : internalValue;
+  const selected = options.find((o) => o.value === currentValue) ?? null;
 
   const [open, setOpen] = React.useState(false);
+
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const menuRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [menuPos, setMenuPos] = React.useState<MenuPos>({ top: 0, left: 0, width: 0 });
+  const [menuPos, setMenuPos] = React.useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
 
-  const recomputePos = React.useCallback(() => {
+  const computeMenuPos = React.useCallback(() => {
     const el = rootRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    setMenuPos({
-      top: rect.bottom + 6,
-      left: rect.left,
-      width: rect.width
-    });
+    setMenuPos({ top: rect.bottom + 6, left: rect.left, width: rect.width });
   }, []);
 
   React.useEffect(() => {
     if (!open) return;
-    recomputePos();
+    computeMenuPos();
 
-    const onResize = () => recomputePos();
-    // capture scroll from any scrollable parent
-    const onScroll = () => recomputePos();
+    const onScroll = () => computeMenuPos();
+    const onResize = () => computeMenuPos();
 
-    window.addEventListener("resize", onResize);
+    // capture scroll from any scroll container
     window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+
     return () => {
-      window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
     };
-  }, [open, recomputePos]);
+  }, [open, computeMenuPos]);
 
   React.useEffect(() => {
     if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      const el = rootRef.current;
-      if (!el) return;
-      if (!el.contains(e.target as Node)) setOpen(false);
+
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node | null;
+      if (!t) return;
+
+      const root = rootRef.current;
+      const menu = menuRef.current;
+
+      // IMPORTANT: menu is portaled, so it's not a child of rootRef.
+      if (root && root.contains(t)) return;
+      if (menu && menu.contains(t)) return;
+
+      setOpen(false);
     };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+
+    window.addEventListener("mousedown", onDown, true);
+    return () => window.removeEventListener("mousedown", onDown, true);
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   const commitValue = React.useCallback(
     (next: string) => {
       if (!isControlled) setInternalValue(next);
-      onChange?.({
-        target: { value: next },
-        currentTarget: { value: next }
-      } as any);
+
+      if (onChange) {
+        // Provide the shape Beholden code expects (e.target.value).
+        const evt = { target: { value: next } } as unknown as React.ChangeEvent<HTMLSelectElement>;
+        onChange(evt);
+      }
     },
     [isControlled, onChange]
   );
 
-  const bgSolid = menuSolidBg();
+  // Allow callers to control width via style.width/minWidth.
+  const width = (style as any)?.width;
+  const minWidth = (style as any)?.minWidth;
 
-  return (
-    <div
-      ref={rootRef}
-      style={{
-        position: "relative",
-        minWidth: 140,
-        ...(style ?? {})
-      }}
-      title={title}
-    >
-      {/* Trigger */}
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => setOpen((o) => !o)}
-        style={{
-          width: "100%",
-          padding: "8px 10px",
-          borderRadius: theme.radius.control,
-          border: `2px solid ${theme.colors.accent}`,
-          background: theme.colors.inputBg,
-          color: theme.colors.text,
-          fontWeight: 800,
-          cursor: disabled ? "not-allowed" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 10,
-          opacity: disabled ? 0.55 : 1
-        }}
-      >
-        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {selectedLabel || "Select…"}
-        </span>
-        <span style={{ opacity: 0.85, fontWeight: 900 }}>▾</span>
-      </button>
+  const triggerStyle: React.CSSProperties = {
+    width,
+    minWidth,
+    padding: "8px 10px",
+    borderRadius: theme.radius.control,
+    border: `2px solid ${theme.colors.accent}`,
+    background: theme.colors.inputBg,
+    color: theme.colors.text,
+    fontWeight: 800,
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.55 : 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+    userSelect: "none",
+    outline: "none",
+    boxShadow: "none"
+  };
 
-      {/* Menu (portal to avoid modal stacking/opacity/overflow issues) */}
-      {open && !disabled
-        ? ReactDOM.createPortal(
-            <div
+  const menuStyle: React.CSSProperties = {
+    position: "fixed",
+    top: menuPos.top,
+    left: menuPos.left,
+    width: menuPos.width,
+    background: theme.colors.bg, // opaque background (avoid see-through)
+    border: `2px solid ${theme.colors.accent}`,
+    borderRadius: theme.radius.control,
+    overflow: "hidden",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+    zIndex: 999999,
+    maxHeight: 280
+  };
+
+  const menu = open ? (
+    <div ref={menuRef} role="listbox" style={menuStyle}>
+      <div style={{ maxHeight: 280, overflowY: "auto" }}>
+        {options.map((o) => {
+          const isSel = o.value === currentValue;
+          const isDis = Boolean(o.disabled);
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="option"
+              aria-selected={isSel}
+              disabled={isDis}
+              onMouseDown={(e) => {
+                // Prevent focus from moving / outside-close firing before click.
+                e.preventDefault();
+              }}
+              onClick={() => {
+                if (isDis) return;
+                commitValue(o.value);
+                setOpen(false);
+              }}
               style={{
-                position: "fixed",
-                top: menuPos.top,
-                left: menuPos.left,
-                width: menuPos.width,
-                zIndex: 999999,
-                borderRadius: theme.radius.control,
-                border: `2px solid ${theme.colors.accent}`,
-                background: bgSolid,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
-                overflow: "hidden",
-                maxHeight: 280
+                width: "100%",
+                textAlign: "left",
+                padding: "10px 12px",
+                border: "none",
+                background: isSel ? theme.colors.accent : theme.colors.bg,
+                color: isSel ? "#000" : theme.colors.text,
+                fontWeight: isSel ? 900 : 700,
+                cursor: isDis ? "not-allowed" : "pointer",
+                opacity: isDis ? 0.45 : 1
               }}
             >
-              <div style={{ maxHeight: 280, overflowY: "auto" }}>
-                {options.map((o) => {
-                  const isSel = o.value === selectedValue;
-                  return (
-                    <button
-                      key={o.value}
-                      type="button"
-                      disabled={o.disabled}
-                      onClick={() => {
-                        if (o.disabled) return;
-                        commitValue(o.value);
-                        setOpen(false);
-                      }}
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "10px 12px",
-                        border: "none",
-                        background: isSel ? theme.colors.accent : bgSolid,
-                        color: isSel ? "#000" : theme.colors.text,
-                        fontWeight: isSel ? 900 : 700,
-                        cursor: o.disabled ? "not-allowed" : "pointer",
-                        opacity: o.disabled ? 0.45 : 1
-                      }}
-                    >
-                      {o.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>,
-            document.body
-          )
-        : null}
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  ) : null;
 
-      {/* Hidden native select for form semantics/compat */}
+  return (
+    <div ref={rootRef} style={{ position: "relative", display: "inline-block", width, minWidth }}>
+      {/* Hidden native select for semantics / forms */}
       <select
         {...rest}
-        value={selectedValue}
-        onChange={(e) => commitValue(e.target.value)}
+        value={currentValue}
         disabled={disabled}
-        aria-hidden="true"
-        tabIndex={-1}
-        style={{
-          position: "absolute",
-          opacity: 0,
-          pointerEvents: "none",
-          width: 1,
-          height: 1
-        }}
+        onChange={(e) => commitValue(e.target.value)}
+        style={{ position: "absolute", opacity: 0, pointerEvents: "none", height: 0, width: 0 }}
       >
         {children}
       </select>
+
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        disabled={disabled}
+        onClick={() => {
+          if (disabled) return;
+          setOpen((o) => !o);
+        }}
+        onKeyDown={(e) => {
+          if (disabled) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+          if (e.key === "Escape") setOpen(false);
+        }}
+        style={triggerStyle}
+      >
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label ?? "Select"}</span>
+        <span style={{ opacity: 0.75, fontWeight: 900 }}>▾</span>
+      </button>
+
+      {open ? ReactDOM.createPortal(menu, document.body) : null}
     </div>
   );
 }
