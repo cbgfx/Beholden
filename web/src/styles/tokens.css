@@ -2,7 +2,7 @@
   /*
     Global color tokens.
     These power the few places that rely on CSS variables (eg. ConfirmDialog + some CombatView pills).
-    Keep these in sync with `src/app/theme/theme.ts` (which is used by inline styles).
+    Keep these in sync with `src/theme/theme.ts` (which is used by inline styles).
   */
   --bg: #2e4057;
   --text: #ffffff;

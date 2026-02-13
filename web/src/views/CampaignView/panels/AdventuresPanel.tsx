@@ -1,9 +1,9 @@
 import React from "react";
-import { Panel } from "../../../components/ui/Panel";
-import { IconButton } from "../../../components/ui/IconButton";
+import { Panel } from "@/ui/Panel";
+import { IconButton } from "@/ui/IconButton";
 import { DraggableList } from "../../../components/drag/DraggableList";
-import { theme } from "../../../app/theme/theme";
-import { IconChest, IconPencil, IconPlus, IconTrash } from "../../../components/icons";
+import { theme } from "../../../theme/theme";
+import { IconChest, IconPencil, IconPlus, IconTrash } from "@/icons";
 
 export function AdventuresPanel(props: {
   adventures: { id: string; name: string }[];

@@ -1,5 +1,5 @@
-import { theme } from "../app/theme/theme";
-import { Button } from "../components/ui/Button";
+import { theme } from "../theme/theme";
+import { Button } from "@/ui/Button";
 
 export function HomeEmptyView(props: { onCreate: () => void }) {
   return (

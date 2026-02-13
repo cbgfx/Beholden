@@ -1,8 +1,8 @@
 import React from "react";
 import { FillPanel } from "./FillPanel";
-import { Select } from "@/components/ui/Select";
-import { theme } from "@/app/theme/theme";
-import { api } from "@/app/services/api";
+import { Select } from "@/ui/Select";
+import { theme } from "@/theme/theme";
+import { api } from "@/services/api";
 
 type SpellRow = {
   id: string;

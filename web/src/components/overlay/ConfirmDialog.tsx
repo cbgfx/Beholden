@@ -1,6 +1,4 @@
-import React from "react";
-
-import { theme } from "../../app/theme/theme";
+import { theme } from "../../theme/theme";
 import { Button } from "../ui/Button";
 import { Modal } from "./Modal";
 
@@ -46,7 +44,7 @@ export function ConfirmDialog(props: {
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <Button variant="secondary" onClick={onCancel}>
+          <Button onClick={onCancel}>
             {cancelLabel}
           </Button>
           <Button variant={intent === "danger" ? "danger" : "primary"} onClick={onConfirm}>

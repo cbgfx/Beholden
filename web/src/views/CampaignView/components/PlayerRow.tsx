@@ -1,8 +1,8 @@
 import React from "react";
-import { theme } from "../../../app/theme/theme";
-import { IconButton } from "../../../components/ui/IconButton";
-import { IconPencil, IconPlayer, IconHeart, IconShield } from "../../../components/icons";
-import { HPBar } from "../../../components/ui/HPBar";
+import { theme } from "../../../theme/theme";
+import { IconButton } from "@/ui/IconButton";
+import { IconPencil, IconPlayer, IconHeart, IconShield } from "@/icons";
+import { HPBar } from "@/ui/HPBar";
 
 export type PlayerVM = {
   id: string;

@@ -1,8 +1,8 @@
 import React from "react";
-import { theme } from "../../../app/theme/theme";
-import type { Note } from "../../../app/types/domain";
-import { IconButton } from "../../../components/ui/IconButton";
-import { IconPencil, IconTrash } from "../../../components/icons";
+import { theme } from "../../../theme/theme";
+import type { Note } from "../../../domain/types/domain";
+import { IconButton } from "@/ui/IconButton";
+import { IconPencil, IconTrash } from "@/icons";
 
 export function NoteAccordionItem(props: {
   note: Note;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 import type { MonsterDetail, SpellDetail, SpellSummary } from "../types";
 import { bestSpellMatch, parseMonsterSpells, sortSpellNames } from "../utils/spells";
 

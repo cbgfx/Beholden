@@ -1,10 +1,10 @@
 import React from "react";
-import { Panel } from "../../components/ui/Panel";
-import { Button } from "../../components/ui/Button";
-import { Select } from "../../components/ui/Select";
-import { IconCompendiumAlt } from "../../components/icons";
-import { theme } from "../../app/theme/theme";
-import { api } from "../../app/services/api";
+import { Panel } from "@/ui/Panel";
+import { Button } from "@/ui/Button";
+import { Select } from "@/ui/Select";
+import { IconCompendiumAlt } from "@/icons";
+import { theme } from "../../theme/theme";
+import { api } from "../../services/api";
 
 import { SpellsPanel } from "./panels/SpellsPanel";
 import { RulesReferencePanel } from "./panels/RulesReferencePanel";

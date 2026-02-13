@@ -1,4 +1,4 @@
-import type { Combatant } from "@/app/types/domain";
+import type { Combatant } from "@/domain/types/domain";
 import type { MonsterDetail } from "../types";
 
 export function allHaveInitiative(combatants: Combatant[]): boolean {

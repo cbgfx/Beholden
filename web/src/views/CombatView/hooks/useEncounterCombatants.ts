@@ -1,7 +1,7 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
-import { useWs } from "@/app/services/ws";
-import type { Combatant } from "@/app/types/domain";
+import { api } from "@/services/api";
+import { useWs } from "@/services/ws";
+import type { Combatant } from "@/domain/types/domain";
 
 type StoreDispatch = (action: any) => void;
 

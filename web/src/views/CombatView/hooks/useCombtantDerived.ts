@@ -1,4 +1,4 @@
-import { Combatant, Player } from "../../../app/types/domain";
+import { Combatant, Player } from "../../../domain/types/domain";
 import {
   parseAC,
   parseHP,

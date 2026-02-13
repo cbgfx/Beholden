@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { theme } from "../../app/theme/theme";
-import { useStore } from "@/app/store";
-import { api } from "@/app/services/api";
-import type { AddMonsterOptions } from "../../app/types/domain";
-import { getMonsterXp } from "@/app/utils/xp";
-import { calcEncounterDifficulty, estimateMonsterDpr } from "@/app/utils/difficulty";
+import { theme } from "../../theme/theme";
+import { useStore } from "@/store";
+import { api } from "@/services/api";
+import type { AddMonsterOptions } from "../../domain/types/domain";
+import { getMonsterXp } from "@/domain/utils/xp";
+import { calcEncounterDifficulty, estimateMonsterDpr } from "@/domain/utils/difficulty";
 
 import { AdventuresPanel } from "./panels/AdventuresPanel";
 import { EncountersPanel } from "./panels/EncountersPanel";

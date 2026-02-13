@@ -1,8 +1,8 @@
 import React from "react";
-import { Panel } from "../../../components/ui/Panel";
-import { IconButton } from "../../../components/ui/IconButton";
-import { theme } from "../../../app/theme/theme";
-import { IconPlayer, IconPlus, IconSkull, IconRest, IconPencil } from "../../../components/icons";
+import { Panel } from "@/ui/Panel";
+import { IconButton } from "@/ui/IconButton";
+import { theme } from "../../../theme/theme";
+import { IconPlayer, IconPlus, IconSkull, IconRest, IconPencil } from "@/icons";
 import { PlayerRow } from "../components/PlayerRow";
 
 export function PlayersPanel(props: {

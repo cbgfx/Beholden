@@ -1,5 +1,5 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
+import { theme } from "@/theme/theme";
 
 export function LettersBar(props: { letters: string[]; onJump: (letter: string) => void }) {
   return (

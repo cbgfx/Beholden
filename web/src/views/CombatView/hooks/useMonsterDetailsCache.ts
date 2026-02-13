@@ -1,8 +1,8 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
-import { useStore } from "@/app/store";
-import type { Combatant } from "@/app/types/domain";
-import type { MonsterDetail } from "@/app/types/compendium";
+import { api } from "@/services/api";
+import { useStore } from "@/store";
+import type { Combatant } from "@/domain/types/domain";
+import type { MonsterDetail } from "@/domain/types/compendium";
 
 export function useMonsterDetailsCache(combatants: Combatant[], active: Combatant | null, target: Combatant | null) {
   const { state, dispatch } = useStore();

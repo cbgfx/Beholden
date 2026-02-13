@@ -1,6 +1,6 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
-import type { AddMonsterOptions } from "@/app/types/domain";
+import { theme } from "@/theme/theme";
+import type { AddMonsterOptions } from "@/domain/types/domain";
 import type { CompendiumMonsterRow, AttackOverridesByMonsterId } from "../types";
 import { MonsterPickerFilters } from "./MonsterPickerFilters";
 import { LettersBar } from "./LettersBar";

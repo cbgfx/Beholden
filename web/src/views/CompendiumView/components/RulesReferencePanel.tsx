@@ -1,6 +1,6 @@
 import React from "react";
 import { FillPanel } from "./FillPanel";
-import { theme } from "@/app/theme/theme";
+import { theme } from "@/theme/theme";
 
 type SectionProps = {
   title: string;

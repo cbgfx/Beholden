@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "@/app/services/api";
-import type { Combatant } from "@/app/types/domain";
-import type { MonsterDetail } from "@/app/types/compendium";
+import { api } from "@/services/api";
+import type { Combatant } from "@/domain/types/domain";
+import type { MonsterDetail } from "@/domain/types/compendium";
 import { dexModFromMonster, parsePositiveInt } from "../utils/combat";
 
 type StoreDispatch = (action: any) => void;

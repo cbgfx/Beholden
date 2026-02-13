@@ -1,9 +1,9 @@
 import React from "react";
-import { Panel } from "@/components/ui/Panel";
-import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Select";
-import { theme } from "@/app/theme/theme";
-import { api } from "@/app/services/api";
+import { Panel } from "@/ui/Panel";
+import { Button } from "@/ui/Button";
+import { Select } from "@/ui/Select";
+import { theme } from "@/theme/theme";
+import { api } from "@/services/api";
 
 type CampaignRow = { id: string; name: string };
 

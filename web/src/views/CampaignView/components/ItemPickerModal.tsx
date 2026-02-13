@@ -1,14 +1,14 @@
 import React from "react";
-import { theme } from "@/app/theme/theme";
-import { api } from "@/app/services/api";
-import { Panel } from "@/components/ui/Panel";
-import { Button } from "@/components/ui/Button";
-import { IconButton } from "@/components/ui/IconButton";
-import { IconClose, IconPlus } from "@/components/icons";
+import { theme } from "@/theme/theme";
+import { api } from "@/services/api";
+import { Panel } from "@/ui/Panel";
+import { Button } from "@/ui/Button";
+import { IconButton } from "@/ui/IconButton";
+import { IconClose, IconPlus } from "@/icons";
 import { Modal } from "@/components/overlay/Modal";
-import type { CompendiumItemDetail, CompendiumItemRow } from "@/app/types/compendium";
+import type { CompendiumItemDetail, CompendiumItemRow } from "@/domain/types/compendium";
 import { titleCase } from "@/lib/format/titleCase";
-import { Select } from "@/components/ui/Select";
+import { Select } from "@/ui/Select";
 
 export type AddItemPayload =
   | { source: "compendium"; itemId: string }

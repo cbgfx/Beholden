@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { theme } from "@/app/theme/theme";
-import { Panel } from "@/components/ui/Panel";
-import { Button } from "@/components/ui/Button";
+import { theme } from "@/theme/theme";
+import { Panel } from "@/ui/Panel";
+import { Button } from "@/ui/Button";
 
 type Props = {
   title: string;

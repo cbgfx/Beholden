@@ -1,10 +1,10 @@
 import React from "react";
-import { Panel } from "../../../components/ui/Panel";
-import { IconButton } from "../../../components/ui/IconButton";
+import { Panel } from "@/ui/Panel";
+import { IconButton } from "@/ui/IconButton";
 import { DraggableList } from "../../../components/drag/DraggableList";
-import { theme } from "../../../app/theme/theme";
-import { IconNotes, IconPlus } from "../../../components/icons";
-import type { Note } from "../../../app/types/domain";
+import { theme } from "../../../theme/theme";
+import { IconNotes, IconPlus } from "@/icons";
+import type { Note } from "../../../domain/types/domain";
 import { NoteAccordionItem } from "../components/NoteAccordionItem";
 
 export function CampaignNotesPanel(props: {

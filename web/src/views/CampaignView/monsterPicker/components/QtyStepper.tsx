@@ -1,6 +1,6 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
-import { IconButton } from "@/components/ui/IconButton";
+import { theme } from "@/theme/theme";
+import { IconButton } from "@/ui/IconButton";
 
 export function QtyStepper(props: { value: number; onChange: (n: number) => void }) {
   const v = props.value ?? 1;

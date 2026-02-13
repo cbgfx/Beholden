@@ -1,9 +1,9 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 import { splitLeadingNumberAndDetail } from "@/lib/parse/statDetails";
-import type { AddMonsterOptions } from "@/app/types/domain";
-import { IconButton } from "@/components/ui/IconButton";
-import { IconClose } from "@/components/icons";
+import type { AddMonsterOptions } from "@/domain/types/domain";
+import { IconButton } from "@/ui/IconButton";
+import { IconClose } from "@/icons";
 import { Modal } from "@/components/overlay/Modal";
 
 import type { AttackOverridesByMonsterId, CompendiumMonsterRow, SortMode } from "./types";

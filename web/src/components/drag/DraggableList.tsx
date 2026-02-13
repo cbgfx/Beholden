@@ -1,5 +1,5 @@
 import React from "react";
-import { theme } from "../../app/theme/theme";
+import { theme } from "../../theme/theme";
 
 export type DragItem = { id: string; title?: string; meta?: string };
 

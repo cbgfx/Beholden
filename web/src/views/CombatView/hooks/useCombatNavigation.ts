@@ -1,6 +1,6 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
-import type { Combatant } from "@/app/types/domain";
+import { api } from "@/services/api";
+import type { Combatant } from "@/domain/types/domain";
 
 type Args = {
   encounterId: string | undefined;

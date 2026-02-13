@@ -1,7 +1,7 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
-import { Button } from "@/components/ui/Button";
-import type { AddMonsterOptions } from "@/app/types/domain";
+import { theme } from "@/theme/theme";
+import { Button } from "@/ui/Button";
+import type { AddMonsterOptions } from "@/domain/types/domain";
 import type { CompendiumMonsterRow, AttackOverridesByMonsterId } from "../types";
 import { formatCr, parseLeadingNumberLoose } from "../utils";
 import { QtyStepper } from "./QtyStepper";

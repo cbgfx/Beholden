@@ -1,7 +1,7 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { theme } from "@/theme/theme";
+import { Input } from "@/ui/Input";
+import { Select } from "@/ui/Select";
 import type { SortMode } from "../types";
 
 export function MonsterPickerFilters(props: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { theme } from "../../../app/theme/theme";
+import { theme } from "../../../theme/theme";
 import type { MonsterDetail } from "../types";
 import { ActionRow } from "./ActionRow";
 

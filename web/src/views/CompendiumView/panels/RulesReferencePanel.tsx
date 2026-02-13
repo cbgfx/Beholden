@@ -1,6 +1,6 @@
 import React from "react";
-import { Panel } from "@/components/ui/Panel";
-import { theme } from "@/app/theme/theme";
+import { Panel } from "@/ui/Panel";
+import { theme } from "@/theme/theme";
 
 type Section = {
   id: string;

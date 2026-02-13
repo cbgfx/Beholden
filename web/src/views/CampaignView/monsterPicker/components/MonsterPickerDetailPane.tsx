@@ -1,6 +1,6 @@
 import * as React from "react";
-import { theme } from "@/app/theme/theme";
-import { Input } from "@/components/ui/Input";
+import { theme } from "@/theme/theme";
+import { Input } from "@/ui/Input";
 import { splitLeadingNumberAndDetail } from "@/lib/parse/statDetails";
 import type { AttackOverridesByMonsterId } from "../types";
 import { MonsterStatblockMemo } from "../statblock/MonsterStatblock";

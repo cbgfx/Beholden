@@ -1,19 +1,19 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { ShellLayout } from "./layout/ShellLayout";
-import { TopBar } from "./layout/TopBar";
-import { StoreProvider, useStore } from "@/app/store";
-import { api, jsonInit } from "./services/api";
-import { useWs } from "./services/ws";
-import type { Adventure, Campaign, Combatant, Encounter, INpc, Meta, Note, Player, AddMonsterOptions, TreasureEntry } from "./types/domain";
+import { ShellLayout } from "@/layout/ShellLayout";
+import { TopBar } from "@/layout/TopBar";
+import { StoreProvider, useStore } from "@/store";
+import { api, jsonInit } from "@/services/api";
+import { useWs } from "@/services/ws";
+import type { Adventure, Campaign, Combatant, Encounter, INpc, Meta, Note, Player, AddMonsterOptions, TreasureEntry } from "@/domain/types/domain";
 import { HomeView } from "../views/HomeView";
 import { CompendiumView } from "../views/CompendiumView/CompendiumView";
 import { CampaignView } from "../views/CampaignView/CampaignView";
 import { CombatView } from "../views/CombatView/CombatView";
 import { CombatRosterView } from "../views/CombatRosterView/CombatRosterView";
-import { DrawerHost } from "@/app/drawers/DrawerHost";
-import { ConfirmProvider, useConfirm } from "./confirm/ConfirmContext";
+import { DrawerHost } from "@/drawers/DrawerHost";
+import { ConfirmProvider, useConfirm } from "@/confirm/ConfirmContext";
 
 function AppInner() {
   const { state, dispatch } = useStore();

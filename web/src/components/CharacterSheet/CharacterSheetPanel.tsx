@@ -1,6 +1,6 @@
 import React from "react";
-import { theme } from "@/app/theme/theme";
-import { IconAC, IconHP, IconSpeed } from "@/components/icons";
+import { theme } from "@/theme/theme";
+import { IconAC, IconHP, IconSpeed } from "@/icons";
 
 export type AbilityKey = "str" | "dex" | "con" | "int" | "wis" | "cha";
 

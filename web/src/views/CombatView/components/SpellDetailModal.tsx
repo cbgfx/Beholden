@@ -1,7 +1,7 @@
 import React from "react";
-import { theme } from "../../../app/theme/theme";
+import { theme } from "../../../theme/theme";
 import { Modal } from "../../../components/overlay/Modal";
-import { Button } from "../../../components/ui/Button";
+import { Button } from "@/ui/Button";
 
 export function SpellDetailModal(props: {
   isOpen: boolean;

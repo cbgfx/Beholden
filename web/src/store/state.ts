@@ -1,5 +1,5 @@
-import type { Adventure, Campaign, Combatant, Encounter, INpc, Meta, Note, Player, TreasureEntry } from "@/app/types/domain";
-import type { MonsterDetail } from "@/app/types/compendium";
+import type { Adventure, Campaign, Combatant, Encounter, INpc, Meta, Note, Player, TreasureEntry } from "@/domain/types/domain";
+import type { MonsterDetail } from "@/domain/types/compendium";
 
 export type DrawerState =
   | { type: "createCampaign" }

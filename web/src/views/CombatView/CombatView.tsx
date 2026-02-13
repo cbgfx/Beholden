@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { useStore } from "@/app/store";
-import type { Combatant } from "@/app/types/domain";
+import { useStore } from "@/store";
+import type { Combatant } from "@/domain/types/domain";
 
 import { CombatantHeader } from "./components/CombatantHeader";
 import { SpellDetailModal } from "./components/SpellDetailModal";
@@ -14,7 +14,7 @@ import { useMonsterDetailsCache } from "./hooks/useMonsterDetailsCache";
 import { useSpellModal } from "./hooks/useSpellModal";
 import { useCombatNavigation } from "./hooks/useCombatNavigation";
 import { useCombatActions } from "./hooks/useCombatActions";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 
 function applyMonsterAttackOverrides(monster: any | null, combatant: any | null): any | null {
   if (!monster || !combatant) return monster;

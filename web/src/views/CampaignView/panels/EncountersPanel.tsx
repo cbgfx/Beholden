@@ -1,9 +1,9 @@
 import React from "react";
-import { Panel } from "../../../components/ui/Panel";
-import { IconButton } from "../../../components/ui/IconButton";
+import { Panel } from "@/ui/Panel";
+import { IconButton } from "@/ui/IconButton";
 import { DraggableList } from "../../../components/drag/DraggableList";
-import { theme } from "../../../app/theme/theme";
-import { IconEncounter, IconPencil, IconPlus, IconTrash, IconPlay, IconBuild } from "../../../components/icons";
+import { theme } from "../../../theme/theme";
+import { IconEncounter, IconPencil, IconPlus, IconTrash, IconPlay, IconBuild } from "@/icons";
 
 export function EncountersPanel(props: {
   encounters: { id: string; name: string; status?: string | null }[];

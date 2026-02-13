@@ -1,11 +1,11 @@
 import React from "react";
-import { api, jsonInit } from "@/app/services/api";
-import { useStore } from "@/app/store";
-import { theme } from "@/app/theme/theme";
-import type { TreasureEntry } from "@/app/types/domain";
-import { IconChest, IconPlus, IconTrash } from "@/components/icons";
-import { IconButton } from "@/components/ui/IconButton";
-import { Panel } from "@/components/ui/Panel";
+import { api, jsonInit } from "@/services/api";
+import { useStore } from "@/store";
+import { theme } from "@/theme/theme";
+import type { TreasureEntry } from "@/domain/types/domain";
+import { IconChest, IconPlus, IconTrash } from "@/icons";
+import { IconButton } from "@/ui/IconButton";
+import { Panel } from "@/ui/Panel";
 import { ItemPickerModal, type AddItemPayload } from "@/views/CampaignView/components/ItemPickerModal";
 
 function titleFromScope(opts: { selectedAdventureId: string | null; adventureName?: string | null }) {

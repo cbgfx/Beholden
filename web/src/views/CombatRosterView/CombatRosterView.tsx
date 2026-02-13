@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useStore } from "@/app/store";
-import { api } from "@/app/services/api";
-import type { AddMonsterOptions, INpc } from "@/app/types/domain";
-import { useConfirm } from "@/app/confirm/ConfirmContext";
+import { useStore } from "@/store";
+import { api } from "@/services/api";
+import type { AddMonsterOptions, INpc } from "@/domain/types/domain";
+import { useConfirm } from "@/confirm/ConfirmContext";
 
 import { PlayersPanel } from "@/views/CampaignView/panels/PlayersPanel";
 import { INpcsPanel } from "@/views/CampaignView/panels/INpcsPanel";
@@ -13,8 +13,8 @@ import { TreasurePanel } from "@/views/CombatRosterView/components/TreasurePanel
 import { CombatRosterHeader } from "@/views/CombatRosterView/components/CombatRosterHeader";
 
 import { useEncounterCombatants } from "@/views/CombatView/hooks/useEncounterCombatants";
-import { getMonsterXp } from "@/app/utils/xp";
-import { calcEncounterDifficulty, estimateMonsterDpr } from "@/app/utils/difficulty";
+import { getMonsterXp } from "@/domain/utils/xp";
+import { calcEncounterDifficulty, estimateMonsterDpr } from "@/domain/utils/difficulty";
 
 export function CombatRosterView() {
   const { campaignId, encounterId } = useParams();

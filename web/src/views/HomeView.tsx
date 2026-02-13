@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { theme } from "../app/theme/theme";
-import { Button } from "../components/ui/Button";
-import { Select } from "../components/ui/Select";
+import { theme } from "../theme/theme";
+import { Button } from "@/ui/Button";
+import { Select } from "@/ui/Select";
 
 type CampaignSummary = {
   id: string;

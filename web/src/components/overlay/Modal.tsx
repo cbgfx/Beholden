@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { theme } from "../../app/theme/theme";
+import { theme } from "../../theme/theme";
 
 /**
  * Lightweight modal overlay.

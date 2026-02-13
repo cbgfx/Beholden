@@ -1,11 +1,11 @@
 import React from "react";
-import { Panel } from "@/components/ui/Panel";
-import { IconButton } from "@/components/ui/IconButton";
-import { theme } from "@/app/theme/theme";
-import { IconINPC, IconPlus, IconPencil, IconTrash, IconEncounter } from "@/components/icons";
+import { Panel } from "@/ui/Panel";
+import { IconButton } from "@/ui/IconButton";
+import { theme } from "@/theme/theme";
+import { IconINPC, IconPlus, IconPencil, IconTrash, IconEncounter } from "@/icons";
 import { PlayerRow } from "../components/PlayerRow";
 import { MonsterPickerModal } from "../monsterPicker/MonsterPickerModal";
-import type { AddMonsterOptions, INpc } from "@/app/types/domain";
+import type { AddMonsterOptions, INpc } from "@/domain/types/domain";
 import { titleCase } from "@/lib/format/titleCase";
 
 type Props = {

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 import { parseLeadingNumber } from "@/lib/parse/statDetails";
-import { theme } from "@/app/theme/theme";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { theme } from "@/theme/theme";
+import { Button } from "@/ui/Button";
+import { Input } from "@/ui/Input";
 import { CharacterSheetPanel, type CharacterSheetStats } from "@/components/CharacterSheet";
 import { formatCr } from "../utils";
 

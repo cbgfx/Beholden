@@ -1,11 +1,11 @@
 import React from "react";
-import { Panel } from "@/components/ui/Panel";
-import { Select } from "@/components/ui/Select";
-import { IconSpells } from "@/components/icons";
-import { theme } from "@/app/theme/theme";
-import { api } from "@/app/services/api";
+import { Panel } from "@/ui/Panel";
+import { Select } from "@/ui/Select";
+import { IconSpells } from "@/icons";
+import { theme } from "@/theme/theme";
+import { api } from "@/services/api";
 import { titleCase } from "@/lib/format/titleCase";
-import { useStore } from "@/app/store";
+import { useStore } from "@/store";
 
 type SpellRow = {
   id: string;

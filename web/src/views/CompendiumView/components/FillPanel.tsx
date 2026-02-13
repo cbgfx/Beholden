@@ -1,5 +1,5 @@
 import React from "react";
-import { theme } from "@/app/theme/theme";
+import { theme } from "@/theme/theme";
 
 export function FillPanel(props: {
   title: React.ReactNode;
