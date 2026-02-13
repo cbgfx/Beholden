@@ -54,13 +54,43 @@ export function createServer() {
 
   // --- persistence ----------------------------------------------------------
   let saveTimer: NodeJS.Timeout | null = null;
-  function scheduleSave() {
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
+  let dirty = false;
+  let saving = false;
+
+  function flushSave() {
+    if (saveTimer) {
+      clearTimeout(saveTimer);
       saveTimer = null;
+    }
+
+    if (saving) {
+      dirty = true;
+      return;
+    }
+
+    saving = true;
+    try {
       persistCampaignStorageFromUserData(paths, userData);
+    } finally {
+      saving = false;
+    }
+
+    if (dirty) {
+      dirty = false;
+      // Coalesce any additional changes that happened during the write.
+      saveTimer = setTimeout(flushSave, 0);
+    }
+  }
+
+  function scheduleSave() {
+    dirty = true;
+    if (saveTimer) return;
+
+    saveTimer = setTimeout(() => {
+      flushSave();
     }, 150);
   }
+
 
   // --- compendium -----------------------------------------------------------
   const compendium = createCompendium({ compendiumPath: paths.compendiumPath });

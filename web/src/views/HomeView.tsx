@@ -39,7 +39,7 @@ export function HomeView({ campaigns, onCreateCampaign, onOpenCampaign }: Props)
   const card: React.CSSProperties = {
     width: 560,
     maxWidth: "100%",
-    background: theme.colors.panel,
+    background: theme.colors.panelBg,
     border: `1px solid ${theme.colors.panelBorder}`,
     borderRadius: theme.radius.panel,
     padding: 16,
@@ -51,7 +51,7 @@ export function HomeView({ campaigns, onCreateCampaign, onOpenCampaign }: Props)
     padding: "10px 12px",
     borderRadius: theme.radius.control,
     border: `1px solid ${theme.colors.panelBorder}`,
-    background: theme.colors.panel2,
+    background: theme.colors.panelBg,
     color: theme.colors.text,
     outline: "none",
     fontWeight: 700,
@@ -62,7 +62,7 @@ export function HomeView({ campaigns, onCreateCampaign, onOpenCampaign }: Props)
       <div style={shell}>
         <div style={card}>
           <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>No campaigns yet</div>
-          <div style={{ color: theme.colors.textMuted, marginBottom: 16 }}>
+          <div style={{ color: theme.colors.muted, marginBottom: 16 }}>
             Create your first campaign to get started.
           </div>
           <Button onClick={onCreateCampaign}>+ Create campaign</Button>
@@ -77,7 +77,7 @@ export function HomeView({ campaigns, onCreateCampaign, onOpenCampaign }: Props)
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div>
             <div style={{ fontSize: 22, fontWeight: 800 }}>Choose a campaign</div>
-            <div style={{ color: theme.colors.textMuted, marginTop: 4 }}>Open an existing campaign or create a new one.</div>
+            <div style={{ color: theme.colors.muted, marginTop: 4 }}>Open an existing campaign or create a new one.</div>
           </div>
           <Button onClick={onCreateCampaign}>+ Campaign</Button>
         </div>
