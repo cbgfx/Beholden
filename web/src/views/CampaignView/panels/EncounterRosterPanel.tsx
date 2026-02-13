@@ -5,7 +5,8 @@ import { IconButton } from "../../../components/ui/IconButton";
 import { IconINPC, IconMonster, IconPlayer, IconTrash } from "../../../components/icons";
 import { Panel } from "../../../components/ui/Panel";
 import type { AddMonsterOptions } from "../../../app/types/domain";
-import { MonsterPickerModal, type CompendiumMonsterRow } from "../components/MonsterPickerModal";
+import { MonsterPickerModal } from "../monsterPicker/MonsterPickerModal";
+import type { CompendiumMonsterRow } from "../monsterPicker/types";
 
 type CombatantVM = {
   id: string;

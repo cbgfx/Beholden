@@ -84,6 +84,29 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     res.json({ ok: true, added });
   });
 
+  app.post("/api/encounters/:encounterId/combatants/addPlayer", (req, res) => {
+    const { encounterId } = req.params;
+    const encounter = userData.encounters[encounterId];
+    if (!encounter) return res.status(404).json({ ok: false, message: "Encounter not found" });
+
+    const playerId = String(req.body?.playerId ?? "").trim();
+    const p = userData.players[playerId];
+    if (!p) return res.status(404).json({ ok: false, message: "Player not found" });
+    if (p.campaignId !== encounter.campaignId) return res.status(400).json({ ok: false, message: "Player not in campaign" });
+
+    const combat = ctx.helpers.ensureCombat(encounterId);
+    const already = (combat.combatants ?? []).some((c: any) => c.baseType === "player" && c.baseId === playerId);
+    if (already) return res.json({ ok: true, added: 0, already: true });
+
+    const t = now();
+    combat.combatants.push(ctx.helpers.createPlayerCombatant({ encounterId, player: p, t }));
+    combat.updatedAt = t;
+    ctx.scheduleSave();
+    ctx.broadcast("encounter:combatantsChanged", { encounterId });
+    res.json({ ok: true, added: 1 });
+  });
+
+
   app.post("/api/encounters/:encounterId/combatants/addMonster", (req, res) => {
     const { encounterId } = req.params;
     const encounter = userData.encounters[encounterId];
@@ -97,10 +120,10 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     const labelBase = labelBaseRaw != null ? String(labelBaseRaw).trim() : "";
     const acOverrideRaw = req.body?.ac != null ? Number(req.body.ac) : NaN;
     const acOverride = Number.isFinite(acOverrideRaw) ? acOverrideRaw : null;
-    const acDetail = req.body?.acDetail != null ? String(req.body.acDetail) : null;
+    const acDetails = req.body?.acDetails != null ? String(req.body.acDetails) : (req.body?.acDetail != null ? String(req.body.acDetail) : null);
     const hpMaxOverrideRaw = req.body?.hpMax != null ? Number(req.body.hpMax) : NaN;
     const hpMaxOverride = Number.isFinite(hpMaxOverrideRaw) ? hpMaxOverrideRaw : null;
-    const hpDetail = req.body?.hpDetail != null ? String(req.body.hpDetail) : null;
+    const hpDetails = req.body?.hpDetails != null ? String(req.body.hpDetails) : (req.body?.hpDetail != null ? String(req.body.hpDetail) : null);
     const attackOverrides =
       req.body?.attackOverrides && typeof req.body.attackOverrides === "object" ? req.body.attackOverrides : null;
 
@@ -127,8 +150,8 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
 
     const defaultAc = leadingNumber(m?.ac);
     const defaultHp = leadingNumber(m?.hp?.average ?? m?.hp);
-    const defaultAcDetail = m?.ac?.note ?? m?.ac?.type ?? null;
-    const defaultHpDetail = m?.hp?.formula ?? m?.hp?.roll ?? null;
+    const defaultAcDetails = m?.ac?.note ?? m?.ac?.type ?? null;
+    const defaultHpDetails = m?.hp?.formula ?? m?.hp?.roll ?? null;
 
     const combat = ctx.helpers.ensureCombat(encounterId);
     const t = now();
@@ -156,9 +179,9 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
         overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
         hpCurrent: hpMax,
         hpMax,
-        hpDetail: hpDetail != null ? hpDetail : defaultHpDetail != null ? String(defaultHpDetail) : null,
+        hpDetails: hpDetails != null ? hpDetails : defaultHpDetails != null ? String(defaultHpDetails) : null,
         ac,
-        acDetail: acDetail != null ? acDetail : defaultAcDetail != null ? String(defaultAcDetail) : null,
+        acDetails: acDetails != null ? acDetails : defaultAcDetails != null ? String(defaultAcDetails) : null,
         attackOverrides: attackOverrides ?? null,
         conditions: [],
         createdAt: t,
@@ -199,9 +222,9 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       hpCurrent: Number(i.hpCurrent ?? i.hpMax ?? 1),
       hpMax: Number(i.hpMax ?? 1),
-      hpDetail: i.hpDetails ?? null,
+      hpDetails: i.hpDetails ?? null,
       ac: Number(i.ac ?? 10),
-      acDetail: i.acDetails ?? null,
+      acDetails: i.acDetails ?? null,
       attackOverrides: null,
       conditions: [],
       createdAt: t,
@@ -236,9 +259,9 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
       color: req.body?.color != null ? String(req.body.color) : existing.color,
       hpCurrent: req.body?.hpCurrent != null ? Number(req.body.hpCurrent) : existing.hpCurrent,
       hpMax: req.body?.hpMax != null ? Number(req.body.hpMax) : existing.hpMax,
-      hpDetail: req.body?.hpDetail != null ? String(req.body.hpDetail) : existing.hpDetail,
+      hpDetails: req.body?.hpDetails != null ? String(req.body.hpDetails) : (req.body?.hpDetail != null ? String(req.body.hpDetail) : (existing.hpDetails ?? existing.hpDetail)),
       ac: req.body?.ac != null ? Number(req.body.ac) : existing.ac,
-      acDetail: req.body?.acDetail != null ? String(req.body.acDetail) : existing.acDetail,
+      acDetails: req.body?.acDetails != null ? String(req.body.acDetails) : (req.body?.acDetail != null ? String(req.body.acDetail) : (existing.acDetails ?? existing.acDetail)),
       overrides: req.body?.overrides != null ? req.body.overrides : existing.overrides,
       conditions: Array.isArray(req.body?.conditions) ? req.body.conditions : existing.conditions ?? [],
       updatedAt: t,

@@ -12,6 +12,12 @@ type ConditionsDrawerState = Exclude<Extract<DrawerState, { type: "combatantCond
 
 type ConditionInstance = { key: string; casterId?: string | null };
 
+// Only these conditions require a caster association.
+const NEEDS_CASTER_KEYS = new Set(["hexed", "marked"]);
+function needsCasterForKey(key: string) {
+  return NEEDS_CASTER_KEYS.has(String(key ?? "").trim().toLowerCase());
+}
+
 
 export function CombatantConditionsDrawer(props: {
   drawer: ConditionsDrawerState;
@@ -100,7 +106,7 @@ export function CombatantConditionsDrawer(props: {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {CONDITION_DEFS.filter((c) => allowedKeys.has(c.key)).map((c) => {
               const on = selectedKeys.has(c.key);
-              const needsCaster = Boolean(c.needsCaster);
+              const needsCaster = needsCasterForKey(c.key);
               const CondIcon = conditionIconByKey[c.key];
               return (
                 <Button
@@ -123,10 +129,12 @@ export function CombatantConditionsDrawer(props: {
             <div style={{ display: "grid", gap: 8 }}>
               {conds.map((c, idx) => {
                 const def = CONDITION_DEFS.find((x) => x.key === c.key);
-                const needsCaster = Boolean(def?.needsCaster);
+                const needsCaster = needsCasterForKey(c.key);
                 const CondIcon = conditionIconByKey[c.key];
                 const casterLabel = c.casterId
-                  ? state.combatants.find((x) => x.id === c.casterId)?.label ?? "Caster"
+                  ? state.combatants.find((x) => x.id === c.casterId)?.label ??
+                    state.combatants.find((x) => x.id === c.casterId)?.name ??
+                    "Caster"
                   : "—";
                 return (
                   <div
@@ -143,14 +151,20 @@ export function CombatantConditionsDrawer(props: {
                       <span>{def?.name ?? c.key}</span>
                     </div>
 
-          <Select value={c.casterId ?? ""} onChange={(e) => setCasterForIndex(idx, (e.target as any).value || null)} style={{ width: "100%" }}>
+                    {needsCaster ? (
+                      <Select
+                        value={c.casterId ?? ""}
+                        onChange={(e) => setCasterForIndex(idx, (e.target as any).value || null)}
+                        style={{ width: "100%" }}
+                      >
                         <option value="">— caster —</option>
                         {state.combatants.map((r: any) => (
                           <option key={r.id} value={r.id}>
-                            {String(r.name || r.label || "Combatant")}
+                            {String(r.label || r.name || "Combatant")}
                           </option>
                         ))}
                       </Select>
+                    ) : null}
                     <Button variant="ghost" onClick={() => removeAt(idx)} title={needsCaster ? `Remove (caster: ${casterLabel})` : "Remove"}>
                       ✕
                     </Button>

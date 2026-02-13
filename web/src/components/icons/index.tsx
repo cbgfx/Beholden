@@ -75,7 +75,6 @@ export const IconSpeed = make("walking-boot");
 export const IconAC = IconShield;
 export const IconHP = IconHeart;
 
-export const IconLooseEncounter = make("shard-sword");
 export const IconRest = make("campfire");
 export const IconCompendium = make("book-pile");
 export const IconSpells = make("spells");

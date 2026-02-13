@@ -230,7 +230,6 @@ export function CampaignView(props: {
           onReorder={props.onReorderEncounters}
         />
 
-        {/* Treasure lives in the old Loose Encounters slot. */}
         <TreasurePanel />
       </div>
 

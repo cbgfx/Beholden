@@ -8,13 +8,13 @@ import { SpellDetailModal } from "./components/SpellDetailModal";
 import { CombatOrderPanel } from "./panels/CombatOrderPanel";
 import { CombatantDetailsPanel } from "./panels/CombatantDetailsPanel/CombatantDetailsPanel";
 
-import { useEncounterCombatants } from "./hooks/useEncounterCombatants";
 import { useIsNarrow } from "./hooks/useIsNarrow";
 import { useServerCombatState } from "./hooks/useServerCombatState";
 import { useMonsterDetailsCache } from "./hooks/useMonsterDetailsCache";
 import { useSpellModal } from "./hooks/useSpellModal";
 import { useCombatNavigation } from "./hooks/useCombatNavigation";
 import { useCombatActions } from "./hooks/useCombatActions";
+import { api } from "@/app/services/api";
 
 function applyMonsterAttackOverrides(monster: any | null, combatant: any | null): any | null {
   if (!monster || !combatant) return monster;
@@ -61,7 +61,19 @@ export function CombatView() {
     return (state as any).encounters?.find((e: any) => e.id === encounterId) ?? null;
   }, [encounterId, (state as any).encounters]);
 
-  const { combatants, refresh } = useEncounterCombatants(encounterId, dispatch);
+  // Combat View should use the store as the single source of truth.
+  // (This fixes drawers updating store state but not a local duplicate roster.)
+  const combatants = (state.combatants ?? []) as Combatant[];
+
+  const refresh = React.useCallback(async () => {
+    if (!encounterId) return;
+    const rows = await api<Combatant[]>(`/api/encounters/${encounterId}/combatants`);
+    dispatch({ type: "setCombatants", combatants: rows });
+  }, [encounterId, dispatch]);
+
+  React.useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const {
     loaded: combatStateLoaded,

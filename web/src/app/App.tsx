@@ -12,7 +12,7 @@ import { CompendiumView } from "../views/CompendiumView/CompendiumView";
 import { CampaignView } from "../views/CampaignView/CampaignView";
 import { CombatView } from "../views/CombatView/CombatView";
 import { CombatRosterView } from "../views/CombatRosterView/CombatRosterView";
-import { DrawerHost } from "./DrawerHost";
+import { DrawerHost } from "@/app/drawers/DrawerHost";
 import { ConfirmProvider, useConfirm } from "./confirm/ConfirmContext";
 
 function AppInner() {

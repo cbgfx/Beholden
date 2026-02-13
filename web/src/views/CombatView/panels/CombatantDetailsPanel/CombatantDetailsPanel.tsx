@@ -126,9 +126,9 @@ export function CombatantDetailsPanel(props: Props) {
   const displayName = React.useCallback((c: Combatant | null) => {
     if (!c) return "—";
     const anyC: any = c as any;
-    // Players: prefer character name; monsters: label; fallback: name.
-    if (anyC.baseType === "player") return String(anyC.name || anyC.label || "Player");
-    return String(anyC.label || anyC.name || "Creature");
+    // Prefer label everywhere (it carries numbering like "Goblin 3").
+    // Fallback to name if a label isn't present.
+    return String(anyC.label || anyC.name || "Combatant");
   }, []);
 
   const pillStyle: React.CSSProperties = {
@@ -416,7 +416,7 @@ export function CombatantDetailsPanel(props: Props) {
               {selectedConditions.length ? (
                 selectedConditions.map((c, idx) => {
                   const def = CONDITIONS.find((d) => d.key === c.key);
-                  const needsCaster = Boolean((def as any)?.needsCaster);
+                  const needsCaster = c.key === "hexed" || c.key === "marked";
                   const caster = c.casterId ? rosterById[c.casterId] : null;
                   const casterLabel = caster ? displayName(caster) : "";
 
