@@ -26,6 +26,9 @@ export function CombatantConditionsDrawer(props: {
 }): DrawerContent {
   const { state } = useStore();
   const [conds, setConds] = React.useState<ConditionInstance[]>([]);
+  // Auto-save (debounced) so the DM doesn't need to press Save.
+  const debounceRef = React.useRef<number | null>(null);
+  const skipNextCommitRef = React.useRef<boolean>(true);
 
   const combatant = React.useMemo(
     () => state.combatants.find((x) => x.id === props.drawer.combatantId),
@@ -39,8 +42,43 @@ export function CombatantConditionsDrawer(props: {
       return;
     }
     const raw = Array.isArray(c.conditions) ? (c.conditions as any[]) : [];
+    // Hydration from store -> do not immediately commit back.
+    skipNextCommitRef.current = true;
     setConds(raw.map((x) => ({ key: String(x.key ?? x), casterId: x.casterId ?? null })));
   }, [combatant]);
+
+  const commit = React.useCallback(
+    async (nextConds: ConditionInstance[]) => {
+      const d = props.drawer;
+      const next = nextConds.map((c) => ({ key: c.key, casterId: c.casterId ?? null }));
+      try {
+        await api(
+          `/api/encounters/${d.encounterId}/combatants/${d.combatantId}`,
+          jsonInit("PUT", { conditions: next })
+        );
+        await props.refreshEncounter(d.encounterId);
+      } catch {
+        // Non-blocking: keep the drawer responsive even if the request fails.
+      }
+    },
+    [props.drawer, props.refreshEncounter]
+  );
+
+  // Debounced auto-save on any condition change.
+  React.useEffect(() => {
+    if (skipNextCommitRef.current) {
+      skipNextCommitRef.current = false;
+      return;
+    }
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(() => {
+      // Fire and forget; the encounter refresh keeps the UI in sync.
+      void commit(conds);
+    }, 250);
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [conds, commit]);
 
   const allowedKeys = React.useMemo(() => {
     if (props.drawer.role === "active") return new Set<string>(["concentration", "invisible"]);
@@ -87,14 +125,6 @@ export function CombatantConditionsDrawer(props: {
       return next;
     });
   }, []);
-
-  const submit = React.useCallback(async () => {
-    const d = props.drawer;
-    const next = conds.map((c) => ({ key: c.key, casterId: c.casterId ?? null }));
-    await api(`/api/encounters/${d.encounterId}/combatants/${d.combatantId}`, jsonInit("PUT", { conditions: next }));
-    await props.refreshEncounter(d.encounterId);
-    props.close();
-  }, [conds, props]);
 
   const selectedKeys = new Set(conds.map((c) => c.key));
 
@@ -181,9 +211,8 @@ export function CombatantConditionsDrawer(props: {
     footer: (
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
         <Button variant="ghost" onClick={props.close}>
-          Cancel
+          Close
         </Button>
-        <Button onClick={submit}>Save</Button>
       </div>
     )
   };
