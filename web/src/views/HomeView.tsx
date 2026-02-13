@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { theme } from "../theme/theme";
+import { theme } from "@/theme/theme";
 import { Button } from "@/ui/Button";
 import { Select } from "@/ui/Select";
 

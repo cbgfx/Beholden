@@ -1,5 +1,5 @@
 import React from "react";
-import { theme } from "../../../theme/theme";
+import { theme } from "@/theme/theme";
 import { IconButton } from "@/ui/IconButton";
 import { IconPencil, IconPlayer, IconHeart, IconShield } from "@/icons";
 import { HPBar } from "@/ui/HPBar";

@@ -1,4 +1,4 @@
-import type { MonsterDetail, SpellSummary } from "../types";
+import type { MonsterDetail, SpellSummary } from "@/views/CombatView/types";
 
 export function parseMonsterSpells(detail: MonsterDetail | null): string[] {
   const raw = (detail as any)?.raw_json ?? {};

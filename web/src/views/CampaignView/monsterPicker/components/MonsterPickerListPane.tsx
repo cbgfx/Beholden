@@ -1,12 +1,12 @@
 import * as React from "react";
 import { theme } from "@/theme/theme";
 import type { AddMonsterOptions } from "@/domain/types/domain";
-import type { CompendiumMonsterRow, AttackOverridesByMonsterId } from "../types";
-import { MonsterPickerFilters } from "./MonsterPickerFilters";
-import { LettersBar } from "./LettersBar";
-import { MonsterRow } from "./MonsterRow";
-import type { SortMode } from "../types";
-import { useVirtualList } from "../hooks/useVirtualList";
+import type { CompendiumMonsterRow, AttackOverridesByMonsterId } from "@/views/CampaignView/monsterPicker/types";
+import { MonsterPickerFilters } from "@/views/CampaignView/monsterPicker/components/MonsterPickerFilters";
+import { LettersBar } from "@/views/CampaignView/monsterPicker/components/LettersBar";
+import { MonsterRow } from "@/views/CampaignView/monsterPicker/components/MonsterRow";
+import type { SortMode } from "@/views/CampaignView/monsterPicker/types";
+import { useVirtualList } from "@/views/CampaignView/monsterPicker/hooks/useVirtualList";
 
 export function MonsterPickerListPane(props: {
   isOpen: boolean;

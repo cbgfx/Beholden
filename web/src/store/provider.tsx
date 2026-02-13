@@ -1,7 +1,7 @@
 import React from "react";
-import type { Action } from "./actions";
-import { reducer } from "./reducer";
-import { initialState, type State } from "./state";
+import type { Action } from "@/store/actions";
+import { reducer } from "@/store/reducer";
+import { initialState, type State } from "@/store/state";
 
 type StoreCtx = { state: State; dispatch: React.Dispatch<Action> };
 

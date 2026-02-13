@@ -2,8 +2,8 @@ import * as React from "react";
 import { theme } from "@/theme/theme";
 import { Input } from "@/ui/Input";
 import { splitLeadingNumberAndDetail } from "@/lib/parse/statDetails";
-import type { AttackOverridesByMonsterId } from "../types";
-import { MonsterStatblockMemo } from "../statblock/MonsterStatblock";
+import type { AttackOverridesByMonsterId } from "@/views/CampaignView/monsterPicker/types";
+import { MonsterStatblockMemo } from "@/views/CampaignView/monsterPicker/statblock/MonsterStatblock";
 
 function cleanDetail(detail: string): string {
   const d = String(detail ?? "").trim();

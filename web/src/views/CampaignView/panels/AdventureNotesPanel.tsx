@@ -1,11 +1,11 @@
 import React from "react";
 import { Panel } from "@/ui/Panel";
 import { IconButton } from "@/ui/IconButton";
-import { DraggableList } from "../../../components/drag/DraggableList";
-import { theme } from "../../../theme/theme";
+import { DraggableList } from "@/components/drag/DraggableList";
+import { theme } from "@/theme/theme";
 import { IconNotes, IconPlus } from "@/icons";
-import type { Note } from "../../../domain/types/domain";
-import { NoteAccordionItem } from "../components/NoteAccordionItem";
+import type { Note } from "@/domain/types/domain";
+import { NoteAccordionItem } from "@/views/CampaignView/components/NoteAccordionItem";
 
 export function AdventureNotesPanel(props: {
   selectedAdventureId: string | null;

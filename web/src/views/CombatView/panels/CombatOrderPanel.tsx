@@ -1,9 +1,9 @@
 import React from "react";
-import type { Combatant } from "../../../domain/types/domain";
-import { theme } from "../../../theme/theme";
+import type { Combatant } from "@/domain/types/domain";
+import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
 import { IconINPC, IconMonster, IconPlayer, IconSkull } from "@/icons";
-import { PlayerRow, type PlayerVM } from "../../CampaignView/components/PlayerRow";
+import { PlayerRow, type PlayerVM } from "@/views/CampaignView/components/PlayerRow";
 
 function InitiativeInput({
   value,

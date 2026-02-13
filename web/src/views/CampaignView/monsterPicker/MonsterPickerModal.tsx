@@ -6,13 +6,13 @@ import { IconButton } from "@/ui/IconButton";
 import { IconClose } from "@/icons";
 import { Modal } from "@/components/overlay/Modal";
 
-import type { AttackOverridesByMonsterId, CompendiumMonsterRow, SortMode } from "./types";
-import { useCompendiumIndexFallback } from "./hooks/useCompendiumIndexFallback";
-import { useMonsterPickerRows } from "./hooks/useMonsterPickerRows";
-import { MonsterPickerListPane } from "./components/MonsterPickerListPane";
-import { MonsterPickerDetailPane } from "./components/MonsterPickerDetailPane";
+import type { AttackOverridesByMonsterId, CompendiumMonsterRow, SortMode } from "@/views/CampaignView/monsterPicker/types";
+import { useCompendiumIndexFallback } from "@/views/CampaignView/monsterPicker/hooks/useCompendiumIndexFallback";
+import { useMonsterPickerRows } from "@/views/CampaignView/monsterPicker/hooks/useMonsterPickerRows";
+import { MonsterPickerListPane } from "@/views/CampaignView/monsterPicker/components/MonsterPickerListPane";
+import { MonsterPickerDetailPane } from "@/views/CampaignView/monsterPicker/components/MonsterPickerDetailPane";
 
-export { type CompendiumMonsterRow } from "./types";
+export { type CompendiumMonsterRow } from "@/views/CampaignView/monsterPicker/types";
 
 export function MonsterPickerModal(props: {
   isOpen: boolean;

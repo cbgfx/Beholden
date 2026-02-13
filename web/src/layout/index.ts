@@ -1,2 +1,2 @@
-export { ShellLayout } from "./ShellLayout";
-export { TopBar } from "./TopBar";
+export { ShellLayout } from "@/layout/ShellLayout";
+export { TopBar } from "@/layout/TopBar";

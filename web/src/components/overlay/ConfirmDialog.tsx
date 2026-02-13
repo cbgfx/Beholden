@@ -1,6 +1,6 @@
-import { theme } from "../../theme/theme";
-import { Button } from "../ui/Button";
-import { Modal } from "./Modal";
+import { theme } from "@/theme";
+import { Button } from "@/ui/Button";
+import { Modal } from "@/components/overlay/Modal";
 
 export function ConfirmDialog(props: {
   open: boolean;

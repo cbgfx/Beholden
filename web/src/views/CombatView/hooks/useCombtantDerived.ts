@@ -1,10 +1,10 @@
-import { Combatant, Player } from "../../../domain/types/domain";
+import { Combatant, Player } from "@/domain/types/domain";
 import {
   parseAC,
   parseHP,
   parseAbilityScore,
   abilityMod
-} from "../utils/combatantParsing";
+} from "@/views/CombatView/utils/combatantParsing";
 
 const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
 

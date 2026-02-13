@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "@/services/api";
 import type { Combatant } from "@/domain/types/domain";
 import type { MonsterDetail } from "@/domain/types/compendium";
-import { dexModFromMonster, parsePositiveInt } from "../utils/combat";
+import { dexModFromMonster, parsePositiveInt } from "@/views/CombatView/utils/combat";
 
 type StoreDispatch = (action: any) => void;
 

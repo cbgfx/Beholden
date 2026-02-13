@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { CompendiumMonsterRow } from "../types";
+import type { CompendiumMonsterRow } from "@/views/CampaignView/monsterPicker/types";
 
 export function useCompendiumIndexFallback(args: {
   isOpen: boolean;

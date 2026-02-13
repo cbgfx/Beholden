@@ -1,8 +1,8 @@
 import React from "react";
 import { Panel } from "@/ui/Panel";
 import { IconButton } from "@/ui/IconButton";
-import { DraggableList } from "../../../components/drag/DraggableList";
-import { theme } from "../../../theme/theme";
+import { DraggableList } from "@/components/drag/DraggableList";
+import { theme } from "@/theme/theme";
 import { IconChest, IconPencil, IconPlus, IconTrash } from "@/icons";
 
 export function AdventuresPanel(props: {

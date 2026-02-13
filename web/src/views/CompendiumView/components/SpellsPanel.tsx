@@ -1,5 +1,5 @@
 import React from "react";
-import { FillPanel } from "./FillPanel";
+import { FillPanel } from "@/views/CompendiumView/components/FillPanel";
 import { Select } from "@/ui/Select";
 import { theme } from "@/theme/theme";
 import { api } from "@/services/api";

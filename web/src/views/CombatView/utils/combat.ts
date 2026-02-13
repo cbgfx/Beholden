@@ -1,5 +1,5 @@
 import type { Combatant } from "@/domain/types/domain";
-import type { MonsterDetail } from "../types";
+import type { MonsterDetail } from "@/views/CombatView/types";
 
 export function allHaveInitiative(combatants: Combatant[]): boolean {
   if (!combatants.length) return false;

@@ -1,7 +1,7 @@
 import React from "react";
-import { theme } from "../../../theme/theme";
-import type { MonsterDetail } from "../types";
-import { ActionRow } from "./ActionRow";
+import { theme } from "@/theme/theme";
+import type { MonsterDetail } from "@/views/CombatView/types";
+import { ActionRow } from "@/views/CombatView/components/ActionRow";
 
 export function MonsterActions(props: { monster: MonsterDetail }) {
   const actions = (props.monster as any).action ?? [];

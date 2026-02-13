@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Icon, type SvgIconProps } from "./Icon";
+import { Icon, type SvgIconProps } from "@/icons/Icon";
 
 const svgs = import.meta.glob("./svg/*.svg", {
   eager: true,

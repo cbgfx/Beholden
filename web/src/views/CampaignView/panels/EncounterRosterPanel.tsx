@@ -1,12 +1,12 @@
 import React from "react";
-import { theme } from "../../../theme/theme";
+import { theme } from "@/theme/theme";
 import { Button } from "@/ui/Button";
 import { IconButton } from "@/ui/IconButton";
 import { IconINPC, IconMonster, IconPlayer, IconTrash } from "@/icons";
 import { Panel } from "@/ui/Panel";
-import type { AddMonsterOptions } from "../../../domain/types/domain";
-import { MonsterPickerModal } from "../monsterPicker/MonsterPickerModal";
-import type { CompendiumMonsterRow } from "../monsterPicker/types";
+import type { AddMonsterOptions } from "@/domain/types/domain";
+import { MonsterPickerModal } from "@/views/CampaignView/monsterPicker/MonsterPickerModal";
+import type { CompendiumMonsterRow } from "@/views/CampaignView/monsterPicker/types";
 
 type CombatantVM = {
   id: string;

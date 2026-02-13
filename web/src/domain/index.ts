@@ -1,2 +1,2 @@
-export * from "./types";
-export * from "./utils";
+export * from "@/domain/types";
+export * from "@/domain/utils";

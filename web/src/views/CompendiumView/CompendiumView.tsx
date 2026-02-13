@@ -3,11 +3,11 @@ import { Panel } from "@/ui/Panel";
 import { Button } from "@/ui/Button";
 import { Select } from "@/ui/Select";
 import { IconCompendiumAlt } from "@/icons";
-import { theme } from "../../theme/theme";
-import { api } from "../../services/api";
+import { theme } from "@/theme/theme";
+import { api } from "@/services/api";
 
-import { SpellsPanel } from "./panels/SpellsPanel";
-import { RulesReferencePanel } from "./panels/RulesReferencePanel";
+import { SpellsPanel } from "@/views/CompendiumView/panels/SpellsPanel";
+import { RulesReferencePanel } from "@/views/CompendiumView/panels/RulesReferencePanel";
 
 type CampaignRow = { id: string; name: string };
 

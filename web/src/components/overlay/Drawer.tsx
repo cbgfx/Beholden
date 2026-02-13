@@ -1,7 +1,7 @@
 
 import React, { useEffect } from "react";
-import { theme } from "../../theme/theme";
-import { Button } from "../ui/Button";
+import { theme } from "@/theme/theme";
+import { Button } from "@/ui/Button";
 
 export function Drawer(props: {
   title: string;

@@ -1,6 +1,6 @@
 import React from "react";
-import type { Combatant } from "../../../../domain/types/domain";
-import { theme } from "../../../../theme/theme";
+import type { Combatant } from "@/domain/types/domain";
+import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
 import { Button } from "@/ui/Button";
 import { IconButton } from "@/ui/IconButton";
@@ -8,9 +8,9 @@ import { IconPencil, IconDroplet, IconConditions } from "@/icons/index";
 import { conditionIconByKey } from "@/icons/conditions";
 import { CharacterSheetPanel, type CharacterSheetStats } from "@/components/CharacterSheet";
 import type { MonsterDetail } from "@/domain/types/compendium";
-import { MonsterActions } from "../../components/MonsterActions";
-import { MonsterSpells } from "../../components/MonsterSpells";
-import { MonsterTraits } from "../../components/MonsterTraits";
+import { MonsterActions } from "@/views/CombatView/components/MonsterActions";
+import { MonsterSpells } from "@/views/CombatView/components/MonsterSpells";
+import { MonsterTraits } from "@/views/CombatView/components/MonsterTraits";
 
 function toFinite(n: any, fallback: number) {
   const x = Number(n);

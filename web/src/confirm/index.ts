@@ -1,1 +1,1 @@
-export { ConfirmProvider, useConfirm } from "./ConfirmContext";
+export { ConfirmProvider, useConfirm } from "@/confirm/ConfirmContext";

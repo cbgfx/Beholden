@@ -1,6 +1,6 @@
 import React from "react";
-import { theme } from "../../../theme/theme";
-import type { Note } from "../../../domain/types/domain";
+import { theme } from "@/theme/theme";
+import type { Note } from "@/domain/types/domain";
 import { IconButton } from "@/ui/IconButton";
 import { IconPencil, IconTrash } from "@/icons";
 

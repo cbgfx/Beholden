@@ -3,54 +3,21 @@ import { useParams } from "react-router-dom";
 import { useStore } from "@/store";
 import type { Combatant } from "@/domain/types/domain";
 
-import { CombatantHeader } from "./components/CombatantHeader";
-import { SpellDetailModal } from "./components/SpellDetailModal";
-import { CombatOrderPanel } from "./panels/CombatOrderPanel";
-import { CombatantDetailsPanel } from "./panels/CombatantDetailsPanel/CombatantDetailsPanel";
+import { CombatHeader } from "@/views/CombatView/components/CombatHeader";
+import { SpellDetailModal } from "@/views/CombatView/components/SpellDetailModal";
+import { InitiativePanel } from "@/views/CombatView/panels/InitiativePanel";
+import { CombatantDetailsPanel } from "@/views/CombatView/panels/CombatantDetailsPanel/CombatantDetailsPanel";
 
-import { useIsNarrow } from "./hooks/useIsNarrow";
-import { useServerCombatState } from "./hooks/useServerCombatState";
-import { useMonsterDetailsCache } from "./hooks/useMonsterDetailsCache";
-import { useSpellModal } from "./hooks/useSpellModal";
-import { useCombatNavigation } from "./hooks/useCombatNavigation";
-import { useCombatActions } from "./hooks/useCombatActions";
+import { useIsNarrow } from "@/views/CombatView/hooks/useIsNarrow";
+import { useServerCombatState } from "@/views/CombatView/hooks/useServerCombatState";
+import { useMonsterDetailsCache } from "@/views/CombatView/hooks/useMonsterDetailsCache";
+import { useSpellModal } from "@/views/CombatView/hooks/useSpellModal";
+import { useCombatNavigation } from "@/views/CombatView/hooks/useCombatNavigation";
+import { useCombatActions } from "@/views/CombatView/hooks/useCombatActions";
 import { api } from "@/services/api";
-
-function applyMonsterAttackOverrides(monster: any | null, combatant: any | null): any | null {
-  if (!monster || !combatant) return monster;
-  const overrides = (combatant as any).attackOverrides;
-  if (!overrides || typeof overrides !== "object") return monster;
-
-  const patchText = (text: string, ov: any) => {
-    let out = String(text ?? "");
-    if (typeof ov?.toHit === "number" && Number.isFinite(ov.toHit)) {
-      out = out.replace(/Weapon Attack:\s*\+?\d+\s*to hit/i, (m) => m.replace(/\+?\d+/, `+${ov.toHit}`));
-    }
-    if (ov?.damage) {
-      out = out.replace(/\(\s*[^)]+\s*\)\s*[a-zA-Z]+\s+damage/i, (m) => {
-        const type = (ov?.damageType ?? (m.match(/\)\s*([a-zA-Z]+)\s+damage/i)?.[1] ?? "")).toString();
-        return `(${ov.damage}) ${type} damage`;
-      });
-    }
-    if (ov?.damageType) {
-      out = out.replace(/\)\s*[a-zA-Z]+\s+damage/i, `) ${ov.damageType} damage`);
-    }
-    return out;
-  };
-
-  const actions = Array.isArray((monster as any).action) ? (monster as any).action : [];
-  const nextActions = actions.map((a: any) => {
-    const name = String(a?.name ?? a?.title ?? "");
-    const ov = (overrides as any)[name];
-    if (!ov) return a;
-    const nextAttack = { ...(a?.attack ?? {}), ...ov };
-    const nextText = a?.text ? patchText(a.text, ov) : a?.description ? patchText(a.description, ov) : a?.text;
-    return { ...a, attack: nextAttack, text: nextText };
-  });
-
-  return { ...(monster as any), action: nextActions };
-}
-import { allHaveInitiative, orderCombatants } from "./utils/combat";
+import { allHaveInitiative, orderCombatants } from "@/views/CombatView/utils/combat";
+import { applyMonsterAttackOverrides } from "@/views/CombatView/utils/monsterOverrides";
+import { getSecondsInRound } from "@/views/CombatView/utils/roundTime";
 
 export function CombatView() {
   const { campaignId, encounterId } = useParams();
@@ -76,7 +43,6 @@ export function CombatView() {
   }, [refresh]);
 
   const {
-    loaded: combatStateLoaded,
     round,
     setRound,
     activeId,
@@ -119,16 +85,13 @@ export function CombatView() {
     activeId,
     setActiveId,
     setRound,
-    persistCombatState
+    persistCombatState,
   });
 
   const secondsInRound = React.useMemo(() => {
     // Display round time as (Round * 6 - 6): Round 1 => 0s, Round 2 => 6s, etc.
-    // This is intentionally NOT tied to Prev/Next navigation (active combatant).
-    if (!started) return null;
-    const r = Number(round);
-    if (!Number.isFinite(r) || r < 1) return 0;
-    return (r - 1) * 6;
+    // Intentionally NOT tied to Prev/Next navigation (active combatant).
+    return getSecondsInRound({ started, round });
   }, [started, round]);
 
   React.useEffect(() => {
@@ -176,7 +139,7 @@ export function CombatView() {
     refresh,
     monsterCache,
     setMonsterCache,
-    dispatch
+    dispatch,
   });
 
   const activeAny: any = active as any;
@@ -265,7 +228,7 @@ export function CombatView() {
 
   return (
     <div style={{ padding: "var(--space-page)" }}>
-      <CombatantHeader
+      <CombatHeader
         backTo={campaignId && encounterId ? `/campaign/${campaignId}/roster/${encounterId}` : (campaignId ? `/campaign/${campaignId}` : "/")}
         backTitle="Back to Roster"
         title={(encounter as any)?.name ?? "Combat"}
@@ -283,16 +246,14 @@ export function CombatView() {
         style={{
           marginTop: 14,
           display: "grid",
-          gridTemplateColumns: isNarrow  ? "1fr" : "minmax(0, 6fr) minmax(0, 5fr) minmax(0, 6fr)",
-
+          gridTemplateColumns: isNarrow ? "1fr" : "minmax(0, 6fr) minmax(0, 5fr) minmax(0, 6fr)",
           gap: 14,
           alignItems: "start"
         }}
       >
         <CombatantDetailsPanel roleTitle="Active" role="active" combatant={active ?? null} ctx={activeCtx} />
 
-
-        <CombatOrderPanel
+        <InitiativePanel
           combatants={orderedCombatants}
           playersById={playersById}
           monsterCrById={monsterCrById}

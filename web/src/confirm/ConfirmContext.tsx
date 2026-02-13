@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
-import { ConfirmDialog } from "../components/overlay/ConfirmDialog";
+import { ConfirmDialog } from "@/components/overlay/ConfirmDialog";
 
 export type ConfirmOptions = {
   title?: string;

@@ -2,7 +2,7 @@ import * as React from "react";
 import { theme } from "@/theme/theme";
 import { Input } from "@/ui/Input";
 import { Select } from "@/ui/Select";
-import type { SortMode } from "../types";
+import type { SortMode } from "@/views/CampaignView/monsterPicker/types";
 
 export function MonsterPickerFilters(props: {
   compQ: string;

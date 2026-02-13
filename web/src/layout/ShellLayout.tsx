@@ -1,6 +1,6 @@
 
 import React from "react";
-import { theme } from "../theme/theme";
+import { theme } from "@/theme/theme";
 
 export function ShellLayout(props: { children: React.ReactNode }) {
   return (

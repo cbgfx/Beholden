@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { theme } from "../../theme/theme";
+import { theme } from "@/theme/theme";
 import { useStore } from "@/store";
 import { api } from "@/services/api";
-import type { AddMonsterOptions } from "../../domain/types/domain";
+import type { AddMonsterOptions } from "@/domain/types/domain";
 import { getMonsterXp } from "@/domain/utils/xp";
 import { calcEncounterDifficulty, estimateMonsterDpr } from "@/domain/utils/difficulty";
 
-import { AdventuresPanel } from "./panels/AdventuresPanel";
-import { EncountersPanel } from "./panels/EncountersPanel";
-import { TreasurePanel } from "./panels/TreasurePanel";
-import { PlayersPanel } from "./panels/PlayersPanel";
-import { INpcsPanel } from "./panels/INpcsPanel";
-import { CampaignNotesPanel } from "./panels/CampaignNotesPanel";
-import { AdventureNotesPanel } from "./panels/AdventureNotesPanel";
+import { AdventuresPanel } from "@/views/CampaignView/panels/AdventuresPanel";
+import { EncountersPanel } from "@/views/CampaignView/panels/EncountersPanel";
+import { TreasurePanel } from "@/views/CampaignView/panels/TreasurePanel";
+import { PlayersPanel } from "@/views/CampaignView/panels/PlayersPanel";
+import { INpcsPanel } from "@/views/CampaignView/panels/INpcsPanel";
+import { CampaignNotesPanel } from "@/views/CampaignView/panels/CampaignNotesPanel";
+import { AdventureNotesPanel } from "@/views/CampaignView/panels/AdventureNotesPanel";
 
 export function CampaignView(props: {
   onCreateAdventure: () => void;

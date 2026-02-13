@@ -1,2 +1,2 @@
-export * from "./difficulty";
-export * from "./xp";
+export * from "@/domain/utils/difficulty";
+export * from "@/domain/utils/xp";

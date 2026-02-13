@@ -5,7 +5,7 @@ import { theme } from "@/theme/theme";
 import { Button } from "@/ui/Button";
 import { Input } from "@/ui/Input";
 import { CharacterSheetPanel, type CharacterSheetStats } from "@/components/CharacterSheet";
-import { formatCr } from "../utils";
+import { formatCr } from "@/views/CampaignView/monsterPicker/utils";
 
 function StatLine(props: { label: string; value: React.ReactNode }) {
   return (

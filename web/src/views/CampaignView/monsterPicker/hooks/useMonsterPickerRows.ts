@@ -1,6 +1,6 @@
 import * as React from "react";
-import type { CompendiumMonsterRow, PreparedMonsterRow, SortMode } from "../types";
-import { parseCrNumber } from "../utils";
+import type { CompendiumMonsterRow, PreparedMonsterRow, SortMode } from "@/views/CampaignView/monsterPicker/types";
+import { parseCrNumber } from "@/views/CampaignView/monsterPicker/utils";
 
 export function useMonsterPickerRows(args: {
   rows: CompendiumMonsterRow[];

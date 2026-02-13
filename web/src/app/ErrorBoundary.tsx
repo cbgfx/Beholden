@@ -1,5 +1,5 @@
 import * as React from "react";
-import { theme } from "./theme/theme";
+import { theme } from "@/theme";
 
 type State = { error: Error | null };
 

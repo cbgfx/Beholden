@@ -18,7 +18,7 @@ import {
   IconHex,
   IconMarked,
   IconExhaustion,
-} from "./index";
+} from "@/icons/index";
 
 type IconComp = ComponentType<{ size?: number; title?: string; style?: CSSProperties }>;
 

@@ -3,8 +3,8 @@ import { Panel } from "@/ui/Panel";
 import { IconButton } from "@/ui/IconButton";
 import { theme } from "@/theme/theme";
 import { IconINPC, IconPlus, IconPencil, IconTrash, IconEncounter } from "@/icons";
-import { PlayerRow } from "../components/PlayerRow";
-import { MonsterPickerModal } from "../monsterPicker/MonsterPickerModal";
+import { PlayerRow } from "@/views/CampaignView/components/PlayerRow";
+import { MonsterPickerModal } from "@/views/CampaignView/monsterPicker/MonsterPickerModal";
 import type { AddMonsterOptions, INpc } from "@/domain/types/domain";
 import { titleCase } from "@/lib/format/titleCase";
 

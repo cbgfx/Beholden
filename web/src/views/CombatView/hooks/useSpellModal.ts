@@ -1,7 +1,7 @@
 import * as React from "react";
 import { api } from "@/services/api";
-import type { MonsterDetail, SpellDetail, SpellSummary } from "../types";
-import { bestSpellMatch, parseMonsterSpells, sortSpellNames } from "../utils/spells";
+import type { MonsterDetail, SpellDetail, SpellSummary } from "@/views/CombatView/types";
+import { bestSpellMatch, parseMonsterSpells, sortSpellNames } from "@/views/CombatView/utils/spells";
 
 export function useSpellModal(activeMonster: MonsterDetail | null, targetMonster: MonsterDetail | null) {
   const [spellLevelCache, setSpellLevelCache] = React.useState<Record<string, number | null>>({});

@@ -1,9 +1,9 @@
 import React from "react";
 import { Panel } from "@/ui/Panel";
 import { IconButton } from "@/ui/IconButton";
-import { theme } from "../../../theme/theme";
+import { theme } from "@/theme/theme";
 import { IconPlayer, IconPlus, IconSkull, IconRest, IconPencil } from "@/icons";
-import { PlayerRow } from "../components/PlayerRow";
+import { PlayerRow } from "@/views/CampaignView/components/PlayerRow";
 
 export function PlayersPanel(props: {
   players: any[];

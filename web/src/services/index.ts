@@ -1,2 +1,2 @@
-export * from "./api";
-export * from "./ws";
+export * from "@/services/api";
+export * from "@/services/ws";
