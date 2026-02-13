@@ -4,7 +4,8 @@ import { parseAttackFromText } from "../../lib/attacks.js";
 import { normalizeHp } from "./normalizeHp.js";
 import { loadJson } from "../../lib/jsonFile.js";
 
-export function importCompendiumXml({ xml, compendium }) {
+export function importCompendiumXml(args: { xml: string; compendium: any }): { imported: number; total: number } {
+  const { xml, compendium } = args;
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", trimValues: true });
   const parsed = parser.parse(xml);
   const comp = parsed?.compendium ?? parsed;
@@ -55,7 +56,7 @@ export function importCompendiumXml({ xml, compendium }) {
       conditionImmune: m?.conditionImmune ?? null,
 
       trait: asArray(m?.trait),
-      action: asArray(m?.action).map((a) => {
+      action: asArray(m?.action).map((a: any) => {
         const name = a?.name ?? a?.title ?? null;
         const text = a?.text ?? a?.description ?? "";
         const attack = parseAttackFromText(text);
@@ -129,7 +130,7 @@ export function importCompendiumXml({ xml, compendium }) {
   return { imported: incomingMonsters.length, total: merged.monsters.length };
 }
 
-function xmlItemToJson(it) {
+function xmlItemToJson(it: any): any | null {
   const name = String(it?.name ?? "Unknown").trim();
   if (!name) return null;
   const nameKey = normalizeKey(name);
@@ -152,7 +153,7 @@ function xmlItemToJson(it) {
   };
 }
 
-function parseItemDetail(detailRaw) {
+function parseItemDetail(detailRaw: unknown): { rarity: string | null; attunement: boolean } {
   const detail = String(detailRaw ?? "").trim();
   const lower = detail.toLowerCase();
   const rarityList = ["common", "uncommon", "rare", "very rare", "legendary", "artifact"];
@@ -167,9 +168,9 @@ function parseItemDetail(detailRaw) {
   return { rarity, attunement };
 }
 
-function mapItemType(codeRaw) {
+function mapItemType(codeRaw: unknown): { type: string; typeKey: string } {
   const code = String(codeRaw ?? "").trim().toUpperCase();
-  const map = {
+  const map: Record<string, string> = {
     M: "Weapon",
     R: "Weapon",
     A: "Armor",
@@ -183,6 +184,6 @@ function mapItemType(codeRaw) {
     W: "Wondrous",
     G: "Gear",
   };
-  const type = map[code] ?? (code ? "Other" : "Other");
+  const type = map[code] ?? "Other";
   return { type, typeKey: normalizeKey(type) };
 }

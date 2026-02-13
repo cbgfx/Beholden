@@ -1,6 +1,7 @@
 import { now, uid } from "../lib/runtime.js";
+import type { UserData } from "../server/context.js";
 
-export function ensureCombat(userData, encounterId) {
+export function ensureCombat(userData: UserData, encounterId: string): any {
   if (!userData.combats[encounterId]) {
     userData.combats[encounterId] = {
       encounterId,
@@ -15,7 +16,7 @@ export function ensureCombat(userData, encounterId) {
   return userData.combats[encounterId];
 }
 
-export function nextLabelNumber(userData, encounterId, baseName) {
+export function nextLabelNumber(userData: UserData, encounterId: string, baseName: string): number {
   const combat = ensureCombat(userData, encounterId);
   const rx = new RegExp(
     "^" + baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s+(\\d+)$",
@@ -32,7 +33,15 @@ export function nextLabelNumber(userData, encounterId, baseName) {
   return maxN + 1;
 }
 
-export function createPlayerCombatant({ encounterId, player, t = now() }) {
+export function createPlayerCombatant({
+  encounterId,
+  player,
+  t = now(),
+}: {
+  encounterId: string;
+  player: any;
+  t?: number;
+}): any {
   return {
     id: uid(),
     encounterId,

@@ -10,7 +10,7 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     const { encounterId } = req.params;
     const combat = ctx.helpers.ensureCombat(encounterId);
 
-    const merged = (combat.combatants ?? []).map((c) => {
+    const merged = (combat.combatants ?? []).map((c: any) => {
       if (c.baseType !== "player") return c;
       const p = userData.players[c.baseId];
       if (!p) return c;
@@ -50,7 +50,7 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     combat.activeCombatantId = activeCombatantId;
 
     if (activeCombatantId) {
-      const idx = (combat.combatants ?? []).findIndex((c) => c.id === activeCombatantId);
+    const idx = (combat.combatants ?? []).findIndex((c: any) => c.id === activeCombatantId);
       if (idx >= 0) combat.activeIndex = idx;
     }
 
@@ -65,8 +65,12 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     const encounter = userData.encounters[encounterId];
     if (!encounter) return res.status(404).json({ ok: false, message: "Encounter not found" });
     const combat = ctx.helpers.ensureCombat(encounterId);
-    const existingPlayerIds = new Set((combat.combatants ?? []).filter((c) => c.baseType === "player").map((c) => c.baseId));
-    const players = Object.values(userData.players).filter((p) => p.campaignId === encounter.campaignId);
+    const existingPlayerIds = new Set(
+      (combat.combatants ?? [])
+        .filter((c: any) => c.baseType === "player")
+        .map((c: any) => c.baseId)
+    );
+    const players = Object.values(userData.players).filter((p: any) => p.campaignId === encounter.campaignId);
     const t = now();
     let added = 0;
     for (const p of players) {
@@ -100,10 +104,10 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     const attackOverrides =
       req.body?.attackOverrides && typeof req.body.attackOverrides === "object" ? req.body.attackOverrides : null;
 
-    const m = compendium.state.monsters.find((x) => x.id === monsterId);
+    const m = compendium.state.monsters.find((x: any) => x.id === monsterId);
     if (!m) return res.status(404).json({ ok: false, message: "Monster not found in compendium" });
 
-    const leadingNumber = (v) => {
+    const leadingNumber = (v: unknown): number | null => {
       if (v == null) return null;
       if (typeof v === "number") return Number.isFinite(v) ? v : null;
       if (typeof v === "string") {
@@ -111,7 +115,8 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
         return m ? Number(m[0]) : null;
       }
       if (typeof v === "object") {
-        const candidates = [v.value, v.ac, v.armorClass, v.average, v.hp, v.max];
+        const obj = v as any;
+        const candidates = [obj.value, obj.ac, obj.armorClass, obj.average, obj.hp, obj.max];
         for (const c of candidates) {
           const n = leadingNumber(c);
           if (n != null) return n;
@@ -130,7 +135,7 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
 
     const baseName = m.name;
     const effectiveLabelBase = labelBase || baseName;
-    let n = ctx.helpers.nextLabelNumber(encounterId, effectiveLabelBase);
+    let n: number = ctx.helpers.nextLabelNumber(encounterId, effectiveLabelBase);
 
     const created: any[] = [];
     for (let i = 0; i < qty; i++) {
@@ -213,7 +218,7 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
   app.put("/api/encounters/:encounterId/combatants/:combatantId", (req, res) => {
     const { encounterId, combatantId } = req.params;
     const combat = ctx.helpers.ensureCombat(encounterId);
-    const idx = (combat.combatants ?? []).findIndex((c) => c.id === combatantId);
+    const idx = (combat.combatants ?? []).findIndex((c: any) => c.id === combatantId);
     if (idx < 0) return res.status(404).json({ ok: false, message: "Not found" });
 
     const existing = combat.combatants[idx];
@@ -260,7 +265,7 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
   app.delete("/api/encounters/:encounterId/combatants/:combatantId", (req, res) => {
     const { encounterId, combatantId } = req.params;
     const combat = ctx.helpers.ensureCombat(encounterId);
-    const idx = (combat.combatants ?? []).findIndex((x) => x.id === combatantId);
+    const idx = (combat.combatants ?? []).findIndex((x: any) => x.id === combatantId);
     if (idx < 0) return res.status(404).json({ error: "Combatant not found" });
 
     combat.combatants.splice(idx, 1);

@@ -1,8 +1,9 @@
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
+import type { Paths } from "../server/context.js";
 
-export function getPaths({ dataDir }) {
+export function getPaths({ dataDir }: { dataDir: string }): Paths {
   const campaignsDir = path.join(dataDir, "campaigns");
   const campaignsIndexPath = path.join(campaignsDir, "index.json");
   const compendiumPath = path.join(dataDir, "compendium.json");
@@ -31,6 +32,6 @@ export function getPaths({ dataDir }) {
   };
 }
 
-function ensureDir(dir) {
+function ensureDir(dir: string): void {
   fs.mkdirSync(dir, { recursive: true });
 }

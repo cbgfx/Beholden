@@ -28,13 +28,16 @@ export function campaignFilePath(paths: Paths, campaignId: string) {
 }
 
 export function loadAllCampaignFiles(paths: Paths): UserData {
-  const idx = loadJson(paths.campaignsIndexPath, { version: 1, campaigns: {} });
+  const idx = loadJson<{ version: number; campaigns: Record<string, any> }>(paths.campaignsIndexPath, {
+    version: 1,
+    campaigns: {},
+  });
   const ud = buildEmptyUserData();
 
   const campaignIds = Object.keys(idx.campaigns ?? {});
   for (const campaignId of campaignIds) {
     const fp = campaignFilePath(paths, campaignId);
-    const doc = loadJson(fp, null);
+    const doc = loadJson<any>(fp, null);
     if (!doc) continue;
 
     ud.campaigns[campaignId] = doc.campaign ?? idx.campaigns[campaignId];
@@ -52,21 +55,21 @@ export function loadAllCampaignFiles(paths: Paths): UserData {
 }
 
 export function persistCampaignStorageFromUserData(paths: Paths, userData: UserData) {
-  const index = { version: 1, campaigns: {} };
+  const index: { version: number; campaigns: Record<string, any> } = { version: 1, campaigns: {} };
 
   const campaignIds = Object.keys(userData.campaigns ?? {});
   for (const campaignId of campaignIds) {
     const campaign = userData.campaigns[campaignId];
     index.campaigns[campaignId] = campaign;
 
-    const adventures = {};
-    const encounters = {};
-    const notes = {};
-    const treasure = {};
-    const players = {};
-    const inpcs = {};
-    const conditions = {};
-    const combats = {};
+    const adventures: Record<string, any> = {};
+    const encounters: Record<string, any> = {};
+    const notes: Record<string, any> = {};
+    const treasure: Record<string, any> = {};
+    const players: Record<string, any> = {};
+    const inpcs: Record<string, any> = {};
+    const conditions: Record<string, any> = {};
+    const combats: Record<string, any> = {};
 
     for (const [id, a] of Object.entries(userData.adventures)) if (a?.campaignId === campaignId) adventures[id] = a;
     for (const [id, e] of Object.entries(userData.encounters)) if (e?.campaignId === campaignId) encounters[id] = e;

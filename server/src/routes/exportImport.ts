@@ -47,8 +47,9 @@ export function registerExportImportRoutes(app: Express, ctx: ServerContext) {
     for (const [id, i] of Object.entries(userData.inpcs)) if (i?.campaignId === campaignId) delete userData.inpcs[id];
     for (const [id, cnd] of Object.entries(userData.conditions)) if (cnd?.campaignId === campaignId) delete userData.conditions[id];
 
-    const mergeMap = (target, incoming) => {
-      for (const [k, v] of Object.entries(incoming ?? {})) target[k] = v;
+    const mergeMap = (target: Record<string, any>, incoming: unknown): void => {
+      const obj: Record<string, any> = incoming && typeof incoming === "object" ? (incoming as any) : {};
+      for (const [k, v] of Object.entries(obj)) target[k] = v;
     };
 
     mergeMap(userData.adventures, doc.adventures);

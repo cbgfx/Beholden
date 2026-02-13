@@ -1,8 +1,18 @@
-function cleanDice(expr) {
+export type ParsedAttack = {
+  toHit: number | null;
+  reach: string | null;
+  range: string | null;
+  melee: boolean;
+  ranged: boolean;
+  damage: string | null;
+  damageType: string | null;
+};
+
+function cleanDice(expr: unknown): string {
   return String(expr ?? "").replace(/\s+/g, "").trim();
 }
 
-export function parseAttackFromText(text) {
+export function parseAttackFromText(text: unknown): ParsedAttack | null {
   const raw = String(text ?? "").trim();
   if (!raw) return null;
 
@@ -41,7 +51,10 @@ export function parseAttackFromText(text) {
   };
 }
 
-export function applyAttackOverrideToText(text, override) {
+export function applyAttackOverrideToText(
+  text: unknown,
+  override?: Partial<ParsedAttack> | null
+): string {
   const raw = String(text ?? "");
   if (!override) return raw;
 

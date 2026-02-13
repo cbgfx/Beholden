@@ -5,7 +5,7 @@ export function registerCompendiumRoutes(app: Express, ctx: ServerContext) {
   // --- Monsters ------------------------------------------------------------
   app.get("/api/compendium/monsters/:monsterId", (req, res) => {
     const { monsterId } = req.params;
-    const m = ctx.compendium.state.monsters.find((x) => x.id === monsterId);
+    const m = ctx.compendium.state.monsters.find((x: any) => x.id === monsterId);
     if (!m) return res.status(404).json({ ok: false, message: "Monster not found in compendium" });
 
     res.json({
@@ -50,7 +50,7 @@ export function registerCompendiumRoutes(app: Express, ctx: ServerContext) {
 
   // Lightweight index for the full compendium list (used by Monster Picker).
   app.get("/api/compendium/monsters", (_req, res) => {
-    const rows = (ctx.compendium.state.monsters as any[]).map((m) => {
+    const rows = (ctx.compendium.state.monsters as any[]).map((m: any) => {
       const raw = m;
       const rawCr = raw?.cr ?? raw?.challenge_rating;
       const mCr = m?.cr;
@@ -84,7 +84,7 @@ export function registerCompendiumRoutes(app: Express, ctx: ServerContext) {
 
   // --- Items ---------------------------------------------------------------
   app.get("/api/compendium/items", (_req, res) => {
-    const rows = ctx.compendium.state.items.map((it) => ({
+    const rows = ctx.compendium.state.items.map((it: any) => ({
       id: it.id,
       name: it.name,
       rarity: it.rarity ?? null,
@@ -97,7 +97,7 @@ export function registerCompendiumRoutes(app: Express, ctx: ServerContext) {
 
   app.get("/api/compendium/items/:itemId", (req, res) => {
     const { itemId } = req.params;
-    const it = ctx.compendium.state.items.find((x) => x.id === itemId);
+    const it = ctx.compendium.state.items.find((x: any) => x.id === itemId);
     if (!it) return res.status(404).json({ ok: false, message: "Item not found in compendium" });
     res.json({
       id: it.id,
@@ -154,7 +154,7 @@ export function registerCompendiumRoutes(app: Express, ctx: ServerContext) {
 
   app.get("/api/spells/:spellId", (req, res) => {
     const { spellId } = req.params;
-    const s = ctx.compendium.state.spells.find((x) => x.id === spellId);
+    const s = ctx.compendium.state.spells.find((x: any) => x.id === spellId);
     if (!s) return res.status(404).json({ ok: false, message: "Spell not found in compendium" });
     res.json(s);
   });

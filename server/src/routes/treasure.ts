@@ -64,7 +64,19 @@ export function registerTreasureRoutes(app: Express, ctx: ServerContext) {
     res.json({ ok: true });
   });
 
-  function createTreasureEntry({ campaignId, adventureId, source, itemId, custom }) {
+  function createTreasureEntry({
+    campaignId,
+    adventureId,
+    source,
+    itemId,
+    custom,
+  }: {
+    campaignId: string;
+    adventureId?: string | null;
+    source: "compendium" | "custom";
+    itemId?: unknown;
+    custom?: unknown;
+  }): any {
     const id = uid();
     const t = now();
 
@@ -76,7 +88,7 @@ export function registerTreasureRoutes(app: Express, ctx: ServerContext) {
     let text = "";
 
     if (source === "compendium") {
-      const it = compendium.state.items.find((x) => String(x.id) === String(itemId));
+      const it = compendium.state.items.find((x: any) => String(x.id) === String(itemId));
       if (!it) return { error: { status: 404, message: "Item not found in compendium" } };
       name = it.name;
       rarity = it.rarity ?? null;
@@ -85,7 +97,7 @@ export function registerTreasureRoutes(app: Express, ctx: ServerContext) {
       attunement = Boolean(it.attunement);
       text = it.text ?? "";
     } else {
-      const c = custom ?? {};
+      const c: any = custom ?? {};
       name = String(c.name ?? "New Item").trim() || "New Item";
       rarity = c.rarity != null ? String(c.rarity).trim() : null;
       type = c.type != null ? String(c.type).trim() : null;
@@ -95,7 +107,7 @@ export function registerTreasureRoutes(app: Express, ctx: ServerContext) {
     }
 
     const existing = Object.values(userData.treasure ?? {}).filter(
-      (x) => x?.campaignId === campaignId && String(x?.adventureId ?? "") === String(adventureId ?? "")
+      (x: any) => x?.campaignId === campaignId && String(x?.adventureId ?? "") === String(adventureId ?? "")
     );
     const sort = nextSort(existing);
 

@@ -1,4 +1,4 @@
-export function normalizeKey(s) {
+export function normalizeKey(s: unknown): string {
   return (s ?? "")
     .toString()
     .trim()
@@ -6,25 +6,26 @@ export function normalizeKey(s) {
     .replace(/\s+/g, " ");
 }
 
-export function asText(v) {
+export function asText(v: unknown): string {
   if (v == null) return "";
   if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") return String(v);
   if (Array.isArray(v)) return asText(v[0]);
   if (typeof v === "object") {
-    if (Object.prototype.hasOwnProperty.call(v, "#text")) return asText(v["#text"]);
-    if (Object.prototype.hasOwnProperty.call(v, "_")) return asText(v["_"]);
-    if (Object.prototype.hasOwnProperty.call(v, "text")) return asText(v["text"]);
-    if (Object.prototype.hasOwnProperty.call(v, "value")) return asText(v["value"]);
+    const obj = v as any;
+    if (Object.prototype.hasOwnProperty.call(obj, "#text")) return asText(obj["#text"]);
+    if (Object.prototype.hasOwnProperty.call(obj, "_")) return asText(obj["_"]);
+    if (Object.prototype.hasOwnProperty.call(obj, "text")) return asText(obj["text"]);
+    if (Object.prototype.hasOwnProperty.call(obj, "value")) return asText(obj["value"]);
   }
   return "";
 }
 
-export function asArray(v) {
-  if (!v) return [];
+export function asArray<T = unknown>(v: T | T[] | null | undefined): T[] {
+  if (v == null) return [];
   return Array.isArray(v) ? v : [v];
 }
 
-export function parseLeadingInt(v) {
+export function parseLeadingInt(v: unknown): number | null {
   const s = String(v ?? "").trim();
   const m = s.match(/^(-?\d+)/);
   if (!m) return null;
@@ -34,7 +35,7 @@ export function parseLeadingInt(v) {
 
 // Challenge Rating parsing must support fractional CRs from XML like "1/2" and "1/4".
 // NOTE: Do NOT strip non-digits naively ("1/2" -> "12").
-export function parseCrValue(raw) {
+export function parseCrValue(raw: unknown): number | null {
   const s = String(raw ?? "").trim();
   if (!s) return null;
 

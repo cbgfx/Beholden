@@ -22,8 +22,9 @@ import { now, uid } from "../lib/runtime.js";
 import { bySortThenUpdatedDesc, nextSort } from "../lib/sort.js";
 import { normalizeKey, parseLeadingInt } from "../lib/text.js";
 import { normalizeHp } from "../services/compendium/normalizeHp.js";
-import { createWsServer, createBroadcaster } from "./ws.js";
+import { createWsServer, createBroadcaster, sendWsEvent } from "./ws.js";
 import type { ServerContext } from "./context.js";
+import type { BroadcastFn } from "./events.js";
 import { multerErrorMiddleware, zodErrorMiddleware } from "../shared/validate.js";
 
 // This file owns orchestration (dependencies + wiring).
@@ -70,7 +71,10 @@ export function createServer() {
   app.use(express.json({ limit: "10mb" }));
 
   // websocket (created after http server)
-  let broadcast: ServerContext["broadcast"] = () => {};
+  const noopBroadcast: BroadcastFn = (() => {
+    /* noop */
+  }) as BroadcastFn;
+  let broadcast: BroadcastFn = noopBroadcast;
 
   const ctx: ServerContext = {
     runtime,
@@ -80,7 +84,7 @@ export function createServer() {
     path,
     userData,
     scheduleSave,
-    broadcast: (type, payload) => broadcast(type, payload),
+    broadcast,
     compendium,
     upload,
     helpers: {
@@ -137,7 +141,7 @@ export function createServer() {
     httpServer,
     path: "/ws",
     onConnectionHello: (ws) => {
-      ws.send(JSON.stringify({ type: "hello", payload: { ok: true, time: now() } }));
+      sendWsEvent(ws, "hello", { ok: true, time: now() });
     },
   });
   broadcast = createBroadcaster(wss);

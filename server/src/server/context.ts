@@ -1,5 +1,6 @@
 import type { Multer } from "multer";
 import type { Express } from "express";
+import type { BroadcastFn } from "./events.js";
 
 export type Id = string;
 
@@ -38,9 +39,11 @@ export interface Helpers {
   uid: () => string;
   normalizeKey: (s: string) => string;
   parseLeadingInt: (s: string) => number | null;
-  normalizeHp: (hp: string) => { hp: number | null; hpText: string };
+  // Compendium-facing HP normalization (keeps raw text but cleans HTML / bad formats)
+  normalizeHp: (hpVal: unknown) => unknown;
   bySortThenUpdatedDesc: (a: any, b: any) => number;
-  nextSort: (map: Record<string, any>, filterFn?: (x: any) => boolean) => number;
+  // Sort helper used for list ordering (typically: max sort + 1)
+  nextSort: (items: Array<any>) => number;
   ensureCombat: (encounterId: string) => any;
   nextLabelNumber: (encounterId: string, baseName: string) => number;
   createPlayerCombatant: (args: { encounterId: string; player: any; t?: number }) => any;
@@ -58,7 +61,7 @@ export interface ServerContext {
   path?: any;
   userData: UserData;
   scheduleSave: () => void;
-  broadcast: (type: string, payload: any) => void;
+  broadcast: BroadcastFn;
   compendium: any;
   upload: Multer;
   helpers: Helpers;

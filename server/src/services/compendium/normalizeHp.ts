@@ -1,4 +1,4 @@
-function avgFromDiceFormula(formula) {
+function avgFromDiceFormula(formula: unknown): number | null {
   if (!formula) return null;
   const s = String(formula).replace(/\s+/g, "").toLowerCase();
   const m = s.match(/^(\d+)d(\d+)([+-]\d+)?$/);
@@ -13,7 +13,7 @@ function avgFromDiceFormula(formula) {
   return Number.isFinite(avg) ? Math.floor(avg) : null;
 }
 
-export function normalizeHp(hpVal) {
+export function normalizeHp(hpVal: unknown): unknown {
   if (hpVal == null) return hpVal;
   if (typeof hpVal !== "string") return hpVal;
   const s = hpVal.trim();

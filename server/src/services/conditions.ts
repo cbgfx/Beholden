@@ -1,7 +1,8 @@
 import { now } from "../lib/runtime.js";
 import { normalizeKey } from "../lib/text.js";
+import type { UserData } from "../server/context.js";
 
-export function seedDefaultConditions(userData, campaignId) {
+export function seedDefaultConditions(userData: UserData, campaignId: string): void {
   const defaults = [
     ["Blinded", "condition"],
     ["Charmed", "condition"],

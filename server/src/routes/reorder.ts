@@ -7,8 +7,8 @@ export function registerReorderRoutes(app: Express, ctx: ServerContext) {
 
   app.post("/api/campaigns/:campaignId/adventures/reorder", (req, res) => {
     const { campaignId } = req.params;
-    const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
-    ids.forEach((id, i) => {
+    const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids.map(String) : [];
+    ids.forEach((id: string, i: number) => {
       const a = userData.adventures[id];
       if (a && a.campaignId === campaignId) {
         a.sort = i + 1;
@@ -24,8 +24,8 @@ export function registerReorderRoutes(app: Express, ctx: ServerContext) {
     const { adventureId } = req.params;
     const a = userData.adventures[adventureId];
     if (!a) return res.status(404).json({ ok: false, message: "Adventure not found" });
-    const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
-    ids.forEach((id, i) => {
+    const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids.map(String) : [];
+    ids.forEach((id: string, i: number) => {
       const e = userData.encounters[id];
       if (e && e.adventureId === adventureId) {
         e.sort = i + 1;
@@ -39,8 +39,8 @@ export function registerReorderRoutes(app: Express, ctx: ServerContext) {
 
   app.post("/api/campaigns/:campaignId/notes/reorder", (req, res) => {
     const { campaignId } = req.params;
-    const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
-    ids.forEach((id, i) => {
+    const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids.map(String) : [];
+    ids.forEach((id: string, i: number) => {
       const n = userData.notes[id];
       if (n && n.campaignId === campaignId && n.adventureId == null) {
         n.sort = i + 1;
@@ -56,8 +56,8 @@ export function registerReorderRoutes(app: Express, ctx: ServerContext) {
     const { adventureId } = req.params;
     const a = userData.adventures[adventureId];
     if (!a) return res.status(404).json({ ok: false, message: "Adventure not found" });
-    const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
-    ids.forEach((id, i) => {
+    const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids.map(String) : [];
+    ids.forEach((id: string, i: number) => {
       const n = userData.notes[id];
       if (n && n.adventureId === adventureId) {
         n.sort = i + 1;

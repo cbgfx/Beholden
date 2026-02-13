@@ -79,7 +79,9 @@ export function registerPlayerRoutes(app: Express, ctx: ServerContext) {
       if (!combat?.combatants) continue;
       const before = combat.combatants.length;
       const next = combat.combatants.filter(
-        (c) => !(c?.sourceType === "player" && c?.sourceId === playerId) && !(c?.baseType === "player" && c?.baseId === playerId)
+        (c: any) =>
+          !(c?.sourceType === "player" && c?.sourceId === playerId) &&
+          !(c?.baseType === "player" && c?.baseId === playerId)
       );
       if (next.length !== before) {
         userData.combats[encounterId] = { ...combat, combatants: next, updatedAt: now() };

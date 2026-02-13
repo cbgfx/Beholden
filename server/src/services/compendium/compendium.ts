@@ -3,7 +3,7 @@ import { loadJson, saveJsonAtomic } from "../../lib/jsonFile.js";
 import { asArray, asText, normalizeKey } from "../../lib/text.js";
 import { normalizeHp } from "./normalizeHp.js";
 
-function parseWeaponAttack(text) {
+function parseWeaponAttack(text: unknown): any | null {
   const s = (text ?? "").toString();
   if (!s) return null;
 
@@ -40,12 +40,12 @@ function parseWeaponAttack(text) {
   let damage: string | null = null;
   let damageType: string | null = null;
   const dmgParen = s.match(/Hit:\s*[^\(]*\(\s*([^\)]+?)\s*\)\s*([A-Za-z]+)\s*damage/i);
-  if (dmgParen) {
+  if (dmgParen?.[1] && dmgParen?.[2]) {
     damage = dmgParen[1].replace(/\s+/g, "");
     damageType = dmgParen[2].toLowerCase();
   } else {
     const dmgFlat = s.match(/Hit:\s*(\d+)\s*\(?[^\)]*\)?\s*([A-Za-z]+)\s*damage/i);
-    if (dmgFlat) {
+    if (dmgFlat?.[1] && dmgFlat?.[2]) {
       damage = String(dmgFlat[1]);
       damageType = dmgFlat[2].toLowerCase();
     }
@@ -62,7 +62,7 @@ function parseWeaponAttack(text) {
   };
 }
 
-function normalizeCompendiumEntry(x) {
+function normalizeCompendiumEntry(x: any): any | null {
   if (!x) return null;
   const name = x.name ?? x.title;
   const text = x.text ?? x.description ?? "";
@@ -75,7 +75,7 @@ function normalizeCompendiumEntry(x) {
   };
 }
 
-function pruneNone(v) {
+function pruneNone(v: unknown): any[] {
   return asArray(v)
     .map(normalizeCompendiumEntry)
     .filter(Boolean)
@@ -88,7 +88,7 @@ function pruneNone(v) {
     });
 }
 
-function matchesFilters(m, f) {
+function matchesFilters(m: any, f: any): boolean {
   if (f.crMin != null && m.cr != null && Number(m.cr) < Number(f.crMin)) return false;
   if (f.crMax != null && m.cr != null && Number(m.cr) > Number(f.crMax)) return false;
   if (f.types?.length && !f.types.includes(m.typeKey)) return false;
@@ -97,7 +97,7 @@ function matchesFilters(m, f) {
   return true;
 }
 
-export function createCompendium({ compendiumPath }) {
+export function createCompendium({ compendiumPath }: { compendiumPath: string }) {
   type CompendiumState = { loaded: boolean; monsters: any[]; spells: any[]; items: any[] };
   const state: CompendiumState = { loaded: false, monsters: [] as any[], spells: [] as any[], items: [] as any[] };
 
@@ -205,7 +205,7 @@ export function createCompendium({ compendiumPath }) {
     state.loaded = false;
   }
 
-  function searchMonsters(q, filters, limit) {
+  function searchMonsters(q: unknown, filters: any, limit: unknown): any[] {
     const query = (q ?? "").toString().trim().toLowerCase();
     const f = filters ?? {};
     const out: any[] = [];
@@ -222,7 +222,7 @@ export function createCompendium({ compendiumPath }) {
     return out;
   }
 
-  function writeMerged(rawDoc) {
+  function writeMerged(rawDoc: unknown): void {
     saveJsonAtomic(compendiumPath, rawDoc);
     load();
   }

@@ -16,7 +16,7 @@ export function registerInpcRoutes(app: Express, ctx: ServerContext) {
     const monsterId = String(b.monsterId ?? "").trim();
     const qty = Math.min(Math.max(Number(b.qty ?? 1), 1), 20);
 
-    const m = ctx.compendium.state.monsters.find((x) => x.id === monsterId);
+    const m = ctx.compendium.state.monsters.find((x: any) => x.id === monsterId);
     if (!m) return res.status(404).json({ ok: false, message: "Monster not found in compendium" });
 
     const defaultAcRaw = m?.ac ?? null;
@@ -95,7 +95,7 @@ export function registerInpcRoutes(app: Express, ctx: ServerContext) {
     if (!existing) return res.status(404).json({ ok: false, message: "Not found" });
 
     for (const combat of Object.values(userData.combats)) {
-      combat.combatants = (combat.combatants ?? []).filter((c) => !(c.baseType === "inpc" && c.baseId === inpcId));
+      combat.combatants = (combat.combatants ?? []).filter((c: any) => !(c.baseType === "inpc" && c.baseId === inpcId));
     }
     delete userData.inpcs[inpcId];
     ctx.scheduleSave();

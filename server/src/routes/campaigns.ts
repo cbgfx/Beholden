@@ -78,7 +78,7 @@ export function registerCampaignRoutes(app: Express, ctx: ServerContext) {
 
     const t = now();
 
-    const players = Object.values(userData.players).filter((p) => p.campaignId === campaignId);
+    const players = Object.values(userData.players).filter((p: any) => p.campaignId === campaignId);
     for (const p of players) {
       userData.players[p.id] = { ...p, hpCurrent: p.hpMax, updatedAt: t };
     }
@@ -90,7 +90,7 @@ export function registerCampaignRoutes(app: Express, ctx: ServerContext) {
       if (!combat) continue;
 
       let changed = false;
-      const nextCombatants = (combat.combatants ?? []).map((c) => {
+      const nextCombatants = (combat.combatants ?? []).map((c: any) => {
         if (c.baseType !== "player") return c;
         const p = userData.players[c.baseId];
         if (!p) return c;
