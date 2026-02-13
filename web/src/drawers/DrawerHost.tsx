@@ -2,15 +2,7 @@ import React from "react";
 import { Drawer } from "@/components/overlay/Drawer";
 import { useStore } from "@/store";
 import { getDrawerTitle } from "@/drawers/drawerTitle";
-import { NameDrawer } from "@/drawers/drawers/NameDrawer";
-import { NoteDrawer } from "@/drawers/drawers/NoteDrawer";
-import { PlayerDrawer } from "@/drawers/drawers/PlayerDrawer";
-import { INpcDrawer } from "@/drawers/drawers/INpcDrawer";
-import { CombatantDrawer } from "@/drawers/drawers/CombatantDrawer";
-import { CombatantOverridesDrawer } from "@/drawers/drawers/CombatantOverridesDrawer";
-import { CombatantConditionsDrawer } from "@/drawers/drawers/CombatantConditionsDrawer";
-import { TreasureDrawer } from "@/drawers/drawers/TreasureDrawer";
-import { SpellDrawer } from "@/drawers/drawers/SpellDrawer";
+import { getDrawerRegistration } from "@/drawers/registry";
 import type { DrawerContent } from "@/drawers/types";
 import type { DrawerState } from "@/store";
 
@@ -56,185 +48,17 @@ export function DrawerHost(props: HostProps) {
 
   const title = getDrawerTitle(d);
 
-  switch (d.type) {
-    case "createCampaign":
-    case "editCampaign":
-    case "createAdventure":
-    case "editAdventure":
-    case "createEncounter":
-    case "editEncounter":
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            NameDrawer({
-              drawer: d as any,
-              close,
-              refreshAll: props.refreshAll,
-              refreshCampaign: props.refreshCampaign,
-              refreshAdventure: props.refreshAdventure
-            })
-          }
-        />
-      );
-    case "note":
-    case "editNote": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            NoteDrawer({
-              drawer: d as any,
-              close,
-              refreshCampaign: props.refreshCampaign,
-              refreshAdventure: props.refreshAdventure
-            })
-          }
-        />
-      );
-    }
+  const reg = getDrawerRegistration(d, props, close);
+  if (!reg) return null;
 
-    case "createPlayer":
-    case "editPlayer": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            PlayerDrawer({
-              drawer: d as any,
-              close,
-              refreshCampaign: props.refreshCampaign
-            })
-          }
-        />
-      );
-    }
-
-    case "editINpc": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            INpcDrawer({
-              drawer: d as any,
-              close,
-              refreshCampaign: props.refreshCampaign
-            })
-          }
-        />
-      );
-    }
-
-    case "editCombatant": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            CombatantDrawer({
-              drawer: d as any,
-              close,
-              refreshEncounter: props.refreshEncounter
-            })
-          }
-        />
-      );
-    }
-
-    case "combatantOverrides": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            CombatantOverridesDrawer({
-              drawer: d as any,
-              close,
-              refreshEncounter: props.refreshEncounter
-            })
-          }
-        />
-      );
-    }
-
-    case "combatantConditions": {
-      return (
-        <DrawerWrapper
-          key={d.type}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            CombatantConditionsDrawer({
-              drawer: d as any,
-              close,
-              refreshEncounter: props.refreshEncounter
-            })
-          }
-        />
-      );
-    }
-
-    case "viewTreasure": {
-      return (
-        <DrawerWrapper
-          key={d.type + d.treasureId}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            TreasureDrawer({
-              drawer: d as any,
-              close
-            })
-          }
-        />
-      );
-    }
-
-    case "viewSpell": {
-      return (
-        <DrawerWrapper
-          key={d.type + d.spellId}
-          drawer={d}
-          title={title}
-          close={close}
-          {...props}
-          getContent={() =>
-            SpellDrawer({
-              drawer: d as any,
-              close
-            })
-          }
-        />
-      );
-    }
-
-    default:
-      return null;
-  }
+  return (
+    <DrawerWrapper
+      key={reg.key}
+      drawer={d}
+      title={title}
+      close={close}
+      {...props}
+      getContent={reg.getContent}
+    />
+  );
 }

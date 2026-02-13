@@ -99,7 +99,18 @@ export function NameDrawer(props: {
     body: (
       <div style={{ display: "grid", gap: 10 }}>
         <div style={{ fontSize: "var(--fs-medium)", opacity: 0.8 }}>Name</div>
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => {
+            // QoL: drawers with a single "name" field should save on Enter.
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          placeholder="Name"
+        />
       </div>
     ),
     footer: (

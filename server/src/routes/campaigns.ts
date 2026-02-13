@@ -102,8 +102,10 @@ export function registerCampaignRoutes(app: Express, ctx: ServerContext) {
           hpMax: p.hpMax,
           conditions: [],
           overrides: {
-            ...c.overrides,
+            ...(c.overrides ?? {}),
             tempHp: 0,
+            acBonus: 0,
+            hpMaxOverride: null,
           },
           updatedAt: t,
         };

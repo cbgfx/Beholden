@@ -1,0 +1,51 @@
+import React from "react";
+import type { AddMonsterOptions } from "@/domain/types/domain";
+import { PlayersPanel } from "@/views/CampaignView/panels/PlayersPanel";
+import { INpcsPanel } from "@/views/CampaignView/panels/INpcsPanel";
+
+export function CampaignMainColumn(props: {
+  players: any[];
+  combatants: any[];
+  selectedEncounterId: string | null;
+  onFullRest: () => void;
+  onCreatePlayer: () => void;
+  onEditPlayer: (playerId: string) => void;
+  onAddPlayerToEncounter: (playerId: string) => void;
+
+  inpcs: any[];
+  selectedCampaignId: string | null;
+  compQ: string;
+  onChangeCompQ: (v: string) => void;
+  compRows: any[];
+  onAddINpcFromMonster: (monsterId: string, qty: number, opts?: AddMonsterOptions) => void;
+  onEditINpc: (inpcId: string) => void;
+  onDeleteINpc: (inpcId: string) => void;
+  onAddINpcToEncounter: (inpcId: string) => void;
+}) {
+  return (
+    <div className="campaignCol">
+      <PlayersPanel
+        players={props.players}
+        combatants={props.combatants}
+        selectedEncounterId={props.selectedEncounterId}
+        onFullRest={props.onFullRest}
+        onCreatePlayer={props.onCreatePlayer}
+        onEditPlayer={props.onEditPlayer}
+        onAddPlayerToEncounter={props.onAddPlayerToEncounter}
+      />
+
+      <INpcsPanel
+        inpcs={props.inpcs}
+        selectedCampaignId={props.selectedCampaignId}
+        selectedEncounterId={props.selectedEncounterId}
+        compQ={props.compQ}
+        onChangeCompQ={props.onChangeCompQ}
+        compRows={props.compRows}
+        onAddINpcFromMonster={props.onAddINpcFromMonster}
+        onEditINpc={props.onEditINpc}
+        onDeleteINpc={props.onDeleteINpc}
+        onAddINpcToEncounter={props.onAddINpcToEncounter}
+      />
+    </div>
+  );
+}

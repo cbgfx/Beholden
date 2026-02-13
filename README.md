@@ -1,4 +1,4 @@
-# DM Tool LAN (Node server + React)
+# Beholden - TTRPG Campaign Manager
 
 PC runs Node server + JSON DB. Open from any browser on your LAN.
 
