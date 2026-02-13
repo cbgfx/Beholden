@@ -1,6 +1,7 @@
 import React from "react";
 import { Panel } from "../../components/ui/Panel";
 import { Button } from "../../components/ui/Button";
+import { Select } from "../../components/ui/Select";
 import { IconCompendiumAlt } from "../../components/icons";
 import { theme } from "../../app/theme/theme";
 import { api } from "../../app/services/api";
@@ -163,25 +164,18 @@ export function CompendiumView() {
             </div>
 
             <div style={{ marginTop: 14, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <select
+              <Select
                 value={selectedCampaignId}
                 onChange={(e) => setSelectedCampaignId(e.target.value)}
-                style={{
-                  colorScheme: "dark",
-                  background: theme.colors.panelBg,
-                  color: theme.colors.text,
-                  border: `1px solid ${theme.colors.panelBorder}`,
-                  borderRadius: 10,
-                  padding: "8px 10px",
-                  minWidth: 260,
-                }}
+                style={{ minWidth: 260 }}
+                title="Select campaign"
               >
                 {campaigns.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
                 ))}
-              </select>
+              </Select>
 
               <Button onClick={exportCampaign} disabled={!selectedCampaignId}>
                 Export

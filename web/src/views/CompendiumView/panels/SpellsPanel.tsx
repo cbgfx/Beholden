@@ -1,5 +1,6 @@
 import React from "react";
 import { Panel } from "@/components/ui/Panel";
+import { Select } from "@/components/ui/Select";
 import { IconSpells } from "@/components/icons";
 import { theme } from "@/app/theme/theme";
 import { api } from "@/app/services/api";
@@ -83,21 +84,14 @@ export function SpellsPanel() {
             outline: "none",
           }}
         />
-        <select
+        <Select
           value={level}
           onChange={(e) => setLevel(e.target.value)}
-          style={{
-            background: theme.colors.panelBg,
-            color: theme.colors.text,
-            border: `1px solid ${theme.colors.panelBorder}`,
-            borderRadius: 10,
-            padding: "8px 10px",
-            minWidth: 110,
-          }}
+          style={{ minWidth: 110 }}
           title="Filter by level"
         >
-          <option value="all">All levels</option>
-          <option value="0">0 (Cantrip)</option>
+          <option value="all">All Levels</option>
+          <option value="0">Cantrip</option>
           {Array.from({ length: 9 }).map((_, i) => {
             const n = i + 1;
             return (
@@ -106,7 +100,7 @@ export function SpellsPanel() {
               </option>
             );
           })}
-        </select>
+        </Select>
       </div>
 
       <div

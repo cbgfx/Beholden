@@ -123,11 +123,13 @@ export function CombatView() {
   });
 
   const secondsInRound = React.useMemo(() => {
-    const alive = orderedCombatants.filter((c: any) => !(c as any).isDead);
-    if (!activeId) return null;
-    const idx = alive.findIndex((c: any) => (c as any).id === activeId);
-    return idx >= 0 ? idx * 6 : null;
-  }, [orderedCombatants, activeId]);
+    // Display round time as (Round * 6 - 6): Round 1 => 0s, Round 2 => 6s, etc.
+    // This is intentionally NOT tied to Prev/Next navigation (active combatant).
+    if (!started) return null;
+    const r = Number(round);
+    if (!Number.isFinite(r) || r < 1) return 0;
+    return (r - 1) * 6;
+  }, [started, round]);
 
   React.useEffect(() => {
     // Keep target valid when combatants change.
