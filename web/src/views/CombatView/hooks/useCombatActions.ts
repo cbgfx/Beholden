@@ -44,14 +44,38 @@ export function useCombatActions({
 }: Args) {
   const navigate = useNavigate();
 
-  const damageAmount = React.useMemo(() => parsePositiveInt(delta), [delta]);
+  const parseSignedDelta = React.useCallback(
+    (
+      input: string,
+      defaultKind: "damage" | "heal"
+    ): { kind: "damage" | "heal"; amount: number } => {
+      const raw = String(input ?? "").trim();
+      if (!raw) return { kind: defaultKind, amount: 0 };
+
+      // Sign override rules:
+      //  - "+10" => heal 10
+      //  - "-10" => damage 10
+      //  - "10" => defaultKind 10
+      const first = raw[0];
+      const hasPlus = first === "+";
+      const hasMinus = first === "-";
+      const digits = hasPlus || hasMinus ? raw.slice(1) : raw;
+      const amount = parsePositiveInt(digits);
+      if (amount <= 0) return { kind: defaultKind, amount: 0 };
+      if (hasPlus) return { kind: "heal", amount };
+      if (hasMinus) return { kind: "damage", amount };
+      return { kind: defaultKind, amount };
+    },
+    []
+  );
 
   const targetAny: any = target as any;
 
   const applyHpDelta = React.useCallback(
-    async (kind: "damage" | "heal") => {
+    async (defaultKind: "damage" | "heal") => {
       if (!encounterId || !targetAny) return;
-      if (damageAmount <= 0) return;
+      const { kind, amount } = parseSignedDelta(delta, defaultKind);
+      if (amount <= 0) return;
 
       const cur = targetAny.hpCurrent;
       const overrides = targetAny.overrides || null;
@@ -71,14 +95,14 @@ export function useCombatActions({
 
       if (kind === "damage") {
         // Damage consumes temp HP first.
-        const fromTemp = Math.min(nextTemp, damageAmount);
+        const fromTemp = Math.min(nextTemp, amount);
         nextTemp -= fromTemp;
-        const remaining = damageAmount - fromTemp;
+        const remaining = amount - fromTemp;
         nextHp = Math.max(0, nextHp - remaining);
       }
       if (kind === "heal") {
-        if (max != null) nextHp = Math.min(max, nextHp + damageAmount);
-        else nextHp = nextHp + damageAmount;
+        if (max != null) nextHp = Math.min(max, nextHp + amount);
+        else nextHp = nextHp + amount;
       }
 
       await api(`/api/encounters/${encounterId}/combatants/${targetAny.id}`, {
@@ -95,7 +119,7 @@ export function useCombatActions({
       await refresh();
       setDelta("");
     },
-    [encounterId, targetAny, damageAmount, refresh, setDelta]
+    [encounterId, targetAny, delta, parseSignedDelta, refresh, setDelta]
   );
 
   const updateCombatant = React.useCallback(
@@ -157,13 +181,12 @@ export function useCombatActions({
     if (!encounterId) return;
     const rows = orderedCombatants as any[];
     for (const c of rows) {
-      const overrides = c.overrides ?? { tempHp: 0, acBonus: 0, hpMaxOverride: null };
       const patch: any = {
         conditions: [],
-        overrides: { ...overrides, tempHp: 0 },
         initiative: 0
       };
       if (c.baseType === "monster") {
+        const overrides = c.overrides ?? null;
         const max = overrides?.hpMaxOverride != null ? Number(overrides.hpMaxOverride) : Number(c.hpMax);
         patch.hpCurrent = Number.isFinite(max) ? max : Number(c.hpCurrent ?? 0);
       }
@@ -240,7 +263,6 @@ export function useCombatActions({
   );
 
   return {
-    damageAmount,
     applyHpDelta,
     updateCombatant,
     rollInitiativeForMonsters,

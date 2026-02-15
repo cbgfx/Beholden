@@ -2,9 +2,8 @@ import React from "react";
 import type { Combatant } from "@/domain/types/domain";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
-import { Button } from "@/ui/Button";
 import { IconButton } from "@/ui/IconButton";
-import { IconPencil, IconDroplet, IconConditions } from "@/icons/index";
+import { IconPencil, IconConditions } from "@/icons/index";
 import { conditionIconByKey } from "@/icons/conditions";
 import { CharacterSheetPanel, type CharacterSheetStats } from "@/components/CharacterSheet";
 import type { MonsterDetail } from "@/domain/types/compendium";
@@ -27,11 +26,6 @@ export type CombatantDetailsCtx = {
   roster: Combatant[];
   activeForCaster: Combatant | null;
   showHpActions: boolean;
-
-  delta?: string;
-  onDeltaChange?: (v: string) => void;
-  onDamage?: () => void;
-  onHeal?: () => void;
 
   onUpdate: (patch: any) => void;
   onOpenOverrides: () => void;
@@ -357,32 +351,6 @@ export function CombatantDetailsPanel(props: Props) {
             <IconButton title="Overrides" onClick={ctx.onOpenOverrides}>
               <IconPencil size={18} title="Overrides" />
             </IconButton>
-
-            {ctx.showHpActions === false ? null : (
-              <>
-                <input
-                  value={ctx.delta ?? ""}
-                  onChange={(e) => ctx.onDeltaChange?.(e.target.value)}
-                  placeholder=""
-                  style={{
-                    width: 54,
-                    padding: "6px 8px",
-                    borderRadius: 10,
-                    border: `1px solid ${theme.colors.panelBorder}`,
-                    background: theme.colors.panelBg,
-                    color: theme.colors.text,
-                    fontWeight: 900,
-                    fontSize: "var(--fs-medium)"
-                  }}
-                />
-                <Button variant="danger" onClick={ctx.onDamage}>
-                  Damage
-                </Button>
-                <Button variant="health" onClick={ctx.onHeal}>
-                  Heal
-                </Button>
-              </>
-            )}
           </div>
         )
       }

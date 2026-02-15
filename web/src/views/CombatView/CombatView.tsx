@@ -4,6 +4,7 @@ import { useStore } from "@/store";
 import type { Combatant } from "@/domain/types/domain";
 
 import { CombatHeader } from "@/views/CombatView/components/CombatHeader";
+import { CombatDeltaControls } from "@/views/CombatView/components/CombatDeltaControls";
 import { SpellDetailModal } from "@/views/CombatView/components/SpellDetailModal";
 import { InitiativePanel } from "@/views/CombatView/panels/InitiativePanel";
 import { CombatantDetailsPanel } from "@/views/CombatView/panels/CombatantDetailsPanel/CombatantDetailsPanel";
@@ -192,12 +193,7 @@ export function CombatView() {
       spellLevels: spellLevelCache,
       roster: orderedCombatants,
       activeForCaster: (active as Combatant | null) ?? null,
-      showHpActions: true,
-
-      delta,
-      onDeltaChange: (v: string) => setDelta(v.replace(/[^0-9]/g, "")),
-      onDamage: () => applyHpDelta("damage"),
-      onHeal: () => applyHpDelta("heal"),
+      showHpActions: false,
 
       onUpdate: (patch: any) => ((target as any)?.id ? updateCombatant((target as any).id, patch) : void 0),
       onOpenOverrides: () => onOpenOverrides((target as any)?.id ?? null),
@@ -216,9 +212,6 @@ export function CombatView() {
       orderedCombatants,
       active,
       target,
-      delta,
-      setDelta,
-      applyHpDelta,
       updateCombatant,
       onOpenOverrides,
       onOpenConditions,
@@ -253,15 +246,25 @@ export function CombatView() {
       >
         <CombatantDetailsPanel roleTitle="Active" role="active" combatant={active ?? null} ctx={activeCtx} />
 
-        <InitiativePanel
-          combatants={orderedCombatants}
-          playersById={playersById}
-          monsterCrById={monsterCrById}
-          activeId={activeId}
-          targetId={(target as any)?.id ?? null}
-          onSelectTarget={(id) => setTargetId(id)}
-          onSetInitiative={(id, initiative) => updateCombatant(id, { initiative })}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <CombatDeltaControls
+            value={delta}
+            disabled={!target}
+            onChange={setDelta}
+            onApplyDamage={() => applyHpDelta("damage")}
+            onApplyHeal={() => applyHpDelta("heal")}
+          />
+
+          <InitiativePanel
+            combatants={orderedCombatants}
+            playersById={playersById}
+            monsterCrById={monsterCrById}
+            activeId={activeId}
+            targetId={(target as any)?.id ?? null}
+            onSelectTarget={(id) => setTargetId(id)}
+            onSetInitiative={(id, initiative) => updateCombatant(id, { initiative })}
+          />
+        </div>
 
         <CombatantDetailsPanel roleTitle="Target" role="target" combatant={target ?? null} ctx={targetCtx} />
       </div>
