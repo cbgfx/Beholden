@@ -4,6 +4,7 @@ import { IconAttack, IconHeal } from "@/icons";
 
 type Props = {
   value: string;
+  targetId?: string | null;
   disabled?: boolean;
   onChange: (v: string) => void;
   onApplyDamage: () => void;
@@ -36,6 +37,12 @@ function HexButton({
 }) {
   const bg = variant === "damage" ? theme.colors.danger : theme.colors.health;
   const fg = theme.colors.text;
+  const anim =
+    disabled
+      ? "none"
+      : variant === "damage"
+        ? "beholdenHexPulseDamage 1.7s ease-in-out infinite"
+        : "beholdenHexPulseHeal 1.7s ease-in-out infinite";
 
   return (
     <button
@@ -57,6 +64,7 @@ function HexButton({
         boxShadow: disabled
           ? "none"
           : `0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset`,
+        animation: anim,
         opacity: disabled ? 0.5 : 1,
         transition: "transform 80ms ease, filter 120ms ease",
         userSelect: "none"
@@ -83,19 +91,39 @@ export function CombatDeltaControls(props: Props) {
   const disabled = Boolean(props.disabled);
   const tooltip = disabled ? "Select a target" : "";
 
+  // When a new target is selected, snap focus back to the input for fast table flow.
+  React.useEffect(() => {
+    if (disabled) return;
+    if (!props.targetId) return;
+    // Defer to the next frame so we don't fight click focus.
+    const raf = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(raf);
+  }, [props.targetId, disabled]);
+
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 10,
-        padding: "10px 8px",
-        borderRadius: 14,
-        border: `1px solid ${theme.colors.panelBorder}`,
-        background: theme.colors.panelBg
-      }}
-    >
+    <div data-allow-combat-nav="true">
+      <style>
+        {`@keyframes beholdenHexPulseDamage {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset; }
+  50% { filter: drop-shadow(0 0 10px ${theme.colors.danger}55); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset, 0 0 18px ${theme.colors.danger}66; }
+}
+@keyframes beholdenHexPulseHeal {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset; }
+  50% { filter: drop-shadow(0 0 10px ${theme.colors.health}55); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset, 0 0 18px ${theme.colors.health}66; }
+}`}
+      </style>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          padding: "10px 8px",
+          borderRadius: 14,
+          border: `1px solid ${theme.colors.panelBorder}`,
+          background: theme.colors.panelBg
+        }}
+      >
       <HexButton
         title={disabled ? tooltip : "Apply damage"}
         disabled={disabled}
@@ -111,11 +139,17 @@ export function CombatDeltaControls(props: Props) {
 
       <input
         ref={inputRef}
+        data-allow-combat-nav="true"
         value={props.value}
         inputMode="numeric"
         placeholder="10 / +10"
         onChange={(e) => props.onChange(normalizeDeltaInput(e.target.value))}
         onKeyDown={(e) => {
+          // Keep global combat hotkeys usable (n/p) even when the delta input is focused.
+          // Everything else should NOT bubble to the window-level key handler.
+          const k = String(e.key || "").toLowerCase();
+          const allowHotkey = !e.altKey && !e.ctrlKey && !e.metaKey && (k === "n" || k === "p");
+          if (!allowHotkey) e.stopPropagation();
           if (e.key === "Enter") {
             e.preventDefault();
             props.onApplyDamage();
@@ -153,6 +187,7 @@ export function CombatDeltaControls(props: Props) {
       >
         <IconHeal size={22} title="Heal" />
       </HexButton>
+      </div>
     </div>
   );
 }

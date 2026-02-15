@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
 import { Button } from "@/ui/Button";
+import { IconEncounterRoster } from "@/icons";
 
 type Props = {
   title: string;
@@ -43,6 +44,7 @@ export function CombatRosterHeader(props: Props) {
           <Button variant="ghost" onClick={() => nav(props.backTo)} title="Back to Campaign">
             ← Back
           </Button>
+          <IconEncounterRoster size={18} title="Combat Roster" />
           <span style={{ fontSize: "var(--fs-title)", fontWeight: 900, color: theme.colors.text }}>
             {props.title}
           </span>

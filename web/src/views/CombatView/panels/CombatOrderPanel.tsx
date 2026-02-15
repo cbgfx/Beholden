@@ -2,7 +2,7 @@ import React from "react";
 import type { Combatant } from "@/domain/types/domain";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
-import { IconINPC, IconMonster, IconPlayer, IconSkull, IconTargeted } from "@/icons";
+import { IconINPC, IconMonster, IconPlayer, IconSkull, IconTargeted, IconInitiative } from "@/icons";
 import { PlayerRow, type PlayerVM } from "@/views/CampaignView/components/PlayerRow";
 
 function InitiativeInput({
@@ -23,6 +23,9 @@ function InitiativeInput({
       value={v}
       onChange={(e) => setV(e.target.value)}
       onKeyDown={(e) => {
+        const k = String(e.key || "").toLowerCase();
+        const allowHotkey = !e.altKey && !e.ctrlKey && !e.metaKey && (k === "n" || k === "p");
+        if (!allowHotkey) e.stopPropagation();
         if (e.key === "Enter") (e.target as HTMLInputElement).blur();
       }}
       onBlur={() => {
@@ -69,7 +72,41 @@ function TurnBadge(props: { active: boolean; targeted: boolean }) {
         color: iconColor
       }}
     >
-      {props.targeted ? <IconTargeted size={14} /> : null}
+      {props.targeted ? <IconTargeted size={22} /> : null}
+    </div>
+  );
+}
+
+function getCombatantIcon(args: {
+  baseType: Combatant["baseType"];
+  isDead: boolean;
+  iconColor: string;
+  badge: React.ReactNode;
+}) {
+  const { baseType, isDead, iconColor, badge } = args;
+
+  const actualIcon = isDead ? (
+    <span style={{ color: iconColor }}>
+      <IconSkull size={28} />
+    </span>
+  ) : baseType === "player" ? (
+    <span style={{ color: iconColor }}>
+      <IconPlayer size={28} />
+    </span>
+  ) : baseType === "inpc" ? (
+    <span style={{ color: iconColor }}>
+      <IconINPC size={28} />
+    </span>
+  ) : (
+    <span style={{ color: iconColor }}>
+      <IconMonster size={28} />
+    </span>
+  );
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {badge}
+      {actualIcon}
     </div>
   );
 }
@@ -83,6 +120,14 @@ export function CombatOrderPanel(props: {
   onSelectTarget: (id: string) => void;
   onSetInitiative: (id: string, initiative: number) => void;
 }) {
+
+  // Target glow should be "danger" red and never cause horizontal scrollbars.
+  // Use *inset-only* shadows + background pulse (no outer shadows that expand paint bounds).
+  const targetStyle: React.CSSProperties = {
+    boxShadow: `0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.10) inset`,
+    backgroundImage: "radial-gradient(circle at 50% 50%, rgba(255,0,0,0.14), transparent 70%)",
+    animation: "beholdenTargetPulse 1.6s ease-in-out infinite"
+  };
 
 const activeIndex = React.useMemo(() => {
   if (!props.combatants.length) return 0;
@@ -98,12 +143,39 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
   return (
     <Panel
       title={
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <span style={{fontSize: "var(--fs-title)", color: theme.colors.accent, alignItems: "center"}}>INITIATIVE</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <IconInitiative size={18} title="Initiative" />
+          <span style={{ fontSize: "var(--fs-title)", color: theme.colors.accent, fontWeight: 900 }}>INITIATIVE</span>
         </div>
       }
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: "70vh", overflow: "auto" }}>
+      <style>{`
+        @keyframes beholdenTargetPulse {
+          0% {
+            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.06) inset;
+            filter: saturate(1);
+          }
+          50% {
+            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 10px rgba(255,0,0,0.14) inset;
+            filter: saturate(1.15);
+          }
+          100% {
+            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.06) inset;
+            filter: saturate(1);
+          }
+        }
+      `}</style>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          maxHeight: "70vh",
+          overflowY: "auto",
+          overflowX: "hidden"
+        }}
+      >
         {upcoming.map((c, idx) => {
           const isActive = c.id === props.activeId;
           const isTarget = c.id === props.targetId;
@@ -146,21 +218,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
             ? theme.colors.muted
             : (c.baseType === "player" ? theme.colors.player : (c.color || (friendly ? theme.colors.health : theme.colors.danger)));
           const badge = <TurnBadge active={isActive} targeted={isTarget} />;
-
-          const actualIcon = isDead
-            ? <span style={{ color: iconColor }}><IconSkull size={28} /></span>
-            : c.baseType === "player"
-              ? <span style={{ color: iconColor }}><IconPlayer size={28} /></span>
-              : c.baseType === "inpc"
-                ? <span style={{ color: iconColor }}><IconINPC size={28} /></span>
-                : <span style={{ color: iconColor }}><IconMonster size={28} /></span>;
-
-          const icon = (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {badge}
-              {actualIcon}
-            </div>
-          );
+          const icon = getCombatantIcon({ baseType: c.baseType, isDead, iconColor, badge });
 
           return (
             <button
@@ -173,24 +231,20 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
               }}
             >
               <div style={{ position: "relative" }}>
-                {isActive ? (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: 14,
-                      boxShadow: `0 0 0 2px ${theme.colors.accent} inset`,
-                      pointerEvents: "none"
-                    }}
-                  />
-                ) : null}
-
                 <div
                   style={{
                     borderRadius: 14,
                     padding: 0,
-                    background: isTarget ? theme.colors.selected : "transparent",
-                    border: `1px solid ${isActive ? theme.colors.accent : theme.colors.panelBorder}`
+                    background: "transparent",
+                    border: `1px solid ${theme.colors.panelBorder}`,
+                    overflow: "hidden",
+                    // Active should pop. Target should glow, but not re-layout or shout.
+                    boxShadow: isActive
+                      ? `0 0 0 2px ${theme.colors.accent} inset, 0 6px 18px rgba(0,0,0,0.18)`
+                      : undefined,
+                    ...(isTarget ? targetStyle : null),
+                    transform: isActive ? "translateY(-1px)" : "none",
+                    transition: "transform 80ms ease"
                   }}
                 >
                   <PlayerRow
@@ -208,6 +262,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                           gap: 6
                         }}
                       >
+                        <IconInitiative size={14} title="Initiative" />
                         <span>Init</span>
                         {(() => {
                           const init = Number((c as any).initiative);
@@ -232,7 +287,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
         })}
         {wrapped.length ? (
           <div style={{ padding: "6px 2px 2px", color: theme.colors.accent, fontSize: "var(--fs-title)", fontWeight: 900 }}>
-            TOP OF THE ROUND
+            NEXT ROUND
           </div>
         ) : null}
         {wrapped.map((c, idx) => {
@@ -276,23 +331,8 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
               ? theme.colors.player
               : c.color || (friendly ? theme.colors.health : theme.colors.danger);
 
-          const icon = isDead ? (
-            <span style={{ color: iconColor }}>
-              <IconSkull size={28} />
-            </span>
-          ) : c.baseType === "player" ? (
-            <span style={{ color: iconColor }}>
-              <IconPlayer size={28} />
-            </span>
-          ) : c.baseType === "inpc" ? (
-            <span style={{ color: iconColor }}>
-              <IconINPC size={28} />
-            </span>
-          ) : (
-            <span style={{ color: iconColor }}>
-              <IconMonster size={28} />
-            </span>
-          );
+          const badge = <TurnBadge active={isActive} targeted={isTarget} />;
+          const icon = getCombatantIcon({ baseType: c.baseType, isDead, iconColor, badge });
 
           return (
             <button
@@ -301,22 +341,19 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
               style={{ all: "unset", cursor: "pointer", display: "block" }}
             >
               <div style={{ position: "relative" }}>
-                {isActive ? (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: 14,
-                      boxShadow: `0 0 0 2px ${theme.colors.accent} inset`
-                    }}
-                  />
-                ) : null}
                 <div
                   style={{
                     borderRadius: 14,
                     padding: 0,
-                    background: isTarget ? theme.colors.selected : "transparent",
-                    border: `1px solid ${isActive ? theme.colors.accent : theme.colors.panelBorder}`
+                    background: "transparent",
+                    border: `1px solid ${theme.colors.panelBorder}`,
+                    overflow: "hidden",
+                    boxShadow: isActive
+                      ? `0 0 0 2px ${theme.colors.accent} inset, 0 6px 18px rgba(0,0,0,0.18)`
+                      : "none",
+                    ...(isTarget ? targetStyle : null),
+                    transform: isActive ? "translateY(-1px)" : "none",
+                    transition: "transform 80ms ease"
                   }}
                 >
                   <PlayerRow
@@ -334,25 +371,22 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                           alignItems: "center"
                         }}
                       >
-                        {Number((c as any).initiative) === 0 ? (
-                          <>
-                            {isTarget ? (
-                          <span style={{ color: theme.colors.accent, display: "inline-flex" }} title="Target">
-                            <IconMarked size={14} />
-                          </span>
-                        ) : null}
+                        {(() => {
+                          const init = Number((c as any).initiative);
+                          if (!Number.isFinite(init) || init === 0) {
+                            return (
+                              <>
+                        <IconInitiative size={14} title="Initiative" />
                         <span>Init</span>
-                            <InitiativeInput
-                              value={null}
-                              onCommit={(n) => props.onSetInitiative((c as any).id, n)}
-                            />
-                          </>
-                        ) : (
-                          (() => {
-                            const init = Number((c as any).initiative);
-                            return `Init ${Number.isFinite(init) && init !== 0 ? init : "—"}`;
-                          })()
-                        )}
+                                <InitiativeInput
+                                  value={null}
+                                  onCommit={(n) => props.onSetInitiative(c.id, n)}
+                                />
+                              </>
+                            );
+                          }
+                          return <span>{`Init ${init}`}</span>;
+                        })()}
                       </span>
                     }
                     actions={null}

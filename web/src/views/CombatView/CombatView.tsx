@@ -306,6 +306,7 @@ export function CombatView() {
 
           <CombatDeltaControls
             value={delta}
+            targetId={(target as any)?.id ?? null}
             disabled={!target}
             onChange={setDelta}
             onApplyDamage={() => applyHpDelta("damage")}

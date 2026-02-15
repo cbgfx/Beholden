@@ -148,7 +148,13 @@ export function useCombatNavigation({
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as any;
       const tag = String(t?.tagName ?? "").toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable) return;
+      const inEditable = tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable;
+      if (inEditable) {
+        // Allow n/p from specific inputs (e.g. CombatDeltaControls) for fast table flow.
+        const k = String(e.key || "").toLowerCase();
+        const allow = typeof t?.closest === "function" ? t.closest('[data-allow-combat-nav="true"]') : null;
+        if (!allow || (k !== "n" && k !== "p")) return;
+      }
 
       if (e.key === "n" || e.key === "N") {
         e.preventDefault();
