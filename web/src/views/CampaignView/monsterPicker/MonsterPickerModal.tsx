@@ -222,7 +222,8 @@ export function MonsterPickerModal(props: {
       }
       width={1100}
     >
-      <div style={{ height: "70vh", fontSize: "var(--fs-medium)", minHeight: 520, overflow: "hidden" }}>
+      {/* Fill the modal body; the list + detail panes manage their own scrolling. */}
+      <div style={{ height: "100%", minHeight: 0, fontSize: "var(--fs-medium)", overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: "420px 1fr", gap: 7, height: "100%", minHeight: 0 }}>
           <MonsterPickerListPane
             isOpen={props.isOpen}

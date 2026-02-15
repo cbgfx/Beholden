@@ -2,7 +2,7 @@ import React from "react";
 import type { Combatant } from "@/domain/types/domain";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
-import { IconINPC, IconMarked, IconMonster, IconPlayer, IconSkull } from "@/icons";
+import { IconINPC, IconMonster, IconPlayer, IconSkull, IconTargeted } from "@/icons";
 import { PlayerRow, type PlayerVM } from "@/views/CampaignView/components/PlayerRow";
 
 function InitiativeInput({
@@ -43,18 +43,18 @@ function InitiativeInput({
       }}
     />
   );
-
 }
 
-function TurnBadge(props: { active: boolean }) {
+function TurnBadge(props: { active: boolean; targeted: boolean }) {
   const size = 22;
   const border = props.active ? theme.colors.accent : theme.colors.panelBorder;
   const bg = props.active ? theme.colors.accent : "transparent";
   const shadow = props.active ? `0 0 0 2px ${theme.colors.accent}40` : "none";
+  const iconColor = props.active ? theme.colors.panelBg : theme.colors.accent;
 
   return (
     <div
-      title={props.active ? "Active" : ""}
+      title={props.active ? "Active" : props.targeted ? "Target" : ""}
       style={{
         width: size,
         height: size,
@@ -62,9 +62,15 @@ function TurnBadge(props: { active: boolean }) {
         border: `2px solid ${border}`,
         background: bg,
         boxShadow: shadow,
-        flex: "0 0 auto"
+        flex: "0 0 auto",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: iconColor
       }}
-    />
+    >
+      {props.targeted ? <IconTargeted size={14} /> : null}
+    </div>
   );
 }
 
@@ -139,7 +145,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
           const iconColor = isDead
             ? theme.colors.muted
             : (c.baseType === "player" ? theme.colors.player : (c.color || (friendly ? theme.colors.health : theme.colors.danger)));
-          const badge = <TurnBadge active={isActive} />;
+          const badge = <TurnBadge active={isActive} targeted={isTarget} />;
 
           const actualIcon = isDead
             ? <span style={{ color: iconColor }}><IconSkull size={28} /></span>
@@ -202,11 +208,6 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                           gap: 6
                         }}
                       >
-                        {isTarget ? (
-                          <span style={{ color: theme.colors.accent, display: "inline-flex" }} title="Target">
-                            <IconMarked size={14} />
-                          </span>
-                        ) : null}
                         <span>Init</span>
                         {(() => {
                           const init = Number((c as any).initiative);

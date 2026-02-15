@@ -526,11 +526,7 @@ export function MonsterStatblock(props: { monster: any | null; hideSummary?: boo
             background: "rgba(0,0,0,0.14)"
           }}
         >
-          {/*
-            In the Monster Picker detail pane we already render editable AC/HP inputs above.
-            "hideSummary" is meant to hide duplicate headline numbers, not useful metadata.
-            Keep infoLines (skills/senses/languages/resist/immune/etc.) visible.
-          */}
+          {/* hideSummary hides the big sheet layout, but we still want InfoLines (skills/senses/etc.) */}
           <CharacterSheetPanel stats={sheetStats} />
         </div>
       )}

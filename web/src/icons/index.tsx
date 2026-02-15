@@ -61,6 +61,7 @@ export const IconHexed = make("hexed");
 export const IconIncapacitated = make("incapacitated");
 export const IconInvisible = make("invisible");
 export const IconMarked = make("marked");
+export const IconTargeted = make("targeted");
 export const IconParalyzed = make("paralyzed");
 export const IconPetrified = make("petrified");
 export const IconPoisoned = make("poisoned");
