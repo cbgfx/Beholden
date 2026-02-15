@@ -19,6 +19,8 @@ import { api } from "@/services/api";
 import { allHaveInitiative, orderCombatants } from "@/views/CombatView/utils/combat";
 import { applyMonsterAttackOverrides } from "@/views/CombatView/utils/monsterOverrides";
 import { getSecondsInRound } from "@/views/CombatView/utils/roundTime";
+import { theme } from "@/theme/theme";
+import { Button } from "@/ui/Button";
 
 export function CombatView() {
   const { campaignId, encounterId } = useParams();
@@ -247,6 +249,53 @@ export function CombatView() {
         <CombatantDetailsPanel roleTitle="Active" role="active" combatant={active ?? null} ctx={activeCtx} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Center-stage turn controls: Round + Prev/Next live above delta controls */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              paddingTop: 2
+            }}
+          >
+            <span
+              style={{
+                fontSize: "var(--fs-pill)",
+                fontWeight: 900,
+                color: theme.colors.muted,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: theme.colors.panelBg,
+                padding: "4px 8px",
+                borderRadius: 999
+              }}
+            >
+              Round {round}
+            </span>
+            {typeof secondsInRound === "number" && (
+              <span
+                style={{
+                  fontSize: "var(--fs-pill)",
+                  fontWeight: 900,
+                  color: theme.colors.muted,
+                  border: `1px solid ${theme.colors.panelBorder}`,
+                  background: theme.colors.panelBg,
+                  padding: "4px 8px",
+                  borderRadius: 999
+                }}
+              >
+                {secondsInRound}s
+              </span>
+            )}
+
+            <Button variant="ghost" onClick={prevTurn} disabled={!canNavigate}>
+              Prev (p)
+            </Button>
+            <Button variant="ghost" onClick={nextTurn} disabled={!canNavigate}>
+              Next (n)
+            </Button>
+          </div>
+
           <CombatDeltaControls
             value={delta}
             disabled={!target}

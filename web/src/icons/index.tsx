@@ -47,6 +47,7 @@ export const IconDragon = IconMonster;
 export const IconSkull = make("death-skull");
 export const IconHeart = make("heart-beats");
 export const IconDroplet = make("blood");
+export const IconAttack = make("attack");
 export const IconConditions = make("flower-twirl")
 export const IconPlayer = make("barbute");
 

@@ -26,7 +26,7 @@ type Props = {
  * which caused a runtime crash when the CombatView passed header props.)
  */
 export function CombatantHeader(props: Props) {
-  const { title, round, seconds, canNavigate, rollLabel } = props;
+  const { title, canNavigate, rollLabel } = props;
   const navigate = useNavigate();
 
   return (
@@ -40,45 +40,10 @@ export function CombatantHeader(props: Props) {
             Back
           </Button>
           <span style={{ fontSize: "var(--fs-title)", fontWeight: 900, color: theme.colors.text }}>{title}</span>
-          <span
-            style={{
-              fontSize: "var(--fs-pill)",
-              fontWeight: 900,
-              color: theme.colors.muted,
-              border: `1px solid ${theme.colors.panelBorder}`,
-              background: theme.colors.panelBg,
-              padding: "4px 8px",
-              borderRadius: 999
-            }}
-          >
-            Round {round}
-          </span>
-          {typeof seconds === "number" && (
-            <span
-              style={{
-                fontSize: "var(--fs-pill)",
-                fontWeight: 900,
-                color: theme.colors.muted,
-                border: `1px solid ${theme.colors.panelBorder}`,
-                background: theme.colors.panelBg,
-                padding: "4px 8px",
-                borderRadius: 999
-              }}
-            >
-              {seconds}s
-            </span>
-          )}
         </div>
       }
       actions={
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <Button variant="ghost" onClick={props.onPrev} disabled={!canNavigate}>
-            Prev (p)
-          </Button>
-          <Button variant="ghost" onClick={props.onNext} disabled={!canNavigate}>
-            Next (n)
-          </Button>
-
           <Button variant="primary" onClick={props.onRollOrReset}>
             {rollLabel}
           </Button>

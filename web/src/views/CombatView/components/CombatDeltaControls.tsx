@@ -1,6 +1,6 @@
 import * as React from "react";
 import { theme } from "@/theme/theme";
-import { IconDroplet, IconHeal } from "@/icons";
+import { IconAttack, IconHeal } from "@/icons";
 
 type Props = {
   value: string;
@@ -106,7 +106,7 @@ export function CombatDeltaControls(props: Props) {
         }}
         variant="damage"
       >
-        <IconDroplet size={22} title="Damage" />
+        <IconAttack size={22} title="Damage" />
       </HexButton>
 
       <input
@@ -133,7 +133,8 @@ export function CombatDeltaControls(props: Props) {
           padding: "10px 12px",
           borderRadius: 12,
           border: `1px solid ${theme.colors.panelBorder}`,
-          background: disabled ? theme.colors.panelBg : theme.colors.bg,
+          // Keep the input readable in the dark theme.
+          background: theme.colors.panelBg,
           color: theme.colors.text,
           fontWeight: 900,
           fontSize: "var(--fs-title)",
