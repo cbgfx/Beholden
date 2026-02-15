@@ -2,7 +2,7 @@ import React from "react";
 import type { Combatant } from "@/domain/types/domain";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
-import { IconINPC, IconMonster, IconPlayer, IconSkull } from "@/icons";
+import { IconINPC, IconMarked, IconMonster, IconPlayer, IconSkull } from "@/icons";
 import { PlayerRow, type PlayerVM } from "@/views/CampaignView/components/PlayerRow";
 
 function InitiativeInput({
@@ -40,6 +40,29 @@ function InitiativeInput({
         color: theme.colors.text,
         textAlign: "center",
         fontSize: "var(--fs-pill)"
+      }}
+    />
+  );
+
+}
+
+function TurnBadge(props: { active: boolean }) {
+  const size = 22;
+  const border = props.active ? theme.colors.accent : theme.colors.panelBorder;
+  const bg = props.active ? theme.colors.accent : "transparent";
+  const shadow = props.active ? `0 0 0 2px ${theme.colors.accent}40` : "none";
+
+  return (
+    <div
+      title={props.active ? "Active" : ""}
+      style={{
+        width: size,
+        height: size,
+        clipPath: "polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)",
+        border: `2px solid ${border}`,
+        background: bg,
+        boxShadow: shadow,
+        flex: "0 0 auto"
       }}
     />
   );
@@ -116,14 +139,22 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
           const iconColor = isDead
             ? theme.colors.muted
             : (c.baseType === "player" ? theme.colors.player : (c.color || (friendly ? theme.colors.health : theme.colors.danger)));
+          const badge = <TurnBadge active={isActive} />;
 
-          const icon = isDead
+          const actualIcon = isDead
             ? <span style={{ color: iconColor }}><IconSkull size={28} /></span>
             : c.baseType === "player"
               ? <span style={{ color: iconColor }}><IconPlayer size={28} /></span>
               : c.baseType === "inpc"
                 ? <span style={{ color: iconColor }}><IconINPC size={28} /></span>
                 : <span style={{ color: iconColor }}><IconMonster size={28} /></span>;
+
+          const icon = (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {badge}
+              {actualIcon}
+            </div>
+          );
 
           return (
             <button
@@ -171,6 +202,11 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                           gap: 6
                         }}
                       >
+                        {isTarget ? (
+                          <span style={{ color: theme.colors.accent, display: "inline-flex" }} title="Target">
+                            <IconMarked size={14} />
+                          </span>
+                        ) : null}
                         <span>Init</span>
                         {(() => {
                           const init = Number((c as any).initiative);
@@ -299,7 +335,12 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                       >
                         {Number((c as any).initiative) === 0 ? (
                           <>
-                            <span>Init</span>
+                            {isTarget ? (
+                          <span style={{ color: theme.colors.accent, display: "inline-flex" }} title="Target">
+                            <IconMarked size={14} />
+                          </span>
+                        ) : null}
+                        <span>Init</span>
                             <InitiativeInput
                               value={null}
                               onCommit={(n) => props.onSetInitiative((c as any).id, n)}

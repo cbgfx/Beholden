@@ -258,15 +258,17 @@ export function CombatantDetailsPanel(props: Props) {
         return "";
       };
 
+      const m = ctx.selectedMonster as any;
+
       const skillsStr = (() => {
-        const skillsObj = (detail.skill ?? detail.skills ?? null) as any;
-        if (typeof detail.skills === "string") return detail.skills;
-        if (skillsObj && typeof skillsObj === "object") return listToString(skillsObj);
+        const raw = detail.skill ?? detail.skills ?? m?.skill ?? m?.skills ?? null;
+        if (typeof raw === "string") return raw;
+        if (raw && typeof raw === "object") return listToString(raw);
         return "";
       })();
 
-      const sensesStr = listToString(detail.senses);
-      const langsStr = listToString(detail.languages);
+      const sensesStr = listToString(detail.senses ?? m?.senses);
+      const langsStr = listToString(detail.languages ?? m?.languages);
 
       const crStr = (() => {
         const cr = detail.cr ?? ctx.selectedMonster?.cr;
@@ -274,10 +276,28 @@ export function CombatantDetailsPanel(props: Props) {
         return cr != null ? `${cr}${xp != null ? ` (${xp} XP)` : ""}` : "";
       })();
 
-      const dmgRes = listToString(detail.damageResist ?? detail.resist ?? detail.resistance);
-      const dmgImm = listToString(detail.damageImmune ?? detail.immune ?? detail.immunity);
-      const dmgVuln = listToString(detail.damageVulnerable ?? detail.vulnerable ?? detail.vulnerability);
-      const condImm = listToString(detail.conditionImmune ?? detail.conditionImmunity ?? detail.condImmune);
+      const dmgRes = listToString(
+        detail.damageResist ?? detail.resist ?? detail.resistance ?? m?.damageResist ?? m?.resist ?? m?.resistance
+      );
+      const dmgImm = listToString(
+        detail.damageImmune ?? detail.immune ?? detail.immunity ?? m?.damageImmune ?? m?.immune ?? m?.immunity
+      );
+      const dmgVuln = listToString(
+        detail.damageVulnerable ??
+          detail.vulnerable ??
+          detail.vulnerability ??
+          m?.damageVulnerable ??
+          m?.vulnerable ??
+          m?.vulnerability
+      );
+      const condImm = listToString(
+        detail.conditionImmune ??
+          detail.conditionImmunity ??
+          detail.condImmune ??
+          m?.conditionImmune ??
+          m?.conditionImmunity ??
+          m?.condImmune
+      );
 
       return [
         { label: "Skills", value: skillsStr || "—" },

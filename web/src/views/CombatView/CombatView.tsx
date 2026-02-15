@@ -56,6 +56,9 @@ export function CombatView() {
 
   const [targetId, setTargetId] = React.useState<string | null>(null);
 
+  // Stable callbacks so initiative rows can be memoized without thrashing.
+  const handleSelectTarget = React.useCallback((id: string) => setTargetId(id), []);
+
   const [delta, setDelta] = React.useState<string>("");
   const isNarrow = useIsNarrow();
 
@@ -144,6 +147,11 @@ export function CombatView() {
     setMonsterCache,
     dispatch,
   });
+
+  const handleSetInitiative = React.useCallback(
+    (id: string, initiative: number) => updateCombatant(id, { initiative }),
+    [updateCombatant]
+  );
 
   const activeAny: any = active as any;
   const targetAny: any = target as any;
@@ -310,8 +318,8 @@ export function CombatView() {
             monsterCrById={monsterCrById}
             activeId={activeId}
             targetId={(target as any)?.id ?? null}
-            onSelectTarget={(id) => setTargetId(id)}
-            onSetInitiative={(id, initiative) => updateCombatant(id, { initiative })}
+            onSelectTarget={handleSelectTarget}
+            onSetInitiative={handleSetInitiative}
           />
         </div>
 

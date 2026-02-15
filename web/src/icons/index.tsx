@@ -34,66 +34,66 @@ export const IconClose = (p: Omit<SvgIconProps, "svg">) => (
   />
 );
 
-export const IconTrash = make("trash-can");
+export const IconTrash = make("trash");
 export const IconPencil = make("pencil");
 export const IconShield = make("shield");
-export const IconEncounter = make("crossed-swords");
-export const IconNotes = make("notebook");
-export const IconAdventure = make("treasure-map");
+export const IconEncounter = make("encounter");
+export const IconNotes = make("notes");
+export const IconAdventure = make("adventure");
 export const IconChest = make("chest");
-export const IconPerson = make("barbute");
-export const IconMonster = make("double-dragon");
+export const IconPerson = make("person");
+export const IconMonster = make("monster");
 export const IconDragon = IconMonster;
-export const IconSkull = make("death-skull");
-export const IconHeart = make("heart-beats");
+export const IconSkull = make("dead");
+export const IconHeart = make("heart");
 export const IconDroplet = make("blood");
 export const IconAttack = make("attack");
-export const IconConditions = make("flower-twirl")
-export const IconPlayer = make("barbute");
+export const IconConditions = make("conditions")
+export const IconPlayer = make("person");
 
 // Condition icons
-export const IconBlinded = make("sight-disabled");
-export const IconCharmed = make("chained-heart");
-export const IconDeafened = make("hearing-disabled");
-export const IconFrightened = make("spectre");
-export const IconGrappled = make("grab");
-export const IconHexed = make("nailed-head");
-export const IconIncapacitated = make("static-guard");
+export const IconBlinded = make("blinded");
+export const IconCharmed = make("charmed");
+export const IconDeafened = make("deafened");
+export const IconFrightened = make("frightened");
+export const IconGrappled = make("grappled");
+export const IconHexed = make("hexed");
+export const IconIncapacitated = make("incapacitated");
 export const IconInvisible = make("invisible");
-export const IconMarked = make("headshot");
-export const IconParalyzed = make("internal-injury");
-export const IconPetrified = make("rock");
-export const IconPoisoned = make("stoned-skull");
-export const IconProne = make("back-pain");
-export const IconRestrained = make("imprisoned");
-export const IconStunned = make("knockout");
-export const IconUnconscious = make("coma");
-export const IconConcentration = make("psychic-waves");
-export const IconHex = make("nailed-head");
+export const IconMarked = make("marked");
+export const IconParalyzed = make("paralyzed");
+export const IconPetrified = make("petrified");
+export const IconPoisoned = make("poisoned");
+export const IconProne = make("prone");
+export const IconRestrained = make("restrained");
+export const IconStunned = make("stunned");
+export const IconUnconscious = make("unconscious");
+export const IconConcentration = make("concentration");
+export const IconHex = make("hexed");
 
 // Misc stats icons
-export const IconSpeed = make("walking-boot");
+export const IconSpeed = make("speed");
 export const IconAC = IconShield;
 export const IconHP = IconHeart;
 
-export const IconRest = make("campfire");
-export const IconCompendium = make("book-pile");
+export const IconRest = make("rest");
+export const IconCompendium = make("compendium-alt");
 export const IconSpells = make("spells");
-export const IconCompendiumAlt = make("compendium");
+export const IconCompendiumAlt = make("compendium-alt");
 
-export const IconEncounterRoster = make("three-friends");
+export const IconEncounterRoster = make("encounter-roster");
 
-export const IconInitiative = make("podium");
+export const IconInitiative = make("initiative");
 
-export const IconINPC = make("iron-mask");
+export const IconINPC = make("inpc");
 
 export const IconPlay = make("play");
-export const IconBuild = make("hammer-nails");
+export const IconBuild = make("build");
 
 export const IconBlood = make("blood");
 
-export const IconHeal = make("healing");
+export const IconHeal = make("heal");
 
-export const IconDead = make("death-skull");
+export const IconDead = make("dead");
 
-export const IconExhaustion = make("sleepy");
+export const IconExhaustion = make("exhaustion");

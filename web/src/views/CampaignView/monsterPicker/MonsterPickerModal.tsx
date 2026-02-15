@@ -222,7 +222,7 @@ export function MonsterPickerModal(props: {
       }
       width={1100}
     >
-      <div style={{ height: "70vh", fontSize: "var(--fs-medium)", lineHeight: "16px", minHeight: 520, overflow: "hidden" }}>
+      <div style={{ height: "70vh", fontSize: "var(--fs-medium)", minHeight: 520, overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: "420px 1fr", gap: 7, height: "100%", minHeight: 0 }}>
           <MonsterPickerListPane
             isOpen={props.isOpen}
