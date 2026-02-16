@@ -280,7 +280,7 @@ export function CombatView() {
                     borderRadius: 999,
                     fontWeight: 900,
                     letterSpacing: 0.6,
-                    fontSize: "var(--fs-xs)",
+                    fontSize: "var(--fs-tiny)",
                     color: "#0b0e13",
                     background: roleAccent,
                     border: `1px solid rgba(0,0,0,0.35)`,
@@ -304,7 +304,7 @@ export function CombatView() {
                   maxWidth: 420
                 }}
               >
-                {names.primary}              
+                {names.primary} &nbsp;             
                 {names.secondary ? (
                 <span
                   title={names.secondary}

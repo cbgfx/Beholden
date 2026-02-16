@@ -257,6 +257,36 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                         }}
                       >
                         <IconInitiative size={14} title="Initiative" />
+                        {(isActive || isTarget) && (
+                          <span
+                            style={{
+                              marginLeft: 2,
+                              padding: "2px 8px",
+                              borderRadius: 999,
+                              fontSize: "var(--fs-tiny)",
+                              fontWeight: 900,
+                              letterSpacing: 0.6,
+                              textTransform: "uppercase",
+                              color: theme.colors.text,
+                              border: `1px solid ${isActive && isTarget ? theme.colors.accent : isActive ? theme.colors.accent : theme.colors.player}`,
+                              background:
+                                isActive && isTarget
+                                  ? `linear-gradient(90deg, ${theme.colors.accent}33, ${theme.colors.player}33)`
+                                  : isActive
+                                    ? `${theme.colors.accent}22`
+                                    : `${theme.colors.player}22`
+                            }}
+                            title={
+                              isActive && isTarget
+                                ? "Active (self-target)"
+                                : isActive
+                                  ? "Active"
+                                  : "Target"
+                            }
+                          >
+                            {isActive && isTarget ? "Self" : isActive ? "Active" : "Target"}
+                          </span>
+                        )}
                         <span>Init</span>
                         {(() => {
                           const init = Number((c as any).initiative);
