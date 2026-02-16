@@ -37,12 +37,6 @@ function HexButton({
 }) {
   const bg = variant === "damage" ? theme.colors.danger : theme.colors.health;
   const fg = theme.colors.text;
-  const anim =
-    disabled
-      ? "none"
-      : variant === "damage"
-        ? "beholdenHexPulseDamage 1.7s ease-in-out infinite"
-        : "beholdenHexPulseHeal 1.7s ease-in-out infinite";
 
   return (
     <button
@@ -64,7 +58,7 @@ function HexButton({
         boxShadow: disabled
           ? "none"
           : `0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset`,
-        animation: anim,
+        animation: disabled ? "none" : "beholdenHexPulse 2.2s ease-in-out infinite",
         opacity: disabled ? 0.5 : 1,
         transition: "transform 80ms ease, filter 120ms ease",
         userSelect: "none"
@@ -96,22 +90,31 @@ export function CombatDeltaControls(props: Props) {
     if (disabled) return;
     if (!props.targetId) return;
     // Defer to the next frame so we don't fight click focus.
-    const raf = requestAnimationFrame(() => inputRef.current?.focus());
+    // IMPORTANT: do NOT steal focus if the user is actively editing another input
+    // (e.g. initiative entries). This was causing a "double-click" requirement.
+    const raf = requestAnimationFrame(() => {
+      const el = document.activeElement as HTMLElement | null;
+      // If focus is already on an input/textarea that isn't OUR delta input, back off.
+      if (el && el !== inputRef.current) {
+        const tag = (el.tagName || "").toUpperCase();
+        const isTextField = tag === "INPUT" || tag === "TEXTAREA" || (el as any).isContentEditable;
+        if (isTextField) return;
+      }
+      inputRef.current?.focus();
+    });
     return () => cancelAnimationFrame(raf);
   }, [props.targetId, disabled]);
 
   return (
-    <div data-allow-combat-nav="true">
+    <>
       <style>
-        {`@keyframes beholdenHexPulseDamage {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset; }
-  50% { filter: drop-shadow(0 0 10px ${theme.colors.danger}55); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset, 0 0 18px ${theme.colors.danger}66; }
-}
-@keyframes beholdenHexPulseHeal {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset; }
-  50% { filter: drop-shadow(0 0 10px ${theme.colors.health}55); box-shadow: 0 2px 0 0 ${theme.colors.panelBorder}, 0 0 0 2px rgba(0,0,0,0.08) inset, 0 0 18px ${theme.colors.health}66; }
-}`}
+        {`@keyframes beholdenHexPulse {
+            0% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+            50% { filter: drop-shadow(0 0 10px rgba(255,255,255,0.10)); }
+            100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+          }`}
       </style>
+
       <div
         style={{
           display: "flex",
@@ -188,6 +191,6 @@ export function CombatDeltaControls(props: Props) {
         <IconHeal size={22} title="Heal" />
       </HexButton>
       </div>
-    </div>
+    </>
   );
 }

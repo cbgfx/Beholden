@@ -121,14 +121,6 @@ export function CombatOrderPanel(props: {
   onSetInitiative: (id: string, initiative: number) => void;
 }) {
 
-  // Target glow should be "danger" red and never cause horizontal scrollbars.
-  // Use *inset-only* shadows + background pulse (no outer shadows that expand paint bounds).
-  const targetStyle: React.CSSProperties = {
-    boxShadow: `0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.10) inset`,
-    backgroundImage: "radial-gradient(circle at 50% 50%, rgba(255,0,0,0.14), transparent 70%)",
-    animation: "beholdenTargetPulse 1.6s ease-in-out infinite"
-  };
-
 const activeIndex = React.useMemo(() => {
   if (!props.combatants.length) return 0;
   if (props.activeId) {
@@ -140,6 +132,26 @@ const activeIndex = React.useMemo(() => {
 
 const upcoming = React.useMemo(() => props.combatants.slice(activeIndex), [props.combatants, activeIndex]);
 const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [props.combatants, activeIndex]);
+
+  const getRowShadow = (isActive: boolean, isTarget: boolean) => {
+    // Target glow should remain visible even when the target is also the active combatant (self-target).
+    if (isActive && isTarget) {
+      return `
+        0 0 0 2px ${theme.colors.accent} inset,
+        0 0 0 4px ${theme.colors.player} inset,
+        0 0 18px ${theme.colors.player} inset,
+        0 6px 18px rgba(0,0,0,0.18)
+      `;
+    }
+    if (isActive) {
+      return `0 0 0 2px ${theme.colors.accent} inset, 0 6px 18px rgba(0,0,0,0.18)`;
+    }
+    if (isTarget) {
+      // Inset-only to avoid scrollbars in the initiative list.
+      return `0 0 0 2px ${theme.colors.player} inset, 0 0 18px ${theme.colors.player} inset`;
+    }
+    return "none";
+  };
   return (
     <Panel
       title={
@@ -149,33 +161,14 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
         </div>
       }
     >
-      <style>{`
-        @keyframes beholdenTargetPulse {
-          0% {
-            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.06) inset;
-            filter: saturate(1);
-          }
-          50% {
-            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 10px rgba(255,0,0,0.14) inset;
-            filter: saturate(1.15);
-          }
-          100% {
-            box-shadow: 0 0 0 2px ${theme.colors.danger} inset, 0 0 0 6px rgba(255,0,0,0.06) inset;
-            filter: saturate(1);
-          }
-        }
-      `}</style>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          maxHeight: "70vh",
-          overflowY: "auto",
-          overflowX: "hidden"
-        }}
-      >
+      <style>
+        {`@keyframes beholdenTargetPulse {
+            0% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+            50% { filter: drop-shadow(0 0 14px ${theme.colors.player}80); }
+            100% { filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+          }`}
+      </style>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: "70vh", overflow: "auto" }}>
         {upcoming.map((c, idx) => {
           const isActive = c.id === props.activeId;
           const isTarget = c.id === props.targetId;
@@ -191,6 +184,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
           const displayName = (c.label || c.name || "(Unnamed)").trim() || "(Unnamed)";
           const friendly = Boolean(c.friendly);
           const isDead = Number(hpCurrent) <= 0;
+          const dim = isDead && c.baseType !== "player";
 
           const vm: PlayerVM = {
             id: c.id,
@@ -238,13 +232,13 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                     background: "transparent",
                     border: `1px solid ${theme.colors.panelBorder}`,
                     overflow: "hidden",
-                    // Active should pop. Target should glow, but not re-layout or shout.
-                    boxShadow: isActive
-                      ? `0 0 0 2px ${theme.colors.accent} inset, 0 6px 18px rgba(0,0,0,0.18)`
-                      : undefined,
-                    ...(isTarget ? targetStyle : null),
+                    // Active should pop. Target should glow. If self-targeted, show both.
+                    boxShadow: getRowShadow(isActive, isTarget),
+                    animation: isTarget ? "beholdenTargetPulse 1.8s ease-in-out infinite" : undefined,
                     transform: isActive ? "translateY(-1px)" : "none",
-                    transition: "transform 80ms ease"
+                    transition: "transform 80ms ease",
+                    opacity: dim ? 0.45 : 1,
+                    filter: dim ? "grayscale(0.85)" : "none"
                   }}
                 >
                   <PlayerRow
@@ -302,6 +296,7 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
           const displayName = (c.label || c.name || "(Unnamed)").trim() || "(Unnamed)";
           const friendly = Boolean(c.friendly);
           const isDead = Number(hpCurrent) <= 0;
+          const dim = isDead && c.baseType !== "player";
 
           const vm: PlayerVM = {
             id: c.id,
@@ -348,12 +343,12 @@ const wrapped = React.useMemo(() => props.combatants.slice(0, activeIndex), [pro
                     background: "transparent",
                     border: `1px solid ${theme.colors.panelBorder}`,
                     overflow: "hidden",
-                    boxShadow: isActive
-                      ? `0 0 0 2px ${theme.colors.accent} inset, 0 6px 18px rgba(0,0,0,0.18)`
-                      : "none",
-                    ...(isTarget ? targetStyle : null),
+                    boxShadow: getRowShadow(isActive, isTarget),
+                    animation: isTarget ? "beholdenTargetPulse 1.8s ease-in-out infinite" : undefined,
                     transform: isActive ? "translateY(-1px)" : "none",
-                    transition: "transform 80ms ease"
+                    transition: "transform 80ms ease",
+                    opacity: dim ? 0.45 : 1,
+                    filter: dim ? "grayscale(0.85)" : "none"
                   }}
                 >
                   <PlayerRow
