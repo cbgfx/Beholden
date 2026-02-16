@@ -345,7 +345,7 @@ export function CombatantDetailsPanel(props: Props) {
         >
           <span>
             {roleTitle ? <span style={{ color: theme.colors.accent }}>{roleTitle}: </span> : null}
-            {titleMain}
+            {titleMain} &nbsp;
           </span>
 
           {selected ? (
