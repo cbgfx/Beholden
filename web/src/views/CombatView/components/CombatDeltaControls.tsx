@@ -1,6 +1,6 @@
 import * as React from "react";
 import { theme } from "@/theme/theme";
-import { IconAttack, IconHeal } from "@/icons";
+import { IconAttack, IconHeal, IconConditions } from "@/icons";
 
 type Props = {
   value: string;
@@ -9,6 +9,7 @@ type Props = {
   onChange: (v: string) => void;
   onApplyDamage: () => void;
   onApplyHeal: () => void;
+  onOpenConditions?: () => void;
 };
 
 function normalizeDeltaInput(raw: string): string {
@@ -32,10 +33,15 @@ function HexButton({
   title: string;
   disabled?: boolean;
   onClick: () => void;
-  variant: "damage" | "heal";
+  variant: "damage" | "heal" | "neutral";
   children: React.ReactNode;
 }) {
-  const bg = variant === "damage" ? theme.colors.danger : theme.colors.health;
+  const bg =
+    variant === "damage"
+      ? theme.colors.danger
+      : variant === "heal"
+        ? theme.colors.health
+        : theme.colors.accent;
   const fg = theme.colors.text;
 
   return (
@@ -84,6 +90,7 @@ export function CombatDeltaControls(props: Props) {
 
   const disabled = Boolean(props.disabled);
   const tooltip = disabled ? "Select a target" : "";
+  const hasConditions = Boolean(props.onOpenConditions);
 
   // When a new target is selected, snap focus back to the input for fast table flow.
   React.useEffect(() => {
@@ -190,6 +197,21 @@ export function CombatDeltaControls(props: Props) {
       >
         <IconHeal size={22} title="Heal" />
       </HexButton>
+
+      {hasConditions ? (
+        <HexButton
+          title={disabled ? tooltip : "Conditions"}
+          disabled={disabled}
+          onClick={() => {
+            props.onOpenConditions?.();
+            // Keep input focus for rapid entry.
+            inputRef.current?.focus();
+          }}
+          variant="neutral"
+        >
+          <IconConditions size={22} title="Conditions" />
+        </HexButton>
+      ) : null}
       </div>
     </>
   );

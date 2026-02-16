@@ -21,6 +21,13 @@ import { applyMonsterAttackOverrides } from "@/views/CombatView/utils/monsterOve
 import { getSecondsInRound } from "@/views/CombatView/utils/roundTime";
 import { theme } from "@/theme/theme";
 import { Button } from "@/ui/Button";
+import {
+  IconPlayer,
+  IconMonster,
+  IconPerson,
+  IconSkull,
+  IconTargeted
+} from "@/icons";
 
 export function CombatView() {
   const { campaignId, encounterId } = useParams();
@@ -156,6 +163,23 @@ export function CombatView() {
   const activeAny: any = active as any;
   const targetAny: any = target as any;
 
+  const renderCombatantIcon = React.useCallback((c: any) => {
+    if (!c) return null;
+    const isDead = Number(c.hpCurrent) <= 0;
+    if (isDead) return <IconSkull size={16} title="Dead" />;
+
+    const bt = (c.baseType ?? c.type ?? "").toString();
+    if (bt === "player") return <IconPlayer size={16} title="Player" />;
+    if (bt === "inpc") return <IconPerson size={16} title="Important NPC" />;
+    return <IconMonster size={16} title="Monster" />;
+  }, []);
+
+  const onOpenConditionsFromDelta = React.useCallback(() => {
+    if (!activeAny?.id || !targetAny?.id) return;
+    const role = targetAny.id === activeAny.id ? "active" : "target";
+    onOpenConditions(targetAny.id, role, activeAny.id);
+  }, [activeAny?.id, targetAny?.id, onOpenConditions]);
+
   const activeCtx = React.useMemo(
     () => ({
       isNarrow,
@@ -254,6 +278,99 @@ export function CombatView() {
           alignItems: "start"
         }}
       >
+        {!isNarrow ? (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 6fr) minmax(0, 5fr) minmax(0, 6fr)",
+              gap: 14,
+              alignItems: "center"
+            }}
+          >
+            <div
+              style={{
+                justifySelf: "end",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "10px 12px",
+                borderRadius: 14,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: theme.colors.panelBg,
+                minWidth: 320
+              }}
+            >
+              {renderCombatantIcon(activeAny)}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: theme.colors.muted, fontWeight: 900 }}>Active</span>
+                <span
+                  style={{
+                    color: theme.colors.text,
+                    fontWeight: 900,
+                    fontSize: "var(--fs-large)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 260
+                  }}
+                >
+                  {activeAny?.label ?? "—"}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ justifySelf: "center" }}>
+              <CombatDeltaControls
+                value={delta}
+                targetId={(target as any)?.id ?? null}
+                disabled={!target}
+                onChange={setDelta}
+                onApplyDamage={() => applyHpDelta("damage")}
+                onApplyHeal={() => applyHpDelta("heal")}
+                onOpenConditions={onOpenConditionsFromDelta}
+              />
+            </div>
+
+            <div
+              style={{
+                justifySelf: "start",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "10px 12px",
+                borderRadius: 14,
+                border: `1px solid ${theme.colors.panelBorder}`,
+                background: theme.colors.panelBg,
+                minWidth: 320
+              }}
+            >
+              {renderCombatantIcon(targetAny)}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: theme.colors.muted, fontWeight: 900 }}>Target</span>
+                <span
+                  style={{
+                    color: theme.colors.text,
+                    fontWeight: 900,
+                    fontSize: "var(--fs-large)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 260
+                  }}
+                >
+                  {targetAny?.label ?? "—"}
+                </span>
+                {targetAny?.id ? (
+                  <span style={{ display: "inline-flex", alignItems: "center" }} title="Targeted">
+                    <IconTargeted size={16} />
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <CombatantDetailsPanel roleTitle="Active" role="active" combatant={active ?? null} ctx={activeCtx} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -304,14 +421,17 @@ export function CombatView() {
             </Button>
           </div>
 
-          <CombatDeltaControls
-            value={delta}
-            targetId={(target as any)?.id ?? null}
-            disabled={!target}
-            onChange={setDelta}
-            onApplyDamage={() => applyHpDelta("damage")}
-            onApplyHeal={() => applyHpDelta("heal")}
-          />
+          {isNarrow ? (
+            <CombatDeltaControls
+              value={delta}
+              targetId={(target as any)?.id ?? null}
+              disabled={!target}
+              onChange={setDelta}
+              onApplyDamage={() => applyHpDelta("damage")}
+              onApplyHeal={() => applyHpDelta("heal")}
+              onOpenConditions={onOpenConditionsFromDelta}
+            />
+          ) : null}
 
           <InitiativePanel
             combatants={orderedCombatants}
