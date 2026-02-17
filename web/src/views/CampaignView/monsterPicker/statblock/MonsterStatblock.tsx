@@ -475,6 +475,7 @@ export function MonsterStatblock(props: { monster: any | null; hideSummary?: boo
       hpCur: hpNum ?? NaN,
       hpMax: hpNum ?? NaN,
       speed: speedVal,
+      speedDisplay: speedDisplay,
       abilities: {
         str: Number(str ?? 10),
         dex: Number(dex ?? 10),

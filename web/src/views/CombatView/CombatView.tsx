@@ -39,6 +39,7 @@ export function CombatView() {
   const { refresh } = useEncounterCombatants(encounterId, dispatch);
 
   const {
+    loaded,
     round,
     setRound,
     activeId,
@@ -58,6 +59,7 @@ export function CombatView() {
     orderedCombatants,
     canNavigate,
     started,
+    loaded,
     round,
     activeId,
     setActiveId,

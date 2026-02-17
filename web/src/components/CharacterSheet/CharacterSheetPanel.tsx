@@ -10,6 +10,7 @@ export type CharacterSheetStats = {
   hpMax: number;
   tempHp?: number;
   speed: number | null;
+  speedDisplay?: string;
   abilities: Record<AbilityKey, number>;
   saves?: Partial<Record<AbilityKey, number>>;
   infoLines?: Array<{ label: string; value: string }>;
@@ -111,7 +112,11 @@ export function CharacterSheetPanel(props: {
   topLeft?: React.ReactNode;
 }) {
   const s = props.stats;
-  const speedText = s.speed == null ? "—" : String(s.speed);
+  const speedText = (() => {
+    const d = (s.speedDisplay ?? "").trim();
+    if (d) return d;
+    return s.speed == null ? "—" : String(s.speed);
+  })();
 
   const info = React.useMemo(
     () =>

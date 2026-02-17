@@ -169,6 +169,41 @@ export function useCombatantDetailsModel(args: {
       return null;
     })();
 
+    const speedDisplay = (() => {
+      if (c.baseType !== "monster") {
+        const p = ctx.player ?? null;
+        const n = Number((p as any)?.speed);
+        const v = Number.isFinite(n) && n > 0 ? n : 30;
+        return `${v} ft.`;
+      }
+
+      const sp: any = detail.speed ?? (ctx.selectedMonster as any)?.speed;
+      if (sp == null) return "";
+      if (typeof sp === "string") return sp;
+      if (typeof sp === "number") return `${sp} ft.`;
+      if (typeof sp === "object") {
+        const parts: string[] = [];
+        const pushPart = (label: string, val: any) => {
+          if (val == null) return;
+          const s = String(val).trim();
+          if (!s) return;
+          parts.push(label === "walk" ? s : `${label} ${s}`);
+        };
+
+        if (sp.walk != null) pushPart("walk", sp.walk);
+        if (sp.speed != null && sp.walk == null) pushPart("walk", sp.speed);
+        if (sp.value != null && sp.walk == null && sp.speed == null) pushPart("walk", sp.value);
+
+        if (sp.fly != null) pushPart("fly", sp.fly);
+        if (sp.climb != null) pushPart("climb", sp.climb);
+        if (sp.swim != null) pushPart("swim", sp.swim);
+        if (sp.burrow != null) pushPart("burrow", sp.burrow);
+
+        return parts.join(", ");
+      }
+      return "";
+    })();
+
     const abilities = (() => {
       if (c.baseType === "monster") {
         const m = ctx.selectedMonster;
@@ -301,6 +336,7 @@ export function useCombatantDetailsModel(args: {
       hpMax,
       tempHp,
       speed: speedVal,
+      speedDisplay: speedDisplay,
       abilities,
       saves,
       infoLines

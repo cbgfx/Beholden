@@ -7,6 +7,7 @@ type Args = {
   orderedCombatants: Combatant[];
   canNavigate: boolean;
   started: boolean;
+  loaded: boolean;
   round: number;
   activeId: string | null;
   setActiveId: (id: string | null) => void;
@@ -19,6 +20,7 @@ export function useCombatNavigation({
   orderedCombatants,
   canNavigate,
   started,
+  loaded,
   round,
   activeId,
   setActiveId,
@@ -112,6 +114,7 @@ export function useCombatNavigation({
   // When initiative becomes fully set (combat "starts"), initialize persisted combat state once.
   const prevCanNavigateRef = React.useRef(false);
   React.useEffect(() => {
+    if (!loaded) return;
     if (!prevCanNavigateRef.current && canNavigate && !started) {
             const firstSelectable =
         (orderedCombatants as any).find((c: any) => {
@@ -139,7 +142,7 @@ export function useCombatNavigation({
       }
     }
     prevCanNavigateRef.current = canNavigate;
-  }, [canNavigate, encounterId, orderedCombatants, persistCombatState, setActiveId, setRound, started]);
+  }, [canNavigate, loaded, encounterId, orderedCombatants, persistCombatState, setActiveId, setRound, started]);
 
   // Keyboard shortcuts: n/p for next/prev. Ignore when focus is in a text input.
   React.useEffect(() => {
