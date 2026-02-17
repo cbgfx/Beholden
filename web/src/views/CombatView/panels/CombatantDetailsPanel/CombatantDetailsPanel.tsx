@@ -4,17 +4,14 @@ import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
 import { IconButton } from "@/ui/IconButton";
 import { IconPencil, IconConditions } from "@/icons/index";
-import { conditionIconByKey } from "@/icons/conditions";
 import { CharacterSheetPanel, type CharacterSheetStats } from "@/components/CharacterSheet";
 import type { MonsterDetail } from "@/domain/types/compendium";
 import { MonsterActions } from "@/views/CombatView/components/MonsterActions";
 import { MonsterSpells } from "@/views/CombatView/components/MonsterSpells";
 import { MonsterTraits } from "@/views/CombatView/components/MonsterTraits";
 
-function toFinite(n: any, fallback: number) {
-  const x = Number(n);
-  return Number.isFinite(x) ? x : fallback;
-}
+import { CombatantConditionsSection } from "@/views/CombatView/panels/CombatantDetailsPanel/components/CombatantConditionsSection";
+import { useCharacterSheetStats } from "@/views/CombatView/panels/CombatantDetailsPanel/hooks/useCharacterSheetStats";
 
 export type CombatantDetailsCtx = {
   isNarrow: boolean;
@@ -53,283 +50,11 @@ export function CombatantDetailsPanel(props: Props) {
   const monsterBaseName = isMonster ? String(selectedAny.name || "").trim() : "";
   const showMonsterBaseName = isMonster && monsterBaseName && norm(monsterBaseName) !== norm(titleMain);
 
-  const CONDITIONS = React.useMemo(
-    () =>
-      [
-        { key: "blinded", name: "Blinded" },
-        { key: "charmed", name: "Charmed" },
-        { key: "deafened", name: "Deafened" },
-        { key: "frightened", name: "Frightened" },
-        { key: "grappled", name: "Grappled" },
-        { key: "incapacitated", name: "Incapacitated" },
-        { key: "invisible", name: "Invisible" },
-        { key: "paralyzed", name: "Paralyzed" },
-        { key: "petrified", name: "Petrified" },
-        { key: "poisoned", name: "Poisoned" },
-        { key: "prone", name: "Prone" },
-        { key: "restrained", name: "Restrained" },
-        { key: "stunned", name: "Stunned" },
-        { key: "unconscious", name: "Unconscious" },
-        { key: "concentration", name: "Concentration" },
-        { key: "hexed", name: "Hexed", needsCaster: true },
-        { key: "marked", name: "Marked", needsCaster: true }
-      ] as const,
-    []
-  );
-
-  function conditionLabel(key: string) {
-    return CONDITIONS.find((c) => c.key === key)?.name ?? key;
-  }
-
-  const allowedConditionKeys = React.useMemo(() => {
-    // Active panel: only Concentration + Invisible
-    // Target panel: everything except Concentration
-    if (role === "active") return new Set(["concentration", "invisible"]);
-    if (role === "target") {
-      const s = new Set(CONDITIONS.map((c) => c.key));
-      s.delete("concentration");
-      return s;
-    }
-    return new Set(CONDITIONS.map((c) => c.key));
-  }, [role, CONDITIONS]);
-
-  const rosterById = React.useMemo(() => {
-    const m: Record<string, Combatant> = {};
-    for (const c of ctx.roster ?? []) m[(c as any).id] = c;
-    return m;
-  }, [ctx.roster]);
-
-  const selectedConditions = React.useMemo(() => {
-    const raw = (selectedAny?.conditions ?? []) as Array<any>;
-    if (!Array.isArray(raw)) return [] as Array<{ key: string; casterId?: string | null }>;
-    // (kept identical behavior: we don't filter by allowedConditionKeys here—UI controls do that upstream)
-    return raw.map((c) => ({ key: String(c.key), casterId: c?.casterId != null ? String(c.casterId) : null }));
-  }, [selectedAny?.id, selectedAny?.conditions, allowedConditionKeys]);
-
-  function commitConditions(next: Array<{ key: string; casterId?: string | null }>) {
-    if (!selectedAny) return;
-    ctx.onUpdate({ conditions: next });
-  }
-
-  function removeConditionAt(index: number) {
-    const next = [...selectedConditions];
-    next.splice(index, 1);
-    commitConditions(next);
-  }
-
-  const displayName = React.useCallback((c: Combatant | null) => {
-    if (!c) return "—";
-    const anyC: any = c as any;
-    // Prefer label everywhere (it carries numbering like "Goblin 3").
-    // Fallback to name if a label isn't present.
-    return String(anyC.label || anyC.name || "Combatant");
-  }, []);
-
-  const pillStyle: React.CSSProperties = {
-    padding: "6px 10px",
-    borderRadius: 999,
-    border: `1px solid ${theme.colors.panelBorder}`,
-    background: theme.colors.panelBg,
-    fontSize: "var(--fs-pill)",
-    fontWeight: 900,
-    color: theme.colors.text,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 8
-  };
-
-  const sheetStats: CharacterSheetStats | null = React.useMemo(() => {
-    if (!selected) return null;
-    const c: any = selected;
-    const overrides = (c.overrides ?? null) as any;
-
-    const acBonus = Number(overrides?.acBonus ?? 0) || 0;
-
-    const hpMaxOverride = (() => {
-      const v = overrides?.hpMaxOverride;
-      if (v == null) return null;
-      const n = Number(v);
-      return Number.isFinite(n) && n > 0 ? n : null;
-    })();
-
-    const hpMaxRaw = hpMaxOverride != null ? hpMaxOverride : Number(c.hpMax ?? 1);
-
-    const hpMax = toFinite(hpMaxRaw, 0);
-    const hpCur = toFinite(c.hpCurrent ?? 0, 0);
-    const tempHp = Math.max(0, Number(overrides?.tempHp ?? 0) || 0);
-    const ac = Math.max(0, toFinite(c.ac ?? 10, 10) + acBonus);
-
-    const detail: any = ctx.selectedMonster?.raw_json ?? {};
-
-    const speedVal = (() => {
-      if (c.baseType !== "monster") {
-        const p = ctx.player ?? null;
-        const n = Number((p as any)?.speed);
-        return Number.isFinite(n) && n > 0 ? n : 30;
-      }
-
-      const sp = detail.speed ?? ctx.selectedMonster?.speed;
-      if (typeof sp === "number") return sp;
-      if (typeof sp === "string") {
-        const m = sp.match(/\d+/);
-        return m ? Number(m[0]) : null;
-      }
-      if (sp && typeof sp === "object") {
-        const w = (sp.walk ?? sp.value ?? sp.speed) as any;
-        if (typeof w === "number") return w;
-        if (typeof w === "string") {
-          const m = w.match(/\d+/);
-          return m ? Number(m[0]) : null;
-        }
-      }
-      return null;
-    })();
-
-    const abilities = (() => {
-      if (c.baseType === "monster") {
-        const m = ctx.selectedMonster;
-        return {
-          str: Number(m?.str ?? detail.str ?? 10),
-          dex: Number(m?.dex ?? detail.dex ?? 10),
-          con: Number(m?.con ?? detail.con ?? 10),
-          int: Number(m?.int ?? detail.int ?? 10),
-          wis: Number(m?.wis ?? detail.wis ?? 10),
-          cha: Number(m?.cha ?? detail.cha ?? 10)
-        } as const;
-      }
-      const p = ctx.player ?? null;
-      return {
-        str: Number((p as any)?.str ?? 10),
-        dex: Number((p as any)?.dex ?? 10),
-        con: Number((p as any)?.con ?? 10),
-        int: Number((p as any)?.int ?? 10),
-        wis: Number((p as any)?.wis ?? 10),
-        cha: Number((p as any)?.cha ?? 10)
-      } as const;
-    })();
-
-    const saves = (() => {
-      if (c.baseType !== "monster") return undefined;
-      const raw = (detail.save ?? detail.saves ?? null) as any;
-      if (!raw || typeof raw !== "object") return undefined;
-      const out: any = {};
-      for (const k of ["str", "dex", "con", "int", "wis", "cha"] as const) {
-        const v = raw[k] ?? raw[k.toUpperCase()] ?? raw[k.charAt(0).toUpperCase() + k.slice(1)];
-        if (v == null) continue;
-        const n = Number(String(v).replace(/[^0-9-]/g, ""));
-        if (Number.isFinite(n)) out[k] = n;
-      }
-      return out;
-    })();
-
-    const infoLines = (() => {
-      if (c.baseType !== "monster") return [];
-
-      const listToString = (v: any): string => {
-        if (!v) return "";
-        if (typeof v === "string") return v;
-        if (Array.isArray(v)) {
-          const parts = v
-            .map((x) => {
-              if (x == null) return "";
-              if (typeof x === "string") return x;
-              if (typeof x === "number") return String(x);
-              if (typeof x === "object") {
-                if (typeof (x as any).name === "string") return (x as any).name;
-                if (typeof (x as any).note === "string" && typeof (x as any).type === "string")
-                  return `${(x as any).type} ${(x as any).note}`;
-                if (typeof (x as any).type === "string") return (x as any).type;
-              }
-              return String(x);
-            })
-            .map((s) => s.trim())
-            .filter(Boolean);
-          return parts.join(", ");
-        }
-        if (typeof v === "object") {
-          try {
-            return Object.entries(v)
-              .map(([k, val]) => `${k} ${String(val).trim()}`)
-              .join(", ");
-          } catch {
-            return "";
-          }
-        }
-        return "";
-      };
-
-      const m = ctx.selectedMonster as any;
-
-      const skillsStr = (() => {
-        const raw = detail.skill ?? detail.skills ?? m?.skill ?? m?.skills ?? null;
-        if (typeof raw === "string") return raw;
-        if (raw && typeof raw === "object") return listToString(raw);
-        return "";
-      })();
-
-      const sensesStr = listToString(detail.senses ?? m?.senses);
-      const langsStr = listToString(detail.languages ?? m?.languages);
-
-      const crStr = (() => {
-        const cr = detail.cr ?? ctx.selectedMonster?.cr;
-        const xp = detail.xp ?? detail.xp?.value;
-        return cr != null ? `${cr}${xp != null ? ` (${xp} XP)` : ""}` : "";
-      })();
-
-      const dmgRes = listToString(
-        detail.damageResist ?? detail.resist ?? detail.resistance ?? m?.damageResist ?? m?.resist ?? m?.resistance
-      );
-      const dmgImm = listToString(
-        detail.damageImmune ?? detail.immune ?? detail.immunity ?? m?.damageImmune ?? m?.immune ?? m?.immunity
-      );
-      const dmgVuln = listToString(
-        detail.damageVulnerable ??
-          detail.vulnerable ??
-          detail.vulnerability ??
-          m?.damageVulnerable ??
-          m?.vulnerable ??
-          m?.vulnerability
-      );
-      const condImm = listToString(
-        detail.conditionImmune ??
-          detail.conditionImmunity ??
-          detail.condImmune ??
-          m?.conditionImmune ??
-          m?.conditionImmunity ??
-          m?.condImmune
-      );
-
-      return [
-        { label: "Skills", value: skillsStr || "—" },
-        { label: "Senses", value: sensesStr || "—" },
-        { label: "Languages", value: langsStr || "—" },
-        { label: "Challenge Rating", value: crStr || "—" },
-        { label: "Damage Resistances", value: dmgRes || "—" },
-        { label: "Damage Vulnerabilities", value: dmgVuln || "—" },
-        { label: "Damage Immunities", value: dmgImm || "—" },
-        { label: "Condition Immunities", value: condImm || "—" }
-      ];
-    })();
-
-    return {
-      ac,
-      hpCur,
-      hpMax,
-      tempHp,
-      speed: speedVal,
-      abilities,
-      saves,
-      infoLines
-    };
-  }, [
-    selectedAny?.id,
-    selectedAny?.hpCurrent,
-    selectedAny?.hpMax,
-    selectedAny?.ac,
-    selectedAny?.overrides,
-    ctx.selectedMonster?.id,
-    ctx.player
-  ]);
+  const sheetStats: CharacterSheetStats | null = useCharacterSheetStats({
+    combatant: selected,
+    selectedMonster: ctx.selectedMonster,
+    player: ctx.player
+  });
 
   return (
     <Panel
@@ -390,69 +115,12 @@ export function CombatantDetailsPanel(props: Props) {
             <div style={{ marginTop: 10 }}>{sheetStats ? <CharacterSheetPanel stats={sheetStats} /> : null}</div>
           </div>
 
-          <div
-            style={{
-              padding: 12,
-              borderRadius: 12,
-              background: theme.colors.panelBg,
-              border: `1px solid ${theme.colors.panelBorder}`
-            }}
-          >
-            <div style={{ color: theme.colors.muted, fontSize: "var(--fs-medium)", fontWeight: 900 }}>Conditions</div>
-
-            <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {selectedConditions.length ? (
-                selectedConditions.map((c, idx) => {
-                  const def = CONDITIONS.find((d) => d.key === c.key);
-                  const needsCaster = c.key === "hexed" || c.key === "marked";
-                  const caster = c.casterId ? rosterById[c.casterId] : null;
-                  const casterLabel = caster ? displayName(caster) : "";
-
-                  return (
-                    <span key={`${c.key}:${c.casterId ?? ""}:${idx}`} style={pillStyle}>
-                      {(() => {
-                          const CondIcon = conditionIconByKey[c.key];
-                          return CondIcon ? (
-                            <CondIcon size={14} title={conditionLabel(c.key)} style={{ opacity: 0.9 }} />
-                          ) : null;
-                        })()}
-                        {conditionLabel(c.key)}
-                      {needsCaster && casterLabel ? (
-                        <span style={{ color: theme.colors.muted, fontWeight: 900 }}>({casterLabel})</span>
-                      ) : null}
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          removeConditionAt(idx);
-                        }}
-                        title="Remove"
-                        style={{
-                          border: `1px solid ${theme.colors.panelBorder}`,
-                          background: "transparent",
-                          color: theme.colors.text,
-                          fontWeight: 900,
-                          borderRadius: 999,
-                          width: 20,
-                          height: 20,
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer"
-                        }}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  );
-                })
-              ) : (
-                <div style={{ color: theme.colors.muted, fontSize: "var(--fs-medium)" }}>No conditions.</div>
-              )}
-            </div>
-          </div>
+          <CombatantConditionsSection
+            selected={selected}
+            role={role}
+            roster={ctx.roster ?? []}
+            onCommit={(next) => ctx.onUpdate({ conditions: next })}
+          />
 
           {ctx.selectedMonster ? <MonsterActions monster={ctx.selectedMonster} /> : null}
 
