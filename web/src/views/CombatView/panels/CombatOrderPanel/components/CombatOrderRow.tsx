@@ -45,7 +45,17 @@ export function CombatOrderRow(props: {
   section: "upcoming" | "wrapped";
   playersById: Record<
     string,
-    { playerName: string; characterName: string; class: string; species: string; level: number; ac: number; hpMax: number; hpCurrent: number }
+    {
+      playerName: string;
+      characterName: string;
+      class: string;
+      species: string;
+      level: number;
+      ac: number;
+      hpMax: number;
+      hpCurrent: number;
+      deathSaves?: { success: number; fail: number };
+    }
   >;
   activeId: string | null;
   targetId: string | null;
@@ -70,6 +80,7 @@ export function CombatOrderRow(props: {
 
   const vm: PlayerVM = {
     id: c.id,
+    playerId: c.baseType === "player" ? (c as any).baseId : undefined,
     playerName: "",
     characterName: displayName,
     class: "",
@@ -79,7 +90,8 @@ export function CombatOrderRow(props: {
     hpMax,
     hpCurrent,
     tempHp: Math.max(0, Number((overrides as any)?.tempHp ?? 0) || 0),
-    acBonus: Number((overrides as any)?.acBonus ?? 0) || 0
+    acBonus: Number((overrides as any)?.acBonus ?? 0) || 0,
+    deathSaves: undefined,
   };
 
   const playerRec = c.baseType === "player" ? props.playersById[(c as any).baseId] : undefined;
@@ -88,6 +100,7 @@ export function CombatOrderRow(props: {
     vm.class = playerRec.class;
     vm.species = playerRec.species;
     vm.level = Number(playerRec.level ?? 0) || 0;
+    vm.deathSaves = playerRec.deathSaves;
   }
 
   const iconColor = isDead

@@ -3,9 +3,13 @@ import { theme } from "@/theme/theme";
 import { IconButton } from "@/ui/IconButton";
 import { IconPencil, IconPlayer, IconHeart, IconShield } from "@/icons";
 import { HPBar } from "@/ui/HPBar";
+import { api } from "@/services/api";
 
 export type PlayerVM = {
   id: string;
+  // When rendered in a combat list, `id` is the combatant id.
+  // `playerId` is the canonical player id (used for persisted fields).
+  playerId?: string;
   playerName?: string;
   characterName: string;
   class: string;
@@ -16,6 +20,9 @@ export type PlayerVM = {
   hpCurrent: number;
   tempHp?: number;
   acBonus?: number;
+
+  // Persisted death saves (player-only).
+  deathSaves?: { success: number; fail: number };
 };
 
 export function PlayerRow(props: {
@@ -45,13 +52,49 @@ export function PlayerRow(props: {
   const isBloody = pct <= 0.5 && pct > 0.25;
   const isQuarter = pct <= 0.25;
 
-  // Death saves: local UI state per row. This persists while the row remains mounted.
-  // Only shown when HP is 0 (dying). Reset automatically when HP rises above 0.
-  const [deathSaves, setDeathSaves] = React.useState<{ s: number; f: number }>({ s: 0, f: 0 });
+  // Death saves are persisted on the Player record (not per-combatant / per-page).
+  // Keep a small optimistic UI state so clicks feel instant while the store refreshes.
+  const playerId = (p as any).playerId as string | undefined;
+  const persisted = (p as any).deathSaves as { success: number; fail: number } | undefined;
+  const [deathSaves, setDeathSaves] = React.useState<{ s: number; f: number }>(() => ({
+    s: Math.max(0, Math.min(3, Number(persisted?.success ?? 0) || 0)),
+    f: Math.max(0, Math.min(3, Number(persisted?.fail ?? 0) || 0)),
+  }));
 
   React.useEffect(() => {
-    if (cur > 0) setDeathSaves({ s: 0, f: 0 });
-  }, [cur]);
+    setDeathSaves({
+      s: Math.max(0, Math.min(3, Number(persisted?.success ?? 0) || 0)),
+      f: Math.max(0, Math.min(3, Number(persisted?.fail ?? 0) || 0)),
+    });
+  }, [persisted?.success, persisted?.fail]);
+
+  const persistDeathSaves = React.useCallback(
+    async (next: { s: number; f: number }) => {
+      if (!playerId) return;
+      try {
+        await api(`/api/players/${playerId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ deathSaves: { success: next.s, fail: next.f } })
+          }
+        );
+      } catch {
+        // ignore (ws + refresh will reconcile)
+      }
+    },
+    [playerId]
+  );
+
+  // Auto-reset when HP rises above 0.
+  React.useEffect(() => {
+    if (!playerId) return;
+    if (cur > 0 && (deathSaves.s > 0 || deathSaves.f > 0)) {
+      const next = { s: 0, f: 0 };
+      setDeathSaves(next);
+      void persistDeathSaves(next);
+    }
+  }, [cur, deathSaves.s, deathSaves.f, playerId, persistDeathSaves]);
 
   const DeathSavesRow = (
     <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: 10, alignItems: "center" }}>
@@ -67,7 +110,12 @@ export function PlayerRow(props: {
                 title={on ? "Remove success" : "Add success"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setDeathSaves((prev) => ({ ...prev, s: Math.max(0, Math.min(3, on ? i : i + 1)) }));
+                  const nextS = Math.max(0, Math.min(3, on ? i : i + 1));
+                  setDeathSaves((prev) => {
+                    const next = { ...prev, s: nextS };
+                    void persistDeathSaves(next);
+                    return next;
+                  });
                 }}
                 style={{
                   width: 18,
@@ -102,7 +150,12 @@ export function PlayerRow(props: {
                 title={on ? "Remove failure" : "Add failure"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setDeathSaves((prev) => ({ ...prev, f: Math.max(0, Math.min(3, on ? i : i + 1)) }));
+                  const nextF = Math.max(0, Math.min(3, on ? i : i + 1));
+                  setDeathSaves((prev) => {
+                    const next = { ...prev, f: nextF };
+                    void persistDeathSaves(next);
+                    return next;
+                  });
                 }}
                 style={{
                   width: 18,

@@ -63,7 +63,7 @@ export function useCharacterSheetStats(args: {
     })();
 
     const abilities = (() => {
-      if (c.baseType === "monster") {
+      if (c.baseType === "monster" || c.baseType === "inpc") {
         const m = selectedMonster;
         return {
           str: Number(m?.str ?? detail.str ?? 10),
@@ -85,7 +85,7 @@ export function useCharacterSheetStats(args: {
     })();
 
     const saves = (() => {
-      if (c.baseType !== "monster") return undefined;
+      if (c.baseType !== "monster" && c.baseType !== "inpc") return undefined;
       const raw = (detail.save ?? detail.saves ?? null) as any;
       if (!raw || typeof raw !== "object") return undefined;
       const out: any = {};
@@ -99,7 +99,7 @@ export function useCharacterSheetStats(args: {
     })();
 
     const infoLines = (() => {
-      if (c.baseType !== "monster") return [];
+      if (c.baseType !== "monster" && c.baseType !== "inpc") return [];
 
       const listToString = (v: any): string => {
         if (!v) return "";

@@ -11,7 +11,17 @@ export function CombatOrderPanel(props: {
   combatants: Combatant[];
   playersById: Record<
     string,
-    { playerName: string; characterName: string; class: string; species: string; level: number; ac: number; hpMax: number; hpCurrent: number }
+    {
+      playerName: string;
+      characterName: string;
+      class: string;
+      species: string;
+      level: number;
+      ac: number;
+      hpMax: number;
+      hpCurrent: number;
+      deathSaves?: { success: number; fail: number };
+    }
   >;
   monsterCrById: Record<string, number | null | undefined>;
   activeId: string | null;

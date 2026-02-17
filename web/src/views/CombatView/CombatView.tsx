@@ -79,8 +79,12 @@ export function CombatView() {
     });
   }, [combatants, setTargetId]);
 
-  const { monsterCache, setMonsterCache, monsterCrById, activeMonster, targetMonster } =
-    useMonsterDetailsCache(combatants, (active as Combatant | null) ?? null, (target as Combatant | null) ?? null);
+  const { monsterCache, setMonsterCache, monsterCrById, activeMonster, targetMonster } = useMonsterDetailsCache(
+    combatants,
+    (active as Combatant | null) ?? null,
+    (target as Combatant | null) ?? null,
+    inpcsById as any
+  );
 
   const {
     spellLevelCache,

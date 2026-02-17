@@ -24,6 +24,7 @@ export function PlayersPanel(props: {
       const effectiveHpMax = Number.isFinite(hpMaxOverride) && hpMaxOverride > 0 ? hpMaxOverride : Number(p.hpMax ?? 0);
       return {
         ...p,
+        playerId: p.id,
         hpMax: effectiveHpMax,
         tempHp: Math.max(0, Number(ov?.tempHp ?? 0) || 0),
         acBonus: Number(ov?.acBonus ?? 0) || 0,

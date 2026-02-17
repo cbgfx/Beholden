@@ -4,7 +4,12 @@ import { useStore } from "@/store";
 import type { Combatant } from "@/domain/types/domain";
 import type { MonsterDetail } from "@/domain/types/compendium";
 
-export function useMonsterDetailsCache(combatants: Combatant[], active: Combatant | null, target: Combatant | null) {
+export function useMonsterDetailsCache(
+  combatants: Combatant[],
+  active: Combatant | null,
+  target: Combatant | null,
+  inpcsById?: Record<string, { monsterId?: string | null } | undefined>
+) {
   const { state, dispatch } = useStore();
   const monsterCache = state.monsterDetails;
   const setMonsterCache = React.useCallback(
@@ -17,8 +22,24 @@ export function useMonsterDetailsCache(combatants: Combatant[], active: Combatan
   const activeAny: any = active as any;
   const targetAny: any = target as any;
 
-  const activeMonster = activeAny?.baseType === "monster" ? monsterCache[activeAny.baseId] : null;
-  const targetMonster = targetAny?.baseType === "monster" ? monsterCache[targetAny.baseId] : null;
+  const resolveMonsterId = React.useCallback(
+    (c: any): string | null => {
+      if (!c) return null;
+      if (c.baseType === "monster" && typeof c.baseId === "string") return c.baseId;
+      if (c.baseType === "inpc") {
+        const mid = inpcsById?.[String(c.baseId)]?.monsterId;
+        return typeof mid === "string" && mid.trim() ? mid : null;
+      }
+      return null;
+    },
+    [inpcsById]
+  );
+
+  const activeMonsterId = resolveMonsterId(activeAny);
+  const targetMonsterId = resolveMonsterId(targetAny);
+
+  const activeMonster = activeMonsterId ? monsterCache[activeMonsterId] : null;
+  const targetMonster = targetMonsterId ? monsterCache[targetMonsterId] : null;
 
   const monsterCrById = React.useMemo(() => {
     const m: Record<string, number | null | undefined> = {};
@@ -41,14 +62,16 @@ export function useMonsterDetailsCache(combatants: Combatant[], active: Combatan
   );
 
   React.useEffect(() => {
-    if (!activeAny || activeAny.baseType !== "monster") return;
-    void ensureMonster(activeAny.baseId);
-  }, [activeAny?.id, activeAny?.baseType, activeAny?.baseId, ensureMonster]);
+    const mid = resolveMonsterId(activeAny);
+    if (!mid) return;
+    void ensureMonster(mid);
+  }, [activeAny?.id, activeAny?.baseType, activeAny?.baseId, ensureMonster, resolveMonsterId]);
 
   React.useEffect(() => {
-    if (!targetAny || targetAny.baseType !== "monster") return;
-    void ensureMonster(targetAny.baseId);
-  }, [targetAny?.id, targetAny?.baseType, targetAny?.baseId, ensureMonster]);
+    const mid = resolveMonsterId(targetAny);
+    if (!mid) return;
+    void ensureMonster(mid);
+  }, [targetAny?.id, targetAny?.baseType, targetAny?.baseId, ensureMonster, resolveMonsterId]);
 
   // Preload CR data for all monsters in roster so order rows don't show Lvl 0.
   React.useEffect(() => {
@@ -57,8 +80,8 @@ export function useMonsterDetailsCache(combatants: Combatant[], active: Combatan
       const monsterIds = Array.from(
         new Set(
           combatants
-            .filter((c: any) => c?.baseType === "monster" && typeof c?.baseId === "string")
-            .map((c: any) => c.baseId)
+            .map((c: any) => resolveMonsterId(c))
+            .filter((id: any) => typeof id === "string" && id)
         )
       );
       for (const id of monsterIds) {
@@ -76,13 +99,18 @@ export function useMonsterDetailsCache(combatants: Combatant[], active: Combatan
     return () => {
       alive = false;
     };
-  }, [combatants, monsterCache, dispatch]);
+  }, [combatants, monsterCache, dispatch, resolveMonsterId]);
+
+  const activeMonsterKey = activeMonsterId;
+  const targetMonsterKey = targetMonsterId;
 
   return {
     monsterCache,
     setMonsterCache,
     monsterCrById,
     activeMonster,
-    targetMonster
+    targetMonster,
+    activeMonsterKey,
+    targetMonsterKey,
   };
 }

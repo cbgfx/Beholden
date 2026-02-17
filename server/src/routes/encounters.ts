@@ -46,6 +46,7 @@ export function registerEncounterRoutes(app: Express, ctx: ServerContext) {
       ...e,
       name: req.body?.name != null ? String(req.body.name).trim() : e.name,
       status: req.body?.status != null ? String(req.body.status) : e.status,
+      combat: req.body?.combat != null ? req.body.combat : (e as any).combat,
       updatedAt: t,
     };
     ctx.scheduleSave();

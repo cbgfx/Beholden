@@ -42,7 +42,8 @@ export function CombatantDetailsPanel(props: Props) {
 
   const selected = combatant ?? null;
   const selectedAny: any = selected as any;
-  const isMonster = selectedAny?.baseType === "monster";
+  // iNPCs are monster-backed; treat them as monsters for display purposes.
+  const isMonster = selectedAny?.baseType === "monster" || (selectedAny?.baseType === "inpc" && !!ctx.selectedMonster);
   const isPlayer = selectedAny?.baseType === "player";
 
   const norm = (v: any) => String(v ?? "").trim().toLowerCase();

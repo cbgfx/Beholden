@@ -19,6 +19,7 @@ export type InitiativePanelProps = {
       ac: number;
       hpMax: number;
       hpCurrent: number;
+      deathSaves?: { success: number; fail: number };
     }
   >;
   monsterCrById: Record<string, number | null | undefined>;

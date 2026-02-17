@@ -34,15 +34,27 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
   app.get("/api/encounters/:encounterId/combatState", (req, res) => {
     const { encounterId } = req.params;
     const combat = ctx.helpers.ensureCombat(encounterId);
+
+    // Mirror state onto the encounter record (when present) so navigation survives
+    // any combat cache resets and is visible in campaign JSON.
+    // NOTE: We persist activeCombatantId directly (not an index) because initiative order
+    // is view-derived and the server can't safely infer it.
+    const enc = userData.encounters[encounterId] as any;
+    const roundFromEncounter = Number(enc?.combat?.round);
+
+    const round = Number.isFinite(roundFromEncounter) && roundFromEncounter >= 1 ? roundFromEncounter : Number(combat.round ?? 1) || 1;
+    const activeCombatantId = (enc?.combat?.activeCombatantId ?? combat.activeCombatantId ?? null) as string | null;
+
     res.json({
-      round: Number(combat.round ?? 1) || 1,
-      activeCombatantId: combat.activeCombatantId ?? null,
+      round,
+      activeCombatantId,
     });
   });
 
   app.put("/api/encounters/:encounterId/combatState", (req, res) => {
     const { encounterId } = req.params;
     const combat = ctx.helpers.ensureCombat(encounterId);
+    const enc = userData.encounters[encounterId] as any;
     const round = Number(req.body?.round);
     const activeCombatantId = req.body?.activeCombatantId != null ? String(req.body.activeCombatantId) : null;
 
@@ -50,8 +62,15 @@ export function registerCombatRoutes(app: Express, ctx: ServerContext) {
     combat.activeCombatantId = activeCombatantId;
 
     if (activeCombatantId) {
-    const idx = (combat.combatants ?? []).findIndex((c: any) => c.id === activeCombatantId);
+      const idx = (combat.combatants ?? []).findIndex((c: any) => c.id === activeCombatantId);
       if (idx >= 0) combat.activeIndex = idx;
+    }
+
+    // Also persist onto encounter JSON.
+    if (enc) {
+      const safeRound = Number.isFinite(round) && round >= 1 ? round : Number(combat.round ?? 1) || 1;
+      enc.combat = { round: safeRound, activeCombatantId };
+      enc.updatedAt = now();
     }
 
     combat.updatedAt = now();

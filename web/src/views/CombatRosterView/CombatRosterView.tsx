@@ -22,7 +22,15 @@ export function CombatRosterView() {
   const { state, dispatch } = useStore();
   const confirm = useConfirm();
 
-  const { combatants, refresh } = useEncounterCombatants(encounterId, dispatch);
+  // This hook only orchestrates fetching + store updates.
+  const { refresh } = useEncounterCombatants(encounterId, dispatch);
+
+  // Store is the single source of truth.
+  const combatants = React.useMemo(() => {
+    const all = (state as any).combatants ?? [];
+    if (!encounterId) return [];
+    return all.filter((c: any) => c.encounterId === encounterId);
+  }, [state.combatants, encounterId]);
 
   const encounter = React.useMemo(() => {
     if (!encounterId) return null;

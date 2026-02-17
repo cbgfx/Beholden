@@ -29,6 +29,7 @@ export function registerPlayerRoutes(app: Express, ctx: ServerContext) {
       // Persisted combat state for the player across encounters.
       overrides: { tempHp: 0, acBonus: 0, hpMaxOverride: null },
       conditions: [],
+      deathSaves: { success: 0, fail: 0 },
       str: Number(p.str ?? 10),
       dex: Number(p.dex ?? 10),
       con: Number(p.con ?? 10),
@@ -66,6 +67,13 @@ export function registerPlayerRoutes(app: Express, ctx: ServerContext) {
       int: p.int != null ? Number(p.int) : existing.int ?? 10,
       wis: p.wis != null ? Number(p.wis) : existing.wis ?? 10,
       cha: p.cha != null ? Number(p.cha) : existing.cha ?? 10,
+      deathSaves:
+        p.deathSaves != null && typeof p.deathSaves === "object"
+          ? {
+              success: Math.max(0, Math.min(3, Number((p.deathSaves as any).success ?? 0) || 0)),
+              fail: Math.max(0, Math.min(3, Number((p.deathSaves as any).fail ?? 0) || 0)),
+            }
+          : (existing as any).deathSaves,
       updatedAt: t,
     };
     ctx.scheduleSave();

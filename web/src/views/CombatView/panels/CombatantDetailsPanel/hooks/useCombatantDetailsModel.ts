@@ -52,7 +52,7 @@ export function useCombatantDetailsModel(args: {
 
   const selected = combatant ?? null;
   const selectedAny: any = selected as any;
-  const isMonster = selectedAny?.baseType === "monster";
+  const isMonster = selectedAny?.baseType === "monster" || (selectedAny?.baseType === "inpc" && !!ctx.selectedMonster);
   const isPlayer = selectedAny?.baseType === "player";
 
   const titleMain = selected ? (selectedAny.label || selectedAny.name || "(Unnamed)") : "No selection";
