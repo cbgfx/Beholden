@@ -1,4 +1,6 @@
+
 import React from "react";
+import { Link } from "react-router-dom";
 import { theme } from "@/theme/theme";
 
 export function ShellLayout(props: { children: React.ReactNode }) {
@@ -14,7 +16,6 @@ export function ShellLayout(props: { children: React.ReactNode }) {
       }}
     >
       <div style={{ flex: 1, minHeight: 0 }}>{props.children}</div>
-
       <footer
         style={{
           borderTop: `1px solid ${theme.colors.panelBorder}`,
@@ -30,16 +31,16 @@ export function ShellLayout(props: { children: React.ReactNode }) {
       >
         <div style={{ minWidth: 0 }}>
           <div>© {new Date().getFullYear()} Beholden. All rights reserved.</div>
-          <div>
-            Icons made by{" "}
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href="https://game-icons.net"
-              style={{ color: theme.colors.muted }}
-            >
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+            <span>Icons made by</span>
+            <a target="_blank" rel="noreferrer" href="https://game-icons.net" style={{ color: theme.colors.muted }}>
               https://game-icons.net
             </a>
+            <span style={{ opacity: 0.6 }}>|</span>
+            <Link to="/about" style={{ color: theme.colors.accent, textDecoration: "none" }}>About</Link>
+            <Link to="/faq" style={{ color: theme.colors.accent, textDecoration: "none" }}>FAQ</Link>
+            <Link to="/updates" style={{ color: theme.colors.accent, textDecoration: "none" }}>Future Updates</Link>
           </div>
         </div>
 

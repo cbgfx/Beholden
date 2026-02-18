@@ -12,6 +12,9 @@ import { CompendiumView } from "@/views/CompendiumView/CompendiumView";
 import { CampaignView } from "@/views/CampaignView/CampaignView";
 import { CombatView } from "@/views/CombatView/CombatView";
 import { CombatRosterView } from "@/views/CombatRosterView/CombatRosterView";
+import { AboutView } from "@/views/Info/AboutView";
+import { FaqView } from "@/views/Info/FaqView";
+import { UpdatesView } from "@/views/Info/UpdatesView";
 import { DrawerHost } from "@/drawers/DrawerHost";
 import { ConfirmProvider, useConfirm } from "@/confirm/ConfirmContext";
 
@@ -364,6 +367,9 @@ function AppInner() {
           <Route path="/campaign/:campaignId/roster/:encounterId" element={<CombatRosterView />} />
           <Route path="/campaign/:campaignId/combat/:encounterId" element={<CombatView />} />
           <Route path="/compendium" element={<CompendiumView />} />
+          <Route path="/about" element={<AboutView />} />
+          <Route path="/faq" element={<FaqView />} />
+          <Route path="/updates" element={<UpdatesView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ShellLayout>
