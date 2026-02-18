@@ -1,228 +1,186 @@
 import React from "react";
-import { FillPanel } from "@/views/CompendiumView/components/FillPanel";
+import { Panel } from "@/ui/Panel";
 import { Select } from "@/ui/Select";
+import { IconSpells } from "@/icons";
 import { theme } from "@/theme/theme";
-import { api } from "@/services/api";
+import { titleCase } from "@/lib/format/titleCase";
+import { useStore } from "@/store";
+import { useSpellSearch } from "@/views/CompendiumView/hooks/useSpellSearch";
 
-type SpellRow = {
-  id: string;
-  name: string;
-  level: number;
-  school?: string | null;
-  time?: string | null;
+type SpellsPanelProps = {
+  /**
+   * When true, this panel is being rendered "inside something else"
+   * (ex: the Combat Spell Book drawer), where we do NOT want to open
+   * the global DrawerHost to show spell details.
+   */
+  embedded?: boolean;
+
+  /**
+   * When embedded, the parent split-view owns the selected spell id.
+   * We accept it here so the list can highlight the current selection.
+   */
+  selectedSpellId?: string | null;
+
+  /**
+   * When embedded, clicking a spell should notify the parent split-view
+   * so it can render <SpellDetailPanel spellId=.../> on the right.
+   */
+  onSelectSpell?: (id: string) => void;
 };
 
-type SpellDetail = {
-  id: string;
-  name: string;
-  level: number;
-  school?: string | null;
-  time?: string | null;
-  range?: string | null;
-  duration?: string | null;
-  components?: string | null;
-  text?: string | null;
-  source?: string | null;
-};
+export function SpellsPanel(props: SpellsPanelProps) {
+  const { dispatch } = useStore();
 
-function titleCase(s: string): string {
-  return s
-    .trim()
-    .split(/\s+/g)
-    .map((w) => (w ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w))
-    .join(" ");
-}
+  // Local active state so the list can highlight the clicked spell.
+  // In embedded mode, this is synced with props.selectedSpellId.
+  const [activeId, setActiveId] = React.useState<string>("");
 
-function singleLine(s: string): string {
-  return s.replace(/\s+/g, " ").trim();
-}
+  // Canonical spell search hook used by the Compendium.
+  // We reuse it so behavior and results stay consistent everywhere.
+  const { q, setQ, level, setLevel, rows, busy } = useSpellSearch();
 
-function levelLabel(level: number) {
-  return level === 0 ? "Cantrip" : `L${level}`;
-}
+  // In the current app, useSpellSearch already applies filters.
+  // Keeping this variable makes it obvious where any additional filtering would go.
+  const filtered = rows;
 
-function schoolShort(s: string | null | undefined) {
-  if (!s) return "";
-  const t = singleLine(s).toLowerCase();
-  const map: Record<string, string> = {
-    abjuration: "Abj",
-    conjuration: "Conj",
-    divination: "Div",
-    enchantment: "Ench",
-    evocation: "Evo",
-    illusion: "Ill",
-    necromancy: "Nec",
-    transmutation: "Trans"
-  };
-  return map[t] ?? titleCase(t);
-}
-
-function timeShort(s: string | null | undefined) {
-  if (!s) return "";
-  return singleLine(s);
-}
-
-export function SpellsPanel() {
-  const [q, setQ] = React.useState("");
-  const [level, setLevel] = React.useState<string>("all");
-  const [rows, setRows] = React.useState<SpellRow[]>([]);
-  const [selectedId, setSelectedId] = React.useState<string>("");
-  const [detail, setDetail] = React.useState<SpellDetail | null>(null);
-
+  // If we're embedded and the parent controls selection, sync the highlight.
   React.useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const out = await api<SpellRow[]>(`/api/spells/search?q=${encodeURIComponent(q)}&limit=200`);
-        if (!alive) return;
-        const filtered = level === "all" ? out : out.filter((r) => String(r.level) === level);
-        setRows(filtered);
-        if (selectedId && !filtered.some((r) => r.id === selectedId)) {
-          setSelectedId("");
-          setDetail(null);
-        }
-      } catch {
-        if (!alive) return;
-        setRows([]);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [q, level, selectedId]);
-
-  React.useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (!selectedId) {
-        setDetail(null);
-        return;
-      }
-      try {
-        const s = await api<SpellDetail>(`/api/spells/${selectedId}`);
-        if (!alive) return;
-        setDetail(s);
-      } catch {
-        if (!alive) return;
-        setDetail(null);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [selectedId]);
+    if (!props.embedded) return;
+    const next = props.selectedSpellId ?? "";
+    setActiveId(next);
+  }, [props.embedded, props.selectedSpellId]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, minHeight: 0, height: "100%" }}>
-      <FillPanel
-        title="Spells"
-        actions={
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <Select value={level} onChange={(e) => setLevel(e.target.value)} style={{ width: 120 }}>
-              <option value="all">All levels</option>
-              {Array.from({ length: 10 }).map((_, i) => (
-                <option key={i} value={String(i)}>
-                  {i === 0 ? "Cantrip" : `Level ${i}`}
-                </option>
-              ))}
-            </Select>
-          </div>
-        }
-        style={{ flex: "0 0 330px" }}
+    <Panel
+      title={
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: "var(--fs-large)"
+          }}
+        >
+          <IconSpells size={36} title="Spells" />
+          <span>Spells</span>
+        </span>
+      }
+      // Light, non-invasive status line.
+      actions={
+        <div style={{ color: theme.colors.muted, fontSize: 12 }}>
+          {busy ? "Loading…" : `${filtered.length}`}
+        </div>
+      }
+      style={{ display: "flex", flexDirection: "column", minWidth: 0 }}
+      bodyStyle={{ display: "flex", flexDirection: "column" }}
+    >
+      {/* Search + filter row */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
+        <input
+          value={q}
+          placeholder="Search…"
+          onChange={(e) => setQ(e.target.value)}
+          style={{
+            flex: 1,
+            background: theme.colors.panelBg,
+            color: theme.colors.text,
+            border: `1px solid ${theme.colors.panelBorder}`,
+            borderRadius: 10,
+            padding: "8px 10px",
+            outline: "none"
+          }}
+        />
+
+        <Select
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+          style={{ minWidth: 110 }}
+          title="Filter by level"
+        >
+          <option value="all">All Levels</option>
+          <option value="0">Cantrip</option>
+          {Array.from({ length: 9 }).map((_, i) => {
+            const n = i + 1;
+            return (
+              <option key={n} value={String(n)}>
+                Level {n}
+              </option>
+            );
+          })}
+        </Select>
+      </div>
+
+      {/* List container */}
+      <div
+        style={{
+          // Note: "60vh" is fine for the Compendium page, but in embedded mode
+          // the parent (drawer) should be doing the height constraint + scrolling.
+          // We'll keep it for now because it works, and the wrapper can still contain it.
+          maxHeight: "60vh",
+          overflowY: "auto",
+          border: `1px solid ${theme.colors.panelBorder}`,
+          borderRadius: 12
+        }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 0 }}>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search"
-            style={{
-              width: "100%",
-              background: theme.colors.panelBg,
-              border: `1px solid ${theme.colors.panelBorder}`,
-              borderRadius: 10,
-              padding: "8px 10px",
-              color: theme.colors.text
-            }}
-          />
+        {filtered.map((s) => {
+          const active = s.id === activeId;
+          const lvl = s.level == null ? "?" : s.level === 0 ? "0" : String(s.level);
+          const safeName = typeof s.name === "string" ? s.name : String((s as any).name ?? "");
 
-          <div className="bh-scroll" style={{ border: `1px solid ${theme.colors.panelBorder}`, borderRadius: 12 }}>
-            {rows.length ? (
-              rows.map((r) => {
-                const active = r.id === selectedId;
-                const meta = `${levelLabel(r.level)} • ${schoolShort(r.school)}${r.time ? ` • ${timeShort(r.time)}` : ""}`;
-                return (
-                  <button
-                    key={r.id}
-                    onClick={() => setSelectedId(r.id)}
-                    style={{
-                      width: "100%",
-                      textAlign: "left",
-                      background: active ? "rgba(0,0,0,0.18)" : "transparent",
-                      color: theme.colors.text,
-                      border: "none",
-                      borderBottom: `1px solid ${theme.colors.panelBorder}`,
-                      padding: "8px 10px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    <div style={{ fontWeight: 900, fontSize: "var(--fs-medium)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {r.name}
-                    </div>
-                    <div
-                      style={{
-                        color: theme.colors.muted,
-                        fontSize: "var(--fs-small)",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis"
-                      }}
-                    >
-                      {meta}
-                    </div>
-                  </button>
-                );
-              })
-            ) : (
-              <div style={{ padding: 10, color: theme.colors.muted }}>No spells found.</div>
-            )}
-          </div>
-        </div>
-      </FillPanel>
+          return (
+            <button
+              key={s.id}
+              onClick={() => {
+                // Always update the highlight immediately.
+                setActiveId(s.id);
 
-      <FillPanel title={detail ? detail.name : "Spell"} style={{ flex: 1 }}>
-        <div className="bh-scroll" style={{ paddingRight: 6 }}>
-          {detail ? (
-            <>
-              <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)", marginBottom: 10 }}>
-                {levelLabel(detail.level)}
-                {detail.school ? ` • ${titleCase(detail.school)}` : ""}
-                {detail.time ? ` • ${singleLine(detail.time)}` : ""}
+                // Embedded mode: do NOT open the global drawer.
+                // We simply tell the parent which spell was chosen.
+                if (props.embedded && props.onSelectSpell) {
+                  props.onSelectSpell(s.id);
+                  return;
+                }
+
+                // Default Compendium behavior: open the spell viewer drawer.
+                dispatch({
+                  type: "openDrawer",
+                  drawer: { type: "viewSpell", spellId: s.id, title: safeName }
+                });
+              }}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                padding: "10px 10px",
+                border: "none",
+                borderBottom: `1px solid ${theme.colors.panelBorder}`,
+                background: active ? theme.colors.panelBg : "transparent",
+                color: theme.colors.text,
+                cursor: "pointer"
+              }}
+            >
+              <div style={{ fontWeight: 700, lineHeight: 1.1 }}>{safeName}</div>
+
+              <div
+                style={{
+                  color: theme.colors.muted,
+                  fontSize: 12,
+                  marginTop: 2,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
+              >
+                L{lvl} • {s.school ? titleCase(String(s.school)) : ""}
+                {s.time ? ` • ${s.time}` : ""}
               </div>
+            </button>
+          );
+        })}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
-                <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)" }}>
-                  <strong style={{ color: theme.colors.text }}>Range:</strong> {detail.range ? singleLine(detail.range) : "—"}
-                </div>
-                <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)" }}>
-                  <strong style={{ color: theme.colors.text }}>Duration:</strong> {detail.duration ? singleLine(detail.duration) : "—"}
-                </div>
-                <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)" }}>
-                  <strong style={{ color: theme.colors.text }}>Components:</strong> {detail.components ? singleLine(detail.components) : "—"}
-                </div>
-                <div style={{ color: theme.colors.muted, fontSize: "var(--fs-small)" }}>
-                  <strong style={{ color: theme.colors.text }}>Source:</strong> {detail.source ? singleLine(detail.source) : "—"}
-                </div>
-              </div>
-
-              <div className="bh-prewrap" style={{ lineHeight: 1.45, fontSize: "var(--fs-medium)" }}>
-                {detail.text ? String(detail.text).trim() : "No description."}
-              </div>
-            </>
-          ) : (
-            <div style={{ color: theme.colors.muted }}>Select a spell.</div>
-          )}
-        </div>
-      </FillPanel>
-    </div>
+        {!filtered.length ? (
+          <div style={{ padding: 10, color: theme.colors.muted }}>No spells found.</div>
+        ) : null}
+      </div>
+    </Panel>
   );
 }

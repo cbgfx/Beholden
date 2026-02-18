@@ -11,6 +11,7 @@ import { CombatantOverridesDrawer } from "@/drawers/drawers/CombatantOverridesDr
 import { CombatantConditionsDrawer } from "@/drawers/drawers/CombatantConditionsDrawer";
 import { TreasureDrawer } from "@/drawers/drawers/TreasureDrawer";
 import { SpellDrawer } from "@/drawers/drawers/SpellDrawer";
+import { SpellBookDrawer } from "@/drawers/drawers/SpellBookDrawer";
 
 export type DrawerHostProps = {
   refreshAll: () => Promise<void>;
@@ -134,6 +135,15 @@ export function getDrawerRegistration(
         getContent: () =>
           SpellDrawer({
             drawer: drawer as any,
+            close
+          })
+      };
+
+    case "spellbook":
+      return {
+        key: drawer.type,
+        getContent: () =>
+          SpellBookDrawer({
             close
           })
       };

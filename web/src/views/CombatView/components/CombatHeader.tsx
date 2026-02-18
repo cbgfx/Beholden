@@ -15,6 +15,7 @@ export type CombatHeaderProps = {
   rollLabel: string;
   onRollOrReset: () => void;
   onEndCombat: () => void;
+  onOpenSpellBook: () => void;
   onPrev: () => void;
   onNext: () => void;
 };

@@ -37,8 +37,22 @@ export function FaqView() {
         <Q q="Why make this?">
           Because I used to use a great app called Game Master 5e, but it stopped working and the developer disappeared. I wanted a free tool that did the same but with a better Combat Difficulty meter.
         </Q>
+
         <Q q="Can my players...?">
           No. This is DM Facing. This is for a table where the DM has a laptop or tablet open to manage combat and NPCs, while players use their own character sheets and dice. I think when players have access to the same tool, it can pull focus away from the game and onto the app. I want Beholden to stay out of the way and let you focus on the game.
+        </Q>
+
+        <Q q="When do updates come out?">
+          When I have time, and feel the app needs more. You can see my future endeavours on the updates page. I’m a solo indie dev with a dayjob, so updates come when they come. If you want to see something sooner, feel free to fork it on GitHub and submit a PR, or buy me a pizza to speed things up. 🍕
+        </Q>
+
+        <Q q="Why should I support you?">
+          You don't have to. The code is at your disposal, feel free to remove the button. It's in ShellLayout.tsx. I won't lose sleep over it. I use this app myself, and I'll keep improving it whether people support me or not. 
+          But if you want to give me the fuzzies and help me feel validated, I'd appreciate it.
+        </Q>
+
+        <Q q="I have a great idea!">
+          That's not a question. I'm open to collaborating with people. If you have an idea for a feature or improvement, feel free to reach out on GitHub. I can't promise I'll implement every suggestion, but I'm always happy to hear feedback and consider new ideas. Or just fork it!
         </Q>
       </Panel>
     </InfoPageLayout>

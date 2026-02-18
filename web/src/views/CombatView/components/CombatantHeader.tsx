@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { theme } from "@/theme/theme";
 import { Panel } from "@/ui/Panel";
 import { Button } from "@/ui/Button";
+import { IconSpells } from "@/icons";
 
 type Props = {
   backTo: string;
@@ -14,6 +15,7 @@ type Props = {
   rollLabel: string;
   onRollOrReset: () => void;
   onEndCombat: () => void;
+  onOpenSpellBook: () => void;
   onPrev: () => void;
   onNext: () => void;
 };
@@ -46,6 +48,13 @@ export function CombatantHeader(props: Props) {
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <Button variant="primary" onClick={props.onRollOrReset}>
             {rollLabel}
+          </Button>
+
+          <Button variant="ghost" onClick={props.onOpenSpellBook} title="Spell Book">
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <IconSpells size={18} title="Spell Book" />
+              Spell Book
+            </span>
           </Button>
 
           <Button variant="danger" onClick={props.onEndCombat}>

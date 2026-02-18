@@ -28,6 +28,10 @@ export function CombatView() {
   const { campaignId, encounterId } = useParams();
   const { state, dispatch } = useStore();
 
+  const openSpellBook = React.useCallback(() => {
+    dispatch({ type: "openDrawer", drawer: { type: "spellbook" } });
+  }, [dispatch]);
+
   const [targetId, setTargetId] = React.useState<string | null>(null);
 
   const { encounter, combatants, orderedCombatants, canNavigate, target, playersById, inpcsById } = useCombatViewModel({
@@ -187,6 +191,7 @@ export function CombatView() {
         canNavigate={canNavigate}
         rollLabel={canNavigate ? "Reset Fight" : "Roll Monsters"}
         onRollOrReset={canNavigate ? resetFight : rollInitiativeForMonsters}
+        onOpenSpellBook={openSpellBook}
         onEndCombat={endCombat}
         onPrev={prevTurn}
         onNext={nextTurn}

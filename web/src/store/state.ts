@@ -18,6 +18,7 @@ export type DrawerState =
   | { type: "combatantConditions"; encounterId: string; combatantId: string; role: "active" | "target"; activeIdForCaster?: string | null }
   | { type: "viewTreasure"; treasureId: string; title: string }
   | { type: "viewSpell"; spellId: string; title: string }
+  | { type: "spellbook" }
   | null;
 
 export type State = {
